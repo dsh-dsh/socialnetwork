@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BaseResponse<DataStr> {
+public class DefaultResponse<DataStr> {
 
     private String error = "string";
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
