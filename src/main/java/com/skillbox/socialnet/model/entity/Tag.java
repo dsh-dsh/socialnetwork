@@ -1,6 +1,5 @@
-package com.skillbox.socialnet.data.entity;
+package com.skillbox.socialnet.model.entity;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,7 +1,6 @@
-package com.skillbox.socialnet.data.entity;
+package com.skillbox.socialnet.model.entity;
 
-import com.skillbox.socialnet.data.enums.MessagesPermission;
-import lombok.EqualsAndHashCode;
+import com.skillbox.socialnet.model.enums.MessagesPermission;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

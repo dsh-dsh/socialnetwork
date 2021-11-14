@@ -1,6 +1,6 @@
-package com.skillbox.socialnet.data.entity;
+package com.skillbox.socialnet.model.entity;
 
-import com.skillbox.socialnet.data.enums.BlockHistoryAction;
+import com.skillbox.socialnet.model.enums.BlockHistoryAction;
 import lombok.*;
 
 import javax.persistence.*;

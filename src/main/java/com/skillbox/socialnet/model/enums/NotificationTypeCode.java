@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.data.enums;
+package com.skillbox.socialnet.model.enums;
 
 public enum NotificationTypeCode {
     POST,

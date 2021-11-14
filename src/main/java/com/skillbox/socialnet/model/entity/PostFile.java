@@ -1,6 +1,5 @@
-package com.skillbox.socialnet.data.entity;
+package com.skillbox.socialnet.model.entity;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,16 +10,17 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "post_like")
-public class PostLike {
+@Table(name = "post_file")
+public class PostFile {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id")
-    private Person person;
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "path")
+    private String path;
 }
