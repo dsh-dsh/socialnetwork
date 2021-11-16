@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -16,9 +17,9 @@ public class PostComment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private int id;
     @Column(name = "time")
-    private Date time;
+    private LocalDateTime time;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
@@ -30,6 +31,6 @@ public class PostComment {
     private Person author;
     @Column(name = "comment_text")
     private String commentText;
-    @Column(name = "is_blocrd")
+    @Column(name = "is_bloced")
     private boolean isBloced;
 }

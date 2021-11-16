@@ -15,7 +15,7 @@ public class Post2tag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private int id;
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;

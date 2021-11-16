@@ -4,7 +4,7 @@ import com.skillbox.socialnet.model.enums.BlockHistoryAction;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,9 +15,9 @@ public class BlockHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private int id;
     @Column(name = "time")
-    private Date time;
+    private LocalDateTime time;
     @ManyToOne
     @JoinColumn(name = "fk_person_id")
     private Person person;

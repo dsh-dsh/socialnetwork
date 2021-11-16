@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,9 +17,9 @@ public class FriendshipStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private int id;
     @Column(name = "time")
-    private Date time;
+    private LocalDateTime time;
     @Column(name = "name")
     private String name;
     @Column(name = "code")
