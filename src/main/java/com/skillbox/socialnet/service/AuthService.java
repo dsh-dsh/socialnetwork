@@ -1,8 +1,8 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.model.response.DefaultResponse;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
+import com.skillbox.socialnet.model.response.DefaultRS;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -11,18 +11,18 @@ import java.util.Calendar;
 public class AuthService {
 
 
-    public DefaultResponse login() {
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(getUserDTO());
-        return defaultResponse;
+    public DefaultRS login() {
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getUserDTO());
+        return defaultRS;
     }
 
-    public DefaultResponse logout() {
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(new MessageDTO());
-        return defaultResponse;
+    public DefaultRS logout() {
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(new MessageDTO());
+        return defaultRS;
     }
 
     private UserDTO getUserDTO() {
