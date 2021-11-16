@@ -19,13 +19,13 @@ public class BlockHistory {
     @Column(name = "time")
     private LocalDateTime time;
     @ManyToOne
-    @JoinColumn(name = "fk_person_id")
+    @JoinColumn(name = "person_id")
     private Person person;
     @ManyToOne
-    @JoinColumn(name = "fk_post_id")
+    @JoinColumn(name = "post_id")
     private Post post;
     @ManyToOne
-    @JoinColumn(name = "fk_comment_id")
+    @JoinColumn(name = "comment_id")
     private PostComment comment;
     @Column(name = "action")
     @Enumerated(EnumType.STRING)

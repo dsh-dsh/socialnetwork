@@ -15,7 +15,7 @@ public class Friendship {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private int id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id")
     private FriendshipStatus status;
