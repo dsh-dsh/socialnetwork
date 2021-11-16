@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.model.response;
+package com.skillbox.socialnet.model.RS;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
