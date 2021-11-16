@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.api.request;
+package com.skillbox.socialnet.model.RQ;
 
 
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthUserRequest {
+public class AuthUserRQ {
 
     private String email;
     private String password;

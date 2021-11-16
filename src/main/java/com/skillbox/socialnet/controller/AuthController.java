@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.controller;
 
 
-import com.skillbox.socialnet.api.request.AuthUserRequest;
+import com.skillbox.socialnet.model.RQ.AuthUserRQ;
 import com.skillbox.socialnet.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +20,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login()
-//            (@RequestBody AuthUserRequest authUserRequest)
+    public ResponseEntity<?> login
+            (@RequestBody AuthUserRQ authUserRQ)
     {
+        System.out.println("jbhj");
         return ResponseEntity.ok(authService.login());
     }
 

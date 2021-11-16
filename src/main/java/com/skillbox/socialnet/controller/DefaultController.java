@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class DefaultController {
 
 
-//    @RequestMapping
-//    public String index() {
-//        return "index";
-//    }
-
-    @GetMapping(value = "/**/{path:[^\\\\.]*}")
-    public String redirectToIndex() {
-        return "forward:/";
+    @RequestMapping
+    public String index() {
+        return "index";
     }
+
+//    @GetMapping(value = "/**/{path:[^\\\\.]*}")
+//    public String redirectToIndex() {
+//        return "forward:/";
+//    }
 
 }
