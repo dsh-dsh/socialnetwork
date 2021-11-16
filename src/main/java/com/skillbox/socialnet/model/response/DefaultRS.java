@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.api.response;
+package com.skillbox.socialnet.model.response;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DefaultResponse<DataStr> {
+public class DefaultRS<DataStr> {
 
     private String error = "string";
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -24,7 +24,5 @@ public class DefaultResponse<DataStr> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private DataStr data;
 
-    public void setError() {
-        this.error = "invalid_request";
-    }
+
 }

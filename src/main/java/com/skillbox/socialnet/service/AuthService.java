@@ -1,6 +1,6 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.api.response.DefaultResponse;
+import com.skillbox.socialnet.model.response.DefaultResponse;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import org.springframework.stereotype.Service;
