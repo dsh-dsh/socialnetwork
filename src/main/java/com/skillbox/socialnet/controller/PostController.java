@@ -1,8 +1,8 @@
 package com.skillbox.socialnet.controller;
 
 
-import com.skillbox.socialnet.model.RQ.CommentRequest;
-import com.skillbox.socialnet.model.RQ.PostChangeRequest;
+import com.skillbox.socialnet.model.RQ.CommentRQ;
+import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,27 +36,27 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> changePostById(@PathVariable long id,
+    public ResponseEntity<?> changePostById(@PathVariable int id,
                                @PathVariable long publish_date,
-                               @RequestBody PostChangeRequest postChangeRequest
+                               @RequestBody PostChangeRQ postChangeRQ
                                ) {
-        return ResponseEntity.ok(postService.changePostById(id, publish_date, postChangeRequest));
+        return ResponseEntity.ok(postService.changePostById(id, publish_date, postChangeRQ));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePostById(@PathVariable long id) {
+    public ResponseEntity<?> deletePostById(@PathVariable int id) {
 
         return ResponseEntity.ok(postService.deletePostById(id));
 
     }
 
     @PutMapping("/{id}/recover")
-    public ResponseEntity<?> recoverPostById(@PathVariable long id) {
+    public ResponseEntity<?> recoverPostById(@PathVariable int id) {
         return ResponseEntity.ok(postService.recoverPostById(id));
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<?> getCommentsByPostId(@PathVariable long id,
+    public ResponseEntity<?> getCommentsByPostId(@PathVariable int id,
                                     @RequestParam int offset,
                                     @RequestParam(defaultValue = "20") int itemPerPage
 
@@ -67,29 +67,30 @@ public class PostController {
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<?> makeCommentToThePost(@PathVariable long id,
-                                     @RequestBody CommentRequest commentRequest) {
-        return ResponseEntity.ok(postService.makeCommentToPost(id, commentRequest));
+    public ResponseEntity<?> makeCommentToThePost(@PathVariable int id,
+                                     @RequestBody CommentRQ commentRQ) {
+        return ResponseEntity.ok(postService.makeCommentToPost(id, commentRQ));
     }
 
     @PutMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> rewriteCommentToPost(@PathVariable long id,
-                                     @PathVariable long comment_id,
-                                     @RequestBody CommentRequest commentRequest) {
-        return ResponseEntity.ok(postService.rewriteCommentToThePost(id, comment_id, commentRequest));
+    public ResponseEntity<?> rewriteCommentToPost(@PathVariable int id,
+                                     @PathVariable int comment_id,
+                                     @RequestBody CommentRQ commentRQ) {
+        return ResponseEntity.ok(postService.rewriteCommentToThePost(id, comment_id, commentRQ));
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> deleteCommentById(@PathVariable long id,
-                                  @PathVariable long comment_id){
+    public ResponseEntity<?> deleteCommentById(@PathVariable int id,
+                                  @PathVariable int
+                                          comment_id){
 
         return ResponseEntity.ok(postService.deleteCommentToThePost(id, comment_id));
 
     }
 
     @PutMapping("/{id}/comments/{comment_id}/recover}")
-    public ResponseEntity<?> recoverCommentToPost(@PathVariable long id,
-                                     @PathVariable long comment_id){
+    public ResponseEntity<?> recoverCommentToPost(@PathVariable int id,
+                                     @PathVariable int comment_id){
 
         return ResponseEntity.ok(postService.recoverCommentToPost(id, comment_id));
 
@@ -97,15 +98,16 @@ public class PostController {
 
 
     @PostMapping("/{id}/report")
-    public ResponseEntity<?> reportPostById(@PathVariable String id){
+    public ResponseEntity<?> reportPostById(@PathVariable int id){
 
         return ResponseEntity.ok(postService.reportPostById(id));
 
     }
 
     @PostMapping("/{id}/comments/{comment_id}/report")
-    public ResponseEntity<?> reportCommentToPost(@PathVariable long id,
-                                     @PathVariable long comment_id){
+    public ResponseEntity<?> reportCommentToPost(@PathVariable int id,
+                                     @PathVariable int
+                                             comment_id){
         return ResponseEntity.ok(postService.reportCommentToThePost(id, comment_id));
 
     }

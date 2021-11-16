@@ -1,13 +1,14 @@
 package com.skillbox.socialnet.service;
 
 
-import com.skillbox.socialnet.model.RQ.CommentRequest;
-import com.skillbox.socialnet.model.RQ.PostChangeRequest;
-import com.skillbox.socialnet.model.response.DefaultResponse;
+
+import com.skillbox.socialnet.model.RQ.CommentRQ;
+import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.dto.CommentDTO;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
+import com.skillbox.socialnet.model.response.DefaultRS;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,25 +19,25 @@ import java.util.List;
 public class PostService {
 
 
-    public DefaultResponse getPostsByText(String text, long date_from, long date_to, int offset, int itemPerPage) {
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setOffset(offset);
-        defaultResponse.setPerPage(itemPerPage);
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
+    public DefaultRS getPostsByText(String text, long date_from, long date_to, int offset, int itemPerPage) {
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setOffset(offset);
+        defaultRS.setPerPage(itemPerPage);
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
         List<PostDTO> posts = new ArrayList<>();
         posts.add(getPostDTO());
-        defaultResponse.setData(posts);
-        return defaultResponse;
+        defaultRS.setData(posts);
+        return defaultRS;
 
     }
 
 
-    public DefaultResponse getPostById(Long id) {
+    public DefaultRS getPostById(Long id) {
 
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(getPostDTO());
-        return defaultResponse;
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getPostDTO());
+        return defaultRS;
 
     }
 
@@ -44,40 +45,40 @@ public class PostService {
         return new PostDTO();
     }
 
-    public DefaultResponse changePostById(long id, long publish_date, PostChangeRequest postChangeRequest) {
+    public DefaultRS changePostById(int id, long publish_date, PostChangeRQ postChangeRQ) {
 
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(getPostDTO());
-        return defaultResponse;
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getPostDTO());
+        return defaultRS;
 
     }
 
-    public DefaultResponse deletePostById(long id) {
+    public DefaultRS deletePostById(int id) {
 
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setId(id);
-        defaultResponse.setData(locationDTO);
-        return defaultResponse;
+        defaultRS.setData(locationDTO);
+        return defaultRS;
 
     }
 
 
-    public DefaultResponse recoverPostById(long id) {
+    public DefaultRS recoverPostById(int id) {
 
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(getPostDTO());
-        return defaultResponse;
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getPostDTO());
+        return defaultRS;
     }
 
-    public DefaultResponse getCommentsToPost(long id, int offset, int itemPerPage) {
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(getCommentDTOList());
-        return defaultResponse;
+    public DefaultRS getCommentsToPost(int id, int offset, int itemPerPage) {
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getCommentDTOList());
+        return defaultRS;
     }
 
 
@@ -93,54 +94,54 @@ public class PostService {
         return commentDTO;
     }
 
-    public DefaultResponse makeCommentToPost(long id, CommentRequest commentRequest) {
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(getCommentDTO());
-        return defaultResponse;
+    public DefaultRS makeCommentToPost(int id, CommentRQ commentRQ) {
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getCommentDTO());
+        return defaultRS;
     }
 
-    public DefaultResponse rewriteCommentToThePost(long id, long comment_id, CommentRequest commentRequest) {
+    public DefaultRS rewriteCommentToThePost(int id, int comment_id, CommentRQ commentRQ) {
 
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(getCommentDTO());
-        return defaultResponse;
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getCommentDTO());
+        return defaultRS;
     }
 
 
-    public DefaultResponse deleteCommentToThePost(long id, long comment_id) {
+    public DefaultRS deleteCommentToThePost(int id, int comment_id) {
 
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setId(id);
-        defaultResponse.setData(locationDTO);
-        return defaultResponse;
+        defaultRS.setData(locationDTO);
+        return defaultRS;
 
     }
 
-    public DefaultResponse recoverCommentToPost(long id, long comment_id) {
+    public DefaultRS recoverCommentToPost(int id, int comment_id) {
 
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(getCommentDTO());
-        return defaultResponse;
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getCommentDTO());
+        return defaultRS;
     }
 
-    public DefaultResponse reportPostById(String id) {
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(new MessageDTO());
-        return defaultResponse;
+    public DefaultRS reportPostById(int id) {
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(new MessageDTO());
+        return defaultRS;
 
     }
 
-    public DefaultResponse reportCommentToThePost(long id, long comment_id) {
+    public DefaultRS reportCommentToThePost(int id, int comment_id) {
 
-        DefaultResponse defaultResponse = new DefaultResponse();
-        defaultResponse.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultResponse.setData(new MessageDTO());
-        return defaultResponse;
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(new MessageDTO());
+        return defaultRS;
     }
 }
