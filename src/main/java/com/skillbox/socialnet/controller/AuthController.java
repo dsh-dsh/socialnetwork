@@ -23,7 +23,6 @@ public class AuthController {
     public ResponseEntity<?> login
             (@RequestBody AuthUserRQ authUserRQ)
     {
-        System.out.println("jbhj");
         return ResponseEntity.ok(authService.login());
     }
 
