@@ -31,6 +31,6 @@ public class PostComment {
     private Person author;
     @Column(name = "comment_text")
     private String commentText;
-    @Column(name = "is_bloced")
-    private boolean isBloced;
+    @Column(name = "is_blocked")
+    private boolean isBlocked;
 }
