@@ -8,7 +8,7 @@ import com.skillbox.socialnet.model.dto.CommentDTO;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
-import com.skillbox.socialnet.model.response.DefaultRS;
+import com.skillbox.socialnet.model.RS.DefaultRS;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
