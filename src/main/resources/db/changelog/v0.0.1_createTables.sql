@@ -96,7 +96,7 @@ create table if not exists post_comment(
 	parent_id int references post_comment(id),
 	author_id int references person(id),
 	comment_text TEXT,
-	is_bloced BOOLEAN
+	is_blocked BOOLEAN
 );
 
 create table if not exists block_history(
