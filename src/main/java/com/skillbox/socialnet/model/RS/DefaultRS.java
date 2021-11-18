@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DefaultRS<DataStr> {
+public class DefaultRS<T> {
 
     private String error = "string";
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -22,7 +22,7 @@ public class DefaultRS<DataStr> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer perPage;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private DataStr data;
+    private T data;
 
 
 }
