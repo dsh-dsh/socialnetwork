@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,7 +19,7 @@ public class Post {
     @Column(name = "id")
     private int id;
     @Column(name = "time")
-    private LocalDateTime time;
+    private Timestamp time;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Person author;
