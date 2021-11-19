@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AcctRegisterRQ {
+public class AccountRegisterRQ {
 
     private String email;
     private String passwd1;

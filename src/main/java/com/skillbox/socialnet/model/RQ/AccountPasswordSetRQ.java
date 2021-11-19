@@ -1,17 +1,21 @@
 package com.skillbox.socialnet.model.RQ;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
  * @author Semen V
- * @created 19|11|2021
+ * @created 18|11|2021
  */
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AcctEmailRQ {
-    String email;
+public class AccountPasswordSetRQ {
+
+    private String token;
+    private String password;
+
 }
