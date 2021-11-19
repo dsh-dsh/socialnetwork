@@ -44,8 +44,8 @@ public class ProfileController {
 
     @GetMapping("/{id}/wall")
     public ResponseEntity<?> getUserWall(@PathVariable int id,
-                                         @RequestParam int offset,
-                                         @RequestParam int itemPerPage) {
+                                         @RequestParam(defaultValue = "0") int offset,
+                                         @RequestParam(defaultValue = "20") int itemPerPage) {
         return ResponseEntity.ok(userService.getUserWall(id, offset, itemPerPage));
     }
 

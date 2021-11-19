@@ -34,7 +34,7 @@ public class UserService {
                 "    \"birth_date\": 1559751301818,\n" +
                 "    \"email\": \"petr@mail.ru\",\n" +
                 "    \"phone\": \"89100000000\",\n" +
-                "    \"photo\": \"https://...../photos/image123.jpg\",\n" +
+                "    \"photo\": \"https://avatanplus.com/files/resources/original/583a1361bea18158a2dbb5f5.png\",\n" +
                 "    \"about\": \"Родился в небольшой, но честной семье\",\n" +
                 "    \"city\": {\n" +
                 "      \"id\": 1,\n" +
@@ -108,7 +108,7 @@ public class UserService {
                 "        \"birth_date\": 1559751301818,\n" +
                 "        \"email\": \"petr@mail.ru\",\n" +
                 "        \"phone\": \"89100000000\",\n" +
-                "        \"photo\": \"https://...../photos/image123.jpg\",\n" +
+                "        \"photo\": \"https://avatanplus.com/files/resources/original/583a1361bea18158a2dbb5f5.png\",\n" +
                 "        \"about\": \"Родился в небольшой, но честной семье\",\n" +
                 "        \"city\": {\n" +
                 "          \"id\": 1,\n" +
@@ -194,7 +194,7 @@ public class UserService {
                 "      \"birth_date\": 1559751301818,\n" +
                 "      \"email\": \"petr@mail.ru\",\n" +
                 "      \"phone\": \"89100000000\",\n" +
-                "      \"photo\": \"https://...../photos/image123.jpg\",\n" +
+                "      \"photo\": \"https://avatanplus.com/files/resources/original/583a1361bea18158a2dbb5f5.png\",\n" +
                 "      \"about\": \"Родился в небольшой, но честной семье\",\n" +
                 "      \"city\": {\n" +
                 "        \"id\": 1,\n" +
@@ -216,7 +216,7 @@ public class UserService {
                 "      \"birth_date\": 1559751301818,\n" +
                 "      \"email\": \"ivan@mail.ru\",\n" +
                 "      \"phone\": \"87600000000\",\n" +
-                "      \"photo\": \"https://...../photos/image123.jpg\",\n" +
+                "      \"photo\": \"https://avatanplus.com/files/resources/original/583a1361bea18158a2dbb5f5.png\",\n" +
                 "      \"about\": \"Родился в большой и доброй семье\",\n" +
                 "      \"city\": {\n" +
                 "        \"id\": 1,\n" +

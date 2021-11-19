@@ -25,18 +25,19 @@ public class FriendsService {
     static{
         userDTO = new UserDTO();
         userDTO.setId(1);
-        userDTO.setFirstName("Петр");
-        userDTO.setLastName("Петрович");
+        userDTO.setFirstName("Семён");
+        userDTO.setLastName("Семёныч");
         userDTO.setRegistrationDate(Calendar.getInstance().getTimeInMillis());
         userDTO.setBirthDate(Calendar.getInstance().getTimeInMillis());
         userDTO.setEmail("petr@mail.ru");
-        userDTO.setPhone( "89100000000");
+        userDTO.setPhone( "891111111111");
         userDTO.setAbout("Родился в небольшой, но честной семье");
         userDTO.setCity(new LocationDTO());
         userDTO.setCountry(new LocationDTO());
         userDTO.setPermission(MessagesPermission.ALL);
         userDTO.setLastOnlineTime(Calendar.getInstance().getTimeInMillis());
         userDTO.setBlocked(false);
+        userDTO.setPhoto("https://vsthemes.org/uploads/posts/2019-03/1195118549.jpg");
 
     }
 
@@ -49,7 +50,7 @@ public class FriendsService {
 
         //List<UserDTO> listFriends = getFriends(name)
 
-        List<UserDTO> listFriends = new ArrayList<UserDTO>();
+        List<UserDTO> listFriends = new ArrayList<>();
         listFriends.add(userDTO);
 
         defaultRS.setData(listFriends);
@@ -78,7 +79,7 @@ public class FriendsService {
 
         //List<UserDTO> listFriends = getFriends(name)
 
-        List<UserDTO> listFriends = new ArrayList<UserDTO>();
+        List<UserDTO> listFriends = new ArrayList<>();
         listFriends.add(userDTO);
 
         defaultRS.setData(listFriends);
@@ -93,7 +94,7 @@ public class FriendsService {
 
         //List<UserDTO> listFriends = getFriends(name)
 
-        List<UserDTO> listFriends = new ArrayList<UserDTO>();
+        List<UserDTO> listFriends = new ArrayList<>();
         listFriends.add(userDTO);
 
         defaultRS.setData(listFriends);
