@@ -21,9 +21,9 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?> getPosts(
             @RequestParam(defaultValue = "") String text,
-            @RequestParam long date_from,
-            @RequestParam long date_to,
-            @RequestParam int offset,
+            @RequestParam (defaultValue = "0") long date_from,
+            @RequestParam (defaultValue = "0") long date_to,
+            @RequestParam (defaultValue = "0") int offset,
             @RequestParam(defaultValue = "20") int itemPerPage
     ) {
         postService.getPostsByText(text, date_from, date_to, offset, itemPerPage);
@@ -37,7 +37,7 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> changePostById(@PathVariable int id,
-                               @PathVariable long publish_date,
+                               @RequestParam (defaultValue = "0")  long publish_date,
                                @RequestBody PostChangeRQ postChangeRQ
                                ) {
         return ResponseEntity.ok(postService.changePostById(id, publish_date, postChangeRQ));
@@ -57,7 +57,7 @@ public class PostController {
 
     @GetMapping("/{id}/comments")
     public ResponseEntity<?> getCommentsByPostId(@PathVariable int id,
-                                    @RequestParam int offset,
+                                    @RequestParam (defaultValue = "0")  int offset,
                                     @RequestParam(defaultValue = "20") int itemPerPage
 
     ){

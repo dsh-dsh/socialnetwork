@@ -20,6 +20,7 @@ public class UserDTO {
     private long birthDate;
     private String email;
     private String phone;
+    private String photo;
     private String about;
     private LocationDTO city;
     private LocationDTO country;
