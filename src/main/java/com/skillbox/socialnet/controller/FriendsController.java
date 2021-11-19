@@ -19,13 +19,15 @@ public class FriendsController {
     @Autowired
     private FriendsService friendsService;
 
+    //!
     @GetMapping("/friends")
-    public ResponseEntity<?> getAllFriends(@RequestParam String name,
-                                           @RequestParam int offset,
-                                           @RequestParam int itemPerPage) {
+    public ResponseEntity<?> getAllFriends(@RequestParam(defaultValue = "") String name,
+                                           @RequestParam(defaultValue = "1") int offset,
+                                           @RequestParam(defaultValue = "20") int itemPerPage) {
         return ResponseEntity.ok(friendsService.getAllFriends(name, offset, itemPerPage));
     }
 
+    //!
     @DeleteMapping("/friends/{id}")
     public ResponseEntity<?> deleteFriend(@PathVariable int id) {
         return ResponseEntity.ok(friendsService.deleteFriend(id));
@@ -37,15 +39,16 @@ public class FriendsController {
     }
 
     @GetMapping("/friends/request")
-    public ResponseEntity<?> getRequests(@RequestParam String name,
-                                         @RequestParam Integer offset,
-                                         @RequestParam Integer itemPerPage) {
+    public ResponseEntity<?> getRequests(@RequestParam(defaultValue = "") String name,
+                                         @RequestParam(defaultValue = "1") int offset,
+                                         @RequestParam(defaultValue = "20") int itemPerPage) {
         return ResponseEntity.ok(friendsService.getRequests(name,offset, itemPerPage));
     }
 
+    //!
     @GetMapping("/friends/recommendations")
-    public ResponseEntity<?> getRecommendations(@RequestParam Integer offset,
-                                                @RequestParam Integer itemPerPage) {
+    public ResponseEntity<?> getRecommendations(@RequestParam(defaultValue = "1") int offset,
+                                                @RequestParam(defaultValue = "20") int itemPerPage) {
         return ResponseEntity.ok(friendsService.getRecommendations(offset,itemPerPage));
     }
 

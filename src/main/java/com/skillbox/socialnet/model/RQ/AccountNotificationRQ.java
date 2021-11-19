@@ -2,6 +2,7 @@ package com.skillbox.socialnet.model.RQ;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AcctNotificationRQ {
+public class AccountNotificationRQ {
 
     @JsonProperty("notification_type")
-    private RequestMethod notificationType;
+    private NotificationTypeCode notificationType;
     private boolean enable;
 }
