@@ -1,5 +1,8 @@
 package com.skillbox.socialnet.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
@@ -15,11 +18,45 @@ import java.util.List;
 @Service
 public class UserService {
 
-    public DefaultRS getUser(int id) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(getUserDTO(id));
-        return defaultRS;
+    public Object getUser(int id) {
+//        DefaultRS defaultRS = new DefaultRS();
+//        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+//        defaultRS.setData(getUserDTO(id));
+//        return defaultRS;
+        String jsonStr = "{\n" +
+                "  \"error\": \"string\",\n" +
+                "  \"timestamp\": 1559751301818,\n" +
+                "  \"data\": {\n" +
+                "    \"id\": 1,\n" +
+                "    \"first_name\": \"Петр\",\n" +
+                "    \"last_name\": \"Петрович\",\n" +
+                "    \"reg_date\": 1559751301818,\n" +
+                "    \"birth_date\": 1559751301818,\n" +
+                "    \"email\": \"petr@mail.ru\",\n" +
+                "    \"phone\": \"89100000000\",\n" +
+                "    \"photo\": \"https://...../photos/image123.jpg\",\n" +
+                "    \"about\": \"Родился в небольшой, но честной семье\",\n" +
+                "    \"city\": {\n" +
+                "      \"id\": 1,\n" +
+                "      \"title\": \"Москва\"\n" +
+                "    },\n" +
+                "    \"country\": {\n" +
+                "      \"id\": 1,\n" +
+                "      \"title\": \"Россия\"\n" +
+                "    },\n" +
+                "    \"messages_permission\": \"ALL\",\n" +
+                "    \"last_online_time\": 1559751301818,\n" +
+                "    \"is_blocked\": false\n" +
+                "  }\n" +
+                "}";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        try {
+            rootNode = mapper.readTree(jsonStr);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return rootNode;
     }
 
     private UserDTO getUserDTO(int id) {
@@ -44,15 +81,74 @@ public class UserService {
         return new MessageDTO();
     }
 
-    public DefaultRS getUserWall(int id, int offset, int itemPerPage) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setOffset(offset);
-        defaultRS.setPerPage(itemPerPage);
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        List<PostDTO> posts = getPosts(id);
-        defaultRS.setData(posts);
-        defaultRS.setTotal(posts.size());
-        return defaultRS;
+    public Object getUserWall(int id, int offset, int itemPerPage) {
+//        DefaultRS defaultRS = new DefaultRS();
+//        defaultRS.setOffset(offset);
+//        defaultRS.setPerPage(itemPerPage);
+//        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+//        List<PostDTO> posts = getPosts(id);
+//        defaultRS.setData(posts);
+//        defaultRS.setTotal(posts.size());
+//        return defaultRS;
+        String jsonStr = "{\n" +
+                "  \"error\": \"string\",\n" +
+                "  \"timestamp\": 1559751301818,\n" +
+                "  \"total\": 0,\n" +
+                "  \"offset\": 0,\n" +
+                "  \"perPage\": 20,\n" +
+                "  \"data\": [\n" +
+                "    {\n" +
+                "      \"id\": 1,\n" +
+                "      \"time\": 1559751301818,\n" +
+                "      \"author\": {\n" +
+                "        \"id\": 1,\n" +
+                "        \"first_name\": \"Петр\",\n" +
+                "        \"last_name\": \"Петрович\",\n" +
+                "        \"reg_date\": 1559751301818,\n" +
+                "        \"birth_date\": 1559751301818,\n" +
+                "        \"email\": \"petr@mail.ru\",\n" +
+                "        \"phone\": \"89100000000\",\n" +
+                "        \"photo\": \"https://...../photos/image123.jpg\",\n" +
+                "        \"about\": \"Родился в небольшой, но честной семье\",\n" +
+                "        \"city\": {\n" +
+                "          \"id\": 1,\n" +
+                "          \"title\": \"Москва\"\n" +
+                "        },\n" +
+                "        \"country\": {\n" +
+                "          \"id\": 1,\n" +
+                "          \"title\": \"Россия\"\n" +
+                "        },\n" +
+                "        \"messages_permission\": \"ALL\",\n" +
+                "        \"last_online_time\": 1559751301818,\n" +
+                "        \"is_blocked\": false\n" +
+                "      },\n" +
+                "      \"title\": \"string\",\n" +
+                "      \"post_text\": \"string\",\n" +
+                "      \"is_blocked\": false,\n" +
+                "      \"likes\": 23,\n" +
+                "      \"comments\": [\n" +
+                "        {\n" +
+                "          \"parent_id\": 1,\n" +
+                "          \"comment_text\": \"string\",\n" +
+                "          \"id\": 111,\n" +
+                "          \"post_id\": \"string\",\n" +
+                "          \"time\": 1559751301818,\n" +
+                "          \"author_id\": 1,\n" +
+                "          \"is_blocked\": true\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"type\": \"POSTED\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        try {
+            rootNode = mapper.readTree(jsonStr);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return rootNode;
     }
 
     private List<PostDTO> getPosts(int id) {
@@ -74,15 +170,76 @@ public class UserService {
         return defaultRS;
     }
 
-    public DefaultRS searchUsers(String firstName, String lastName, int ageFrom, int ageTo, int cityId, int offset, int itemPerPage) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setOffset(offset);
-        defaultRS.setPerPage(itemPerPage);
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        List<UserDTO> users = searchUsersDTO(firstName, lastName, ageFrom, ageTo, cityId);
-        defaultRS.setData(users);
-        defaultRS.setTotal(users.size());
-        return defaultRS;
+    public Object searchUsers(String firstName, String lastName, int ageFrom, int ageTo, int cityId, int offset, int itemPerPage) {
+//        DefaultRS defaultRS = new DefaultRS();
+//        defaultRS.setOffset(offset);
+//        defaultRS.setPerPage(itemPerPage);
+//        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+//        List<UserDTO> users = searchUsersDTO(firstName, lastName, ageFrom, ageTo, cityId);
+//        defaultRS.setData(users);
+//        defaultRS.setTotal(users.size());
+//        return defaultRS;
+        String jsonStr = "{\n" +
+                "  \"error\": \"string\",\n" +
+                "  \"timestamp\": 1559751301818,\n" +
+                "  \"total\": 0,\n" +
+                "  \"offset\": 0,\n" +
+                "  \"perPage\": 20,\n" +
+                "  \"data\": [\n" +
+                "    {\n" +
+                "      \"id\": 1,\n" +
+                "      \"first_name\": \"Петр\",\n" +
+                "      \"last_name\": \"Петрович\",\n" +
+                "      \"reg_date\": 1559751301818,\n" +
+                "      \"birth_date\": 1559751301818,\n" +
+                "      \"email\": \"petr@mail.ru\",\n" +
+                "      \"phone\": \"89100000000\",\n" +
+                "      \"photo\": \"https://...../photos/image123.jpg\",\n" +
+                "      \"about\": \"Родился в небольшой, но честной семье\",\n" +
+                "      \"city\": {\n" +
+                "        \"id\": 1,\n" +
+                "        \"title\": \"Москва\"\n" +
+                "      },\n" +
+                "      \"country\": {\n" +
+                "        \"id\": 1,\n" +
+                "        \"title\": \"Россия\"\n" +
+                "      },\n" +
+                "      \"messages_permission\": \"ALL\",\n" +
+                "      \"last_online_time\": 1559751301818,\n" +
+                "      \"is_blocked\": false\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"id\": 2,\n" +
+                "      \"first_name\": \"Иван\",\n" +
+                "      \"last_name\": \"Васильевич\",\n" +
+                "      \"reg_date\": 1559751301818,\n" +
+                "      \"birth_date\": 1559751301818,\n" +
+                "      \"email\": \"ivan@mail.ru\",\n" +
+                "      \"phone\": \"87600000000\",\n" +
+                "      \"photo\": \"https://...../photos/image123.jpg\",\n" +
+                "      \"about\": \"Родился в большой и доброй семье\",\n" +
+                "      \"city\": {\n" +
+                "        \"id\": 1,\n" +
+                "        \"title\": \"Киев\"\n" +
+                "      },\n" +
+                "      \"country\": {\n" +
+                "        \"id\": 1,\n" +
+                "        \"title\": \"Украина\"\n" +
+                "      },\n" +
+                "      \"messages_permission\": \"ALL\",\n" +
+                "      \"last_online_time\": 1559751301818,\n" +
+                "      \"is_blocked\": false\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        try {
+            rootNode = mapper.readTree(jsonStr);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return rootNode;
     }
 
     private List<UserDTO> searchUsersDTO(String firstName, String lastName, int ageFrom, int ageTo, int cityId) {
@@ -92,7 +249,7 @@ public class UserService {
     }
 
     public DefaultRS blockUser(int id) {
-        getUser(id);//block him
+        getUserDTO(id);//block him
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
         defaultRS.setData(getMessage());
@@ -100,7 +257,7 @@ public class UserService {
     }
 
     public DefaultRS unblockUser(int id) {
-        getUser(id);//unblock him
+        getUserDTO(id);//unblock him
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
         defaultRS.setData(getMessage());

@@ -1,5 +1,8 @@
 package com.skillbox.socialnet.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.service.UserService;
@@ -17,8 +20,8 @@ public class ProfileController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUser() {
-        int id = 1;//take id from auth token
+    public ResponseEntity<?> getUser() throws JsonProcessingException {
+        int id = 1; // get from token
         return ResponseEntity.ok(userService.getUser(id));
     }
 
@@ -34,7 +37,7 @@ public class ProfileController {
         return ResponseEntity.ok(userService.deleteUser(id));
     }
 
-    @GetMapping("/me/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable int id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
