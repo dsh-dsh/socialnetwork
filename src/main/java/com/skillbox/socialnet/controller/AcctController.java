@@ -1,10 +1,8 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.AcctEmailRQ;
-import com.skillbox.socialnet.model.RQ.AcctNotificationRQ;
-import com.skillbox.socialnet.model.RQ.AcctPasswordSetRQ;
-import com.skillbox.socialnet.model.RQ.AcctRegisterRQ;
+import com.skillbox.socialnet.model.RQ.*;
 import com.skillbox.socialnet.service.AcctService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/account")
 public class AcctController {
 
-    private final AcctService accountService;
-
-    public AcctController(AcctService accountService) {
-        this.accountService = accountService;
-    }
+    @Autowired
+    private AcctService accountService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AcctRegisterRQ acctRegisterRQ) {
