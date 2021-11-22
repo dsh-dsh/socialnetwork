@@ -6,7 +6,6 @@ import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.entity.User;
-import com.skillbox.socialnet.model.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.IThrottledTemplateProcessor;
 
@@ -21,33 +20,27 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
-    private UserRepository userRepository;
+//    public DefaultRS register(AccountRegisterRQ accountRegisterRQ) {
+//        DefaultRS defaultRS = new DefaultRS();
+//        if (!isEmailExist(accountRegisterRQ.getEmail())){
+//            User user = new User();
+//            user.setEMail(accountRegisterRQ.getEmail());
+//            user.setName(accountRegisterRQ.getFirstName() + " " + accountRegisterRQ.getLastName());
+//            user.setPassword(accountRegisterRQ.getPasswd1());
+//            userRepository.save(user);
+//            defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+//            defaultRS.setData(new MessageDTO());
+//            return defaultRS;
+//        }
+//        defaultRS.setError("User already exist!");
+//        defaultRS.setErrorDesc("Email is already in use.");
+//        return defaultRS;
+//    }
 
-    public AccountService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public DefaultRS register(AccountRegisterRQ accountRegisterRQ) {
-        DefaultRS defaultRS = new DefaultRS();
-        if (!isEmailExist(accountRegisterRQ.getEmail())){
-            User user = new User();
-            user.setEMail(accountRegisterRQ.getEmail());
-            user.setName(accountRegisterRQ.getFirstName() + " " + accountRegisterRQ.getLastName());
-            user.setPassword(accountRegisterRQ.getPasswd1());
-            userRepository.save(user);
-            defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-            defaultRS.setData(new MessageDTO());
-            return defaultRS;
-        }
-        defaultRS.setError("User already exist!");
-        defaultRS.setErrorDesc("Email is already in use.");
-        return defaultRS;
-    }
-
-    private boolean isEmailExist(String email){
-        Optional<User> users = userRepository.findByEmail(email);
-        return users.isPresent();
-    }
+    //   private boolean isEmailExist(String email){
+    //    Optional<User> users = userRepository.findByEmail(email);
+    //   return users.isPresent();
+   // }
 
     public DefaultRS recoveryPassword() {
         DefaultRS defaultRS = new DefaultRS();
