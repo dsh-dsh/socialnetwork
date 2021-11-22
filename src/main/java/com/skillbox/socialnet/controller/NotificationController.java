@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(name = "/api/v1")
+@RequestMapping(name = "/api/v1/notifications")
 public class NotificationController {
         private final NotificationService notificationService;
 
@@ -19,7 +19,7 @@ public class NotificationController {
                 this.notificationService = notificationService;
         }
 
-        @GetMapping("/notifications")
+        @GetMapping("")
         public ResponseEntity<NotificationRS> getNotification(NotificationRQ notificationRQ){
                 return ResponseEntity.ok(notificationService.getNotification(notificationRQ));
         }

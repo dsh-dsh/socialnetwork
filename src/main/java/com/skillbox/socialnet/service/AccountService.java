@@ -7,13 +7,10 @@ import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.entity.User;
 import com.skillbox.socialnet.model.repository.PersonRepository;
-import com.skillbox.socialnet.model.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
-import java.util.Optional;
 
 /**
  * @author Semen V
@@ -23,11 +20,12 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
-    private PersonRepository personRepository;
+    private final PersonRepository personRepository;
 
-    public AccountService(PersonRepository personRepository) {
-        this.personRepository = personRepository;
+    public AccountService(PersonRepository userRepository) {
+        this.personRepository = userRepository;
     }
+
 
     public DefaultRS register(AccountRegisterRQ accountRegisterRQ) {
         DefaultRS defaultRS = new DefaultRS();
