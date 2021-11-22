@@ -1,7 +1,9 @@
 package com.skillbox.socialnet.controller;
 
 import com.skillbox.socialnet.model.RQ.*;
+import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.service.AccountService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +26,11 @@ public class AccountController {
     //!
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AccountRegisterRQ accountRegisterRQ) {
-        return ResponseEntity.ok(accountService.register());
+        DefaultRS defaultRS = accountService.register(accountRegisterRQ);
+        if (defaultRS.getError().equals("string")){
+            return ResponseEntity.ok(defaultRS);
+        }
+        return new ResponseEntity<>(defaultRS, HttpStatus.BAD_REQUEST);
     }
     //!
     @PutMapping("/password/recovery")
