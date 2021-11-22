@@ -24,14 +24,14 @@ public class AccountController {
     }
 
     //!
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AccountRegisterRQ accountRegisterRQ) {
-        DefaultRS defaultRS = accountService.register(accountRegisterRQ);
-        if (defaultRS.getError().equals("string")){
-            return ResponseEntity.ok(defaultRS);
-        }
-        return new ResponseEntity<>(defaultRS, HttpStatus.BAD_REQUEST);
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<?> register(@RequestBody AccountRegisterRQ accountRegisterRQ) {
+//        DefaultRS defaultRS = accountService.register(accountRegisterRQ);
+//        if (defaultRS.getError().equals("string")){
+//            return ResponseEntity.ok(defaultRS);
+//        }
+//        return new ResponseEntity<>(defaultRS, HttpStatus.BAD_REQUEST);
+//    }
     //!
     @PutMapping("/password/recovery")
     public ResponseEntity<?> passwordRecovery(@RequestBody AccountEmailRQ acctEmailRequest) {
