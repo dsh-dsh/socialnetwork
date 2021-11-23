@@ -21,17 +21,17 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?> getPosts(
             @RequestParam(defaultValue = "") String text,
-            @RequestParam (defaultValue = "0") long date_from,
-            @RequestParam (defaultValue = "0") long date_to,
-            @RequestParam (defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage
+            @RequestParam (defaultValue = "0", required = false) long date_from,
+            @RequestParam (defaultValue = "0", required = false) long date_to,
+            @RequestParam (defaultValue = "0", required = false) int offset,
+            @RequestParam(defaultValue = "20", required = false) int itemPerPage
     ) {
         postService.getPostsByText(text, date_from, date_to, offset, itemPerPage);
         return ResponseEntity.ok(postService.getPostsByText(text, date_from, date_to, offset, itemPerPage));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPostById(@PathVariable Long id) {
+    public ResponseEntity<?> getPostById(@PathVariable int id) {
         return ResponseEntity.ok(postService.getPostById(id));
     }
 
