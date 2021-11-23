@@ -13,32 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(name = "/api/v1/notifications")
 public class NotificationController {
-
-
-        private final NotificationService notificationService;
-
-        public NotificationController(NotificationService notificationService) {
-                this.notificationService = notificationService;
-        }
-
-
-//        @GetMapping("/notifications")
-//        @GetMapping
-//        public ResponseEntity<?> getNotifications(
-//                @RequestParam (defaultValue = "0") int offset,
-//                @RequestParam(defaultValue = "20") int itemPerPage
-//        ){
-//                NotificationRQ notificationRQ = new NotificationRQ(offset, itemPerPage);
+//        private final NotificationService notificationService;
+//
+//        @Autowired
+//        public NotificationController(NotificationService notificationService){
+//                this.notificationService = notificationService;
+//        }
+//
+//        @GetMapping("")
+//        public ResponseEntity<NotificationRS> getNotification(NotificationRQ notificationRQ){
 //                return ResponseEntity.ok(notificationService.getNotification(notificationRQ));
 //        }
-
-//        @GetMapping
-//        public ResponseEntity<NotificationRS> getNotification(
-//                @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-//                @RequestParam (name = "itemPerPage", required = false, defaultValue = "20") int itemPerPage)
-//        {
-//                NotificationRQ notificationRQ = new NotificationRQ(offset, itemPerPage);
-//                return ResponseEntity.ok(notificationService.getNotification(notificationRQ));
-//        }
-
 }
+
