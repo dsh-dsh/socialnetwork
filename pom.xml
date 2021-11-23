@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>RELEASE</version>
+			<version>5.8.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -63,6 +63,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>2.5.6</version>
 				<executions>
 					<execution>
 						<goals>
@@ -81,6 +82,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 
 </project>
