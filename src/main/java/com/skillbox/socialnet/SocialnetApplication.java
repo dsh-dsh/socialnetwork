@@ -8,7 +8,5 @@ public class SocialnetApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SocialnetApplication.class, args);
-
 	}
-
 }
