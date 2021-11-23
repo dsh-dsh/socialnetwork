@@ -15,14 +15,14 @@ import java.time.LocalDateTime;
 @Table(name = "person")
 public class Person {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @Column(name = "reg_data")
+    @Column(name = "reg_date")
     private LocalDateTime regData;
     @Column(name = "birth_date")
     private LocalDateTime birthDate;
