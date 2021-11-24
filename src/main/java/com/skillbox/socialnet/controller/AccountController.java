@@ -3,6 +3,7 @@ package com.skillbox.socialnet.controller;
 import com.skillbox.socialnet.model.RQ.*;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.service.AccountService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +15,11 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/account")
 public class AccountController {
 
     private final AccountService accountService;
-
-    public AccountController(AccountService accountService) {
-        this.accountService = accountService;
-    }
 
     //!
 //    @PostMapping("/register")
