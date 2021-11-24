@@ -16,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = "select p from Post p where (p.postText like %:text% or p.title like %:text%) and p.time between :postTime and :stopTime and p.isBlocked = false order by p.time desc" )
     Page<Post> findPostByPostTextAndTimeBetween(Pageable pageable, Timestamp postTime, Timestamp stopTime, String text);
 
-    @Query(value = "select p from Post p where (p.postText like %:text% or p.title like %:text%) and p.isBlocked = false order by p.time des" )
+    @Query(value = "select p from Post p where (p.postText like %:text% or p.title like %:text%) and p.isBlocked = false order by p.time desc" )
     Page<Post> findPostByPostText(Pageable pageable, String text);
 
     Optional<Post> findPostById(int id);
