@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.model.repository;
+package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.entity.User;
 import org.springframework.data.repository.CrudRepository;
