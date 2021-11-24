@@ -16,15 +16,15 @@ VALUES(3, 'Феликс', 'Абрамов', '2021-11-12T14:55:56', '1994-11-16T1
 -- posts
 INSERT INTO post
 (id, time, author_id, title, post_text, is_blocked)
-VALUES(1, '2021-11-10T14:55:56', 1, 'My first post about Java Collections', 'Java Collections are so fun and easy!', false);
+VALUES(1, '2021-11-10 14:55:56', 1, 'My first post about Java Collections', 'Java Collections are so fun and easy!', false);
 
 INSERT INTO post
 (id, time, author_id, title, post_text, is_blocked)
-VALUES(2, '2021-11-11T14:55:56', 2, 'All things about my life', 'Nobody actually even care!', true);
+VALUES(2, '2021-11-10 14:55:56', 2, 'All things about my life', 'Nobody actually even care!', true);
 
 INSERT INTO post
 (id, time, author_id, title, post_text, is_blocked)
-VALUES(3, '2021-11-12T14:55:56', 3, 'Third test post', 'Nothing to see here', false);
+VALUES(3, '2021-11-12 14:55:56', 3, 'Third test post', 'Nothing to see here', false);
 
 
 -- comments
@@ -51,6 +51,17 @@ VALUES(5, '2021-11-15T14:55:56', 3, null, 3, 'Bla-bla-bla', false);
 INSERT INTO post_comment
 (id, time, post_id, parent_id, author_id, comment_text, is_blocked)
 VALUES(6, '2021-11-16T14:55:56', 2, 5, 1, 'qwljkqjwnpnqgiknqokngl', false);
+
+
+--likes
+
+INSERT INTO post_like
+(id, time, post_id, person_id)
+VALUES(1, '2021-11-14 14:55:56', 2, 3);
+
+INSERT INTO post_like
+(id, time, post_id, person_id)
+VALUES(2, '2021-11-14 14:55:56', 1, 2);
 
 -- tags
 INSERT INTO tag (id, tag) VALUES(1, 'Java Collections');

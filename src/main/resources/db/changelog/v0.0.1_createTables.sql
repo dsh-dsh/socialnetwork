@@ -55,7 +55,7 @@ create table if not exists message(
 
 create table if not exists post(
 	id serial PRIMARY KEY not null,
-	"time" timestamp,
+	time timestamp,
 	author_id int references person(id),
 	title TEXT,
 	post_text TEXT,
@@ -77,7 +77,7 @@ create table if not exists post2tag (
 
 create table if not exists post_like(
 	id serial PRIMARY KEY not null,
-	"time" timestamp,
+	time timestamp,
 	person_id int references person(id),
 	post_id int references post(id)
 );
@@ -91,7 +91,7 @@ create table if not exists post_file(
 
 create table if not exists post_comment(
 	id serial PRIMARY KEY not null,
-	"time" timestamp,
+	time timestamp,
 	post_id int references post(id),
 	parent_id int references post_comment(id),
 	author_id int references person(id),

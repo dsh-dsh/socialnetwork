@@ -10,7 +10,7 @@ public class CommentDTO {
 
     @JsonProperty("parent_id")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private int parentId;
+    private Integer parentId;
     @JsonProperty("comment_text")
     private String commentText;
     private int id;
@@ -18,7 +18,7 @@ public class CommentDTO {
     private String postId;
     private long time;
     @JsonProperty("author_id")
-    private long authorId;
+    private int authorId;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
 

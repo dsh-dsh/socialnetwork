@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class CommentRQ {
 
     @JsonProperty("parent_id")
-    private long parentId;
+    private Integer parentId;
     @JsonProperty("comment_text")
     private String commentText;
 
