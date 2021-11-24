@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.model.repository;
+package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.entity.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
