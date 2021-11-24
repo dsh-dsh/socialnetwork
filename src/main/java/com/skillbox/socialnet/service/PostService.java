@@ -119,11 +119,7 @@ public class PostService {
         if (optionalPost.isPresent()) {
             defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
             Post post = optionalPost.get();
-
-            post.setBlocked(true);
-            postRepository.save(post);
-            //            ТУТ ДЕЛАЕМ НЕВЕДОМОЕ УДАЛЕНИЕ ПОСТА
-
+            postRepository.delete(post);
             defaultRS.setData(getPostDTO(optionalPost.get()));
             LocationDTO locationDTO = new LocationDTO();
             locationDTO.setId(id);
@@ -140,31 +136,15 @@ public class PostService {
     public DefaultRS recoverPostById(int id) {
 
         DefaultRS defaultRS = new DefaultRS();
-        Optional<Post> optionalPost = postRepository.findPostById(id);
-        if (optionalPost.isPresent()) {
-            defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-            Post post = optionalPost.get();
-//            post.setBlocked(false);
-
-            //            ТУТ ДЕЛАЕМ НЕВЕДОМОЕ ВОССТАНОВЛЕНИЕ ПОСТА
-
-            defaultRS.setData(getPostDTO(optionalPost.get()));
-            LocationDTO locationDTO = new LocationDTO();
-            locationDTO.setId(id);
-            defaultRS.setData(locationDTO);
-        }
-        else {
-            defaultRS.setError("bad request");
-        }
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(new PostDTO());
         return defaultRS;
     }
 
     public DefaultRS getCommentsToPost(int id, int offset, int itemPerPage) {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        getCommentDTOList(commentRepository.findByPostId(getPageable(offset, itemPerPage), id));
-        defaultRS.setData(getFakeCommentList());
-//        defaultRS.setData(getCommentDTOList());
+        defaultRS.setData(getCommentDTOList(commentRepository.findByPostId(getPageable(offset, itemPerPage), id)));
         return defaultRS;
     }
 
@@ -199,8 +179,17 @@ public class PostService {
     public DefaultRS rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
 
         DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(new CommentDTO());
+        Optional<PostComment> optionalPostComment = commentRepository.findById(commentId);
+        if (optionalPostComment.isPresent()) {
+            defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+            PostComment postComment = optionalPostComment.get();
+            postComment.setCommentText(commentRQ.getCommentText());
+            commentRepository.save(postComment);
+            defaultRS.setData(getCommentDTO(postComment));
+        }
+        else {
+            defaultRS.setError("bad request");
+        }
         return defaultRS;
     }
 
@@ -208,10 +197,18 @@ public class PostService {
     public DefaultRS deleteCommentToThePost(int id, int commentId) {
 
         DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        LocationDTO locationDTO = new LocationDTO();
-        locationDTO.setId(id);
-        defaultRS.setData(locationDTO);
+        Optional<PostComment> optionalPostComment = commentRepository.findById(commentId);
+        if (optionalPostComment.isPresent()) {
+            defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+            PostComment postComment = optionalPostComment.get();
+            commentRepository.delete(postComment);
+            LocationDTO locationDTO = new LocationDTO();
+            locationDTO.setId(commentId);
+            defaultRS.setData(locationDTO);
+        }
+        else {
+            defaultRS.setError("bad request");
+        }
         return defaultRS;
 
     }
