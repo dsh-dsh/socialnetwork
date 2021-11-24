@@ -8,9 +8,13 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.repository.PersonRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
+import java.util.Optional;
+
+import static com.skillbox.socialnet.config.Config.bcrypt;
 
 /**
  * @author Semen V
@@ -34,7 +38,7 @@ public class AccountService {
             person.setEMail(accountRegisterRQ.getEmail());
             person.setFirstName(accountRegisterRQ.getFirstName());
             person.setLastName(accountRegisterRQ.getLastName());
-            person.setPassword(accountRegisterRQ.getPasswd1());
+            person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
             personRepository.save(person);
             defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
             defaultRS.setData(new MessageDTO());
@@ -46,14 +50,8 @@ public class AccountService {
     }
 
     private boolean isEmailExist(String email) {
-        Iterable<Person> personIterable = personRepository.findAll();
-        for (Person person :
-                personIterable) {
-            if (person.getEMail().equals(email)) {
-                return true;
-            }
-        }
-        return false;
+        Person person = personRepository.findByeMail(email);
+        return (person != null)? true : false;
     }
 
     public DefaultRS recoveryPassword() {
@@ -83,4 +81,6 @@ public class AccountService {
         defaultRS.setData(new MessageDTO());
         return defaultRS;
     }
+
+
 }

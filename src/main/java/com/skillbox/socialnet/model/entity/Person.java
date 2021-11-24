@@ -27,7 +27,7 @@ public class Person {
     private Timestamp regData;
     @Column(name = "birth_date")
     private Timestamp birthDate;
-    @Column(name = "e_mail")
+    @Column(name = "e_mail", unique = true)
     private String eMail;
     @Column(name = "phone")
     private String phone;
