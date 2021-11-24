@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,18 +16,18 @@ import java.time.LocalDateTime;
 @Table(name = "person")
 public class Person {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @Column(name = "reg_data")
-    private LocalDateTime regData;
+    @Column(name = "reg_date")
+    private Timestamp regData;
     @Column(name = "birth_date")
-    private LocalDateTime birthDate;
-    @Column(name = "e_mail")
+    private Timestamp birthDate;
+    @Column(name = "e_mail", unique = true)
     private String eMail;
     @Column(name = "phone")
     private String phone;
@@ -48,7 +49,7 @@ public class Person {
     @Enumerated(EnumType.STRING)
     private MessagesPermission messagesPermission;
     @Column(name = "last_online_time")
-    private LocalDateTime lastOnlineTime;
+    private Timestamp lastOnlineTime;
     @Column(name = "is_blocked")
     private boolean isBlocked;
 }

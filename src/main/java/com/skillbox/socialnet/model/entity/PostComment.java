@@ -1,25 +1,25 @@
 package com.skillbox.socialnet.model.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 
 @Getter
 @Setter
-@NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "post_comment")
 public class PostComment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
     @Column(name = "time")
-    private LocalDateTime time;
+    private Timestamp time;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
