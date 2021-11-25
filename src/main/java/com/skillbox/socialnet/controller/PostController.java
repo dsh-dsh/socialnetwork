@@ -4,19 +4,17 @@ package com.skillbox.socialnet.controller;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.service.PostService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/post")
 public class PostController {
 
 
     private final PostService postService;
-
-    public PostController(PostService postService) {
-        this.postService = postService;
-    }
 
     @GetMapping
     public ResponseEntity<?> getPosts(
