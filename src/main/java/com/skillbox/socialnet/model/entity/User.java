@@ -1,15 +1,15 @@
 package com.skillbox.socialnet.model.entity;
 
 import com.skillbox.socialnet.model.enums.UserType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "user")
 public class User {
