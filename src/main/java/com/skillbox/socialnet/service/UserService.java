@@ -9,8 +9,12 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
+import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.entity.User;
+import com.skillbox.socialnet.model.enums.MessagesPermission;
+import com.skillbox.socialnet.model.enums.UserType;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -262,5 +266,64 @@ public class UserService {
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
         defaultRS.setData(getMessage());
         return defaultRS;
+    }
+
+    public User getUserByEmail(String email) {
+
+        User user = User.builder()
+                .id(1)
+                .name("user")
+                .eMail("user@email.com")
+                .password("password")
+                .type(UserType.ADMIN)
+                .build();
+
+        if(user.getEMail() == email) {
+            return user;
+        }
+
+        return null;
+    }
+
+    public Person getPersonByEmailAndPassword(String email, String password) {
+        Person person = Person.builder()
+                .id(1)
+                .firstName("user")
+                .eMail("user@email.com")
+                .password("password")
+                .birthDate(LocalDateTime.of(1973, 1, 23, 8, 30))
+                .regData(LocalDateTime.of(2021, 1, 1, 0,0))
+                .lastOnlineTime(LocalDateTime.of(2021, 10, 1, 0,0))
+                .city("Krasnodar")
+                .messagesPermission(MessagesPermission.ALL)
+                .isBlocked(false)
+                .build();
+
+        if(person.getEMail().equals(email) && person.getPassword().equals(password)) {
+            return person;
+        }
+
+        return null;
+    }
+
+    public Person getPersonByEmail(String email) {
+        Person person = Person.builder()
+                .id(1)
+                .firstName("user")
+                .eMail("user@email.com")
+                .password("password")
+                .birthDate(LocalDateTime.of(1973, 1, 23, 8, 30))
+                .regData(LocalDateTime.of(2021, 1, 1, 0,0))
+                .lastOnlineTime(LocalDateTime.of(2021, 10, 1, 0,0))
+                .city("Krasnodar")
+                .messagesPermission(MessagesPermission.ALL)
+                .isBlocked(false)
+                .build();
+
+        if(person.getEMail().equals(email)) {
+            return person;
+        }
+
+        return null;
     }
 }
