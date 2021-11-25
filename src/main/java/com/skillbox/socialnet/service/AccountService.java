@@ -11,7 +11,8 @@ import com.skillbox.socialnet.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
-import java.util.Optional;
+
+import static com.skillbox.socialnet.config.Config.bcrypt;
 
 
 /**
@@ -36,7 +37,7 @@ public class AccountService {
             person.setEMail(accountRegisterRQ.getEmail());
             person.setFirstName(accountRegisterRQ.getFirstName());
             person.setLastName(accountRegisterRQ.getLastName());
-   //         person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
+            person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
             personRepository.save(person);
             defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
             defaultRS.setData(new MessageDTO());
