@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.security;
 
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.service.UserService;
+import com.skillbox.socialnet.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -14,10 +14,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserService userService;
+    private final PersonService personService;
 
     public CustomUserDetails setUserDetails(Person person) {
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ADMIN");
+        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("USER"); // TODO Authorities
         return CustomUserDetails.builder()
                 .userName(person.getEMail())
                 .password(person.getPassword())
@@ -27,8 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Person person = userService.getPersonByEmail(username);
-        // TODO PasswordEncoder
+        Person person = personService.getPersonByEmail(username);
         return person == null ? null : setUserDetails(person);
     }
 }

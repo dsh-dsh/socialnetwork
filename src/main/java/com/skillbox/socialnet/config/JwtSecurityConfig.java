@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.configuration;
+package com.skillbox.socialnet.config;
 
 import com.skillbox.socialnet.security.JwtFilter;
 import com.skillbox.socialnet.security.JwtProvider;

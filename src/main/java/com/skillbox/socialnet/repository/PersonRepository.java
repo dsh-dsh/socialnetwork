@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Integer> {
     public Person findByeMail(String email);
+    Optional<Person> findByeMailAndPassword(String email, String password);
 }

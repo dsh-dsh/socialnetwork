@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.security;
 
+import com.skillbox.socialnet.model.entity.Person;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -26,9 +27,9 @@ public class JwtProvider {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    public String generateToken(String userName) {
+    public String generateToken(Person person) {
         Date expiration = new Date(new Date().getTime() + expired);
-        Claims claims = Jwts.claims().setSubject(userName);
+        Claims claims = Jwts.claims().setSubject(person.getEMail());
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(expiration)
@@ -61,11 +62,8 @@ public class JwtProvider {
     }
 
     String getTokenFromRequest(HttpServletRequest request) {
-        String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
-        }
-        return null;
+        String requestToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        return hasText(requestToken) ? requestToken : null;
     }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {

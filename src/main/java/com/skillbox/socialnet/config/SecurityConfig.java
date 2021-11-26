@@ -1,6 +1,8 @@
-package com.skillbox.socialnet.configuration;
+package com.skillbox.socialnet.config;
 
+import com.skillbox.socialnet.Constants;
 import com.skillbox.socialnet.security.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,12 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
 
-    public final String API_ACCOUNT = "/api/v1/account";
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -28,25 +30,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/api/V1/auth/login/jwt").permitAll()
-                //.antMatchers(API_ACCOUNT + "/register", API_ACCOUNT + "/password/recovery").permitAll()
-                .antMatchers("/admin/*").hasRole("ADMIN")
-                .antMatchers("/user/*").hasRole("USER")
+                .antMatchers("/", "/api/v1/auth/login").permitAll()
+                .antMatchers("/static/**").permitAll()
+                .antMatchers("/js/**", "/css/**").permitAll()
+                .antMatchers(Constants.API_PLATFORM + "/languages").permitAll()
+                .antMatchers(Constants.API_ACCOUNT + "/register", Constants.API_ACCOUNT + "/password/recovery").permitAll()
+
+                .antMatchers("/api/v1/auth/admin/access").hasAnyAuthority("ADMIN") // TODO удалить
+                .antMatchers("/api/v1/auth/user/access").hasAnyAuthority("USER")   // TODO удалить
+
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
-//    @Bean
-//    @Override
-//    public AuthenticationManager authenticationManager() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
-
-//    @Bean
-//    PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
+    }
 
 }

@@ -6,6 +6,7 @@ import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -14,8 +15,8 @@ public class PersonModelMapper {
 
     private final ModelMapper modelMapper;
 
-    private final Converter<LocalDateTime, Long> timestampConverter =
-            date -> (date.getSource().toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli());
+    private final Converter<Timestamp, Long> timestampConverter =
+            date -> (date.getSource().getTime());
 
     public PersonModelMapper() {
         this.modelMapper = new ModelMapper();
