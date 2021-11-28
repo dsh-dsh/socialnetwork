@@ -35,16 +35,6 @@ public class AuthController {
         return "user access";
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login
-//            (@RequestBody AuthUserRQ authUserRQ) {
-//        DefaultRS defaultRS = authService.login(authUserRQ);
-//        if (defaultRS.getError().equals("string")){
-//            return ResponseEntity.ok(defaultRS);
-//        }
-//        return new ResponseEntity<>(defaultRS, HttpStatus.BAD_REQUEST);
-//    }
-
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout () {

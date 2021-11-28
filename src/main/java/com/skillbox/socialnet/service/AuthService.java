@@ -42,22 +42,6 @@ public class AuthService {
     }
 
 
-    public DefaultRS login(AuthUserRQ authUserRQ) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        Person person = personRepository.findByeMail(authUserRQ.getEmail());
-        if (person != null && checkPassword(person.getPassword(), authUserRQ.getPassword())){
-            UserDTO userDTO = new UserDTO();
-            userDTO.setFirstName(person.getFirstName());
-            userDTO.setLastName(person.getLastName());
-            userDTO.setEmail(person.getEMail());
-            defaultRS.setData(userDTO);
-            return defaultRS;
-        }
-        defaultRS.setError("Invalid authentication!");
-        return defaultRS;
-    }
-
     public DefaultRS logout() {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());

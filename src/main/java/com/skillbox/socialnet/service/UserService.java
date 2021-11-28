@@ -9,71 +9,44 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
-import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.entity.User;
-import com.skillbox.socialnet.model.enums.MessagesPermission;
-import com.skillbox.socialnet.model.enums.UserType;
+import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+    private final PersonModelMapper personModelMapper;
+    private final PersonService personService;
 
-    public Object getUser(int id) {
-//        DefaultRS defaultRS = new DefaultRS();
-//        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-//        defaultRS.setData(getUserDTO(id));
-//        return defaultRS;
-        String jsonStr = "{\n" +
-                "  \"error\": \"string\",\n" +
-                "  \"timestamp\": 1559751301818,\n" +
-                "  \"data\": {\n" +
-                "    \"id\": 1,\n" +
-                "    \"first_name\": \"Петр\",\n" +
-                "    \"last_name\": \"Петрович\",\n" +
-                "    \"reg_date\": 1559751301818,\n" +
-                "    \"birth_date\": 1559751301818,\n" +
-                "    \"email\": \"petr@mail.ru\",\n" +
-                "    \"phone\": \"89100000000\",\n" +
-                "    \"photo\": \"https://avatanplus.com/files/resources/original/583a1361bea18158a2dbb5f5.png\",\n" +
-                "    \"about\": \"Родился в небольшой, но честной семье\",\n" +
-                "    \"city\": {\n" +
-                "      \"id\": 1,\n" +
-                "      \"title\": \"Москва\"\n" +
-                "    },\n" +
-                "    \"country\": {\n" +
-                "      \"id\": 1,\n" +
-                "      \"title\": \"Россия\"\n" +
-                "    },\n" +
-                "    \"messages_permission\": \"ALL\",\n" +
-                "    \"last_online_time\": 1559751301818,\n" +
-                "    \"is_blocked\": false\n" +
-                "  }\n" +
-                "}";
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(jsonStr);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return rootNode;
+
+    public DefaultRS getUser(String email) {
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonByEmail(email));
+        defaultRS.setData(userDTO);
+        return defaultRS;
     }
 
-    private UserDTO getUserDTO(int id) {
-        return new UserDTO();
+
+    public DefaultRS getUserById(int id) {
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonById(id));
+        defaultRS.setData(userDTO);
+        return defaultRS;
     }
+
 
     public DefaultRS editUser(int id, UserChangeRQ userChangeRQ) {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(getUserDTO(id));
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.editPerson(id, userChangeRQ));
+        defaultRS.setData(userDTO);
         return defaultRS;
     }
 
@@ -268,5 +241,9 @@ public class UserService {
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
         defaultRS.setData(getMessage());
         return defaultRS;
+    }
+
+    private UserDTO getUserDTO(int id) {
+        return new UserDTO();
     }
 }

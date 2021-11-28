@@ -5,10 +5,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
+import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,11 +20,14 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileController {
 
     private final UserService userService;
+    private final JwtProvider jwtProvider;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUser() throws JsonProcessingException {
-        int id = 1; // get from token
-        return ResponseEntity.ok(userService.getUser(id));
+    public ResponseEntity<?> getUser(HttpServletRequest request) throws JsonProcessingException {
+        if (jwtProvider.getTokenFromRequest(request) != null) {
+            return ResponseEntity.ok(userService.getUser(jwtProvider.getUserNameFromToken(jwtProvider.getTokenFromRequest(request))));
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PutMapping("/me")
@@ -37,7 +44,7 @@ public class ProfileController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable int id) {
-        return ResponseEntity.ok(userService.getUser(id));
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @GetMapping("/{id}/wall")

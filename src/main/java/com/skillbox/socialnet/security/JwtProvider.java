@@ -61,7 +61,7 @@ public class JwtProvider {
         return claims.getSubject();
     }
 
-    String getTokenFromRequest(HttpServletRequest request) {
+    public String getTokenFromRequest(HttpServletRequest request) {
         String requestToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         return hasText(requestToken) ? requestToken : null;
     }
