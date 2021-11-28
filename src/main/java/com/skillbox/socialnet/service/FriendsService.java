@@ -7,7 +7,7 @@ import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.User;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
-import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+//import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import com.skillbox.socialnet.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class FriendsService {
 
     private final PersonService personService;
-    private final PersonModelMapper personModelMapper;
+//    private final PersonModelMapper personModelMapper;
 
     //заглушка
     private static UserDTO userDTO;

@@ -9,7 +9,7 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
-import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+//import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final PersonModelMapper personModelMapper;
+//    private final PersonModelMapper personModelMapper;
     private final PersonService personService;
 
 
