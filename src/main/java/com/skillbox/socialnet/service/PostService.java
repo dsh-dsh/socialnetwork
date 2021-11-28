@@ -115,11 +115,13 @@ public class PostService {
     public DefaultRS deletePostById(int id) {
 
         DefaultRS defaultRS = new DefaultRS();
-        Optional<Post> optionalPost = postRepository.findPostById(id);
+        Optional<Post> optionalPost = postRepository.findPostById(id); // TODO .orElseThrow(noSuchPostException)
         if (optionalPost.isPresent()) {
             defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
             Post post = optionalPost.get();
-            postRepository.delete(post);
+
+            //postRepository.delete(post); // TODO сначала удалять все что ссылается на этот post
+
             defaultRS.setData(getPostDTO(optionalPost.get()));
             LocationDTO locationDTO = new LocationDTO();
             locationDTO.setId(id);

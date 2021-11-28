@@ -19,10 +19,9 @@ public class PlatformController {
 
     @GetMapping("/languages")
     public ResponseEntity<?> getLanguages(
-            @RequestParam String language,
-            @RequestParam (defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage
-    ){
+            @RequestParam(defaultValue = "") String language,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "20") int itemPerPage){
         return ResponseEntity.ok(platformService.getLanguage(offset, itemPerPage, language));
     }
 
@@ -30,18 +29,16 @@ public class PlatformController {
     @GetMapping("/country")
     public ResponseEntity<?> getCountry(
             @RequestParam(defaultValue = "") String country,
-            @RequestParam (defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage
-    ){
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "20") int itemPerPage){
         return ResponseEntity.ok(platformService.getCountry(offset, itemPerPage, country));
     }
 
     @GetMapping("/city")
     public ResponseEntity<?> getCity(
             @RequestParam(defaultValue = "") String city,
-            @RequestParam (defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage
-    ){
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "20") int itemPerPage){
         return ResponseEntity.ok(platformService.getCity(offset, itemPerPage, city));
     }
 

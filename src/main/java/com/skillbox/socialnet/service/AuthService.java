@@ -10,6 +10,7 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.security.JwtProvider;
+import com.skillbox.socialnet.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
@@ -38,7 +39,7 @@ public class AuthService {
         UserDTO userDTO = personModelMapper.mapToUserDTO(person);
         String token = jwtProvider.generateToken(person);
         userDTO.setToken(token);
-        return defaultRS(userDTO);
+        return Utils.defaultRS(userDTO);
     }
 
 
@@ -53,13 +54,7 @@ public class AuthService {
         return new UserDTO();
     }
 
-    private static DefaultRS<UserDTO> defaultRS(UserDTO data) {
-        DefaultRS<UserDTO> defaultRS = new DefaultRS();
-        defaultRS.setError("string");
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(data);
-        return defaultRS;
-    }
+
 
 
 }

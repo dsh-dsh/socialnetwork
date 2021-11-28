@@ -2,7 +2,6 @@ package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.Constants;
 import com.skillbox.socialnet.exception.NoSuchUserException;
-import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
 import com.skillbox.socialnet.repository.PersonRepository;
@@ -86,6 +85,12 @@ public class PersonService {
 //        return null;
         return person;
     }
+        Person person = personRepository.findByeMail(email);
+        if(person == null) {
+            throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
+        }
+        return person;
+    }
 
     public Person editPerson(int id, UserChangeRQ userChangeRQ) {
         Person person = getPersonById(id);
@@ -102,5 +107,8 @@ public class PersonService {
         //set location
         personRepository.save(person);
         return person;
+    public List<Person> getAllPersons() {
+        return personRepository.findAll();
     }
+
 }

@@ -43,6 +43,7 @@ public class JwtProvider {
             return true;
             // TODO обработать в ExceptionsHandler
         } catch (ExpiredJwtException expiredJwtException) {
+
             log.severe("Token expired");
         } catch (UnsupportedJwtException unsupportedJwtException) {
             log.severe("Unsupported jwt");

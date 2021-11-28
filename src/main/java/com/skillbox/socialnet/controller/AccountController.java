@@ -46,11 +46,25 @@ public class AccountController {
         return ResponseEntity.ok(accountService.setEmail(acctEmailRequest));
     }
 
-    //!
+    // TODO Заглушка удалил из аргументов @RequestBody AccountNotificationRQ accountNotificationRQ иначе 400 Bad Request
     @PutMapping("/notifications")
-    public ResponseEntity<?> setNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
-        return ResponseEntity.ok(accountService.setNotifications(accountNotificationRQ));
+    public ResponseEntity<?> setNotifications() {
+    //        return ResponseEntity.ok(accountService.setNotifications(accountNotificationRQ));
+        return ResponseEntity.ok(new DefaultRS<>());
     }
+
+    //!
+//    @PutMapping("/notifications")
+//    public ResponseEntity<?> setNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
+//        System.out.println(accountNotificationRQ);
+//        return ResponseEntity.ok(accountService.setNotifications(accountNotificationRQ));
+//    }
+//
+//    @PostMapping("/notifications")
+//    public ResponseEntity<?> postNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
+//        System.out.println(accountNotificationRQ);
+//        return ResponseEntity.ok("ok");
+//    }
 
 
 }

@@ -62,15 +62,31 @@ public class ProfileController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchUsers(@RequestParam(name = "first_name") String firstName,
-                                         @RequestParam(name = "last_name") String lastName,
-                                         @RequestParam(name = "age_from") int ageFrom,
-                                         @RequestParam(name = "age_to") int ageTo,
-                                         @RequestParam(name = "city_id") int cityId,
-                                         @RequestParam int offset,
-                                         @RequestParam int itemPerPage) {
-        return ResponseEntity.ok(userService.searchUsers(firstName, lastName, ageFrom, ageTo, cityId, offset, itemPerPage));
-    }
+    public ResponseEntity<?> searchUsers(  // TODO check required
+            @RequestParam(name = "first_name", required = false) String firstName,
+            @RequestParam(name = "last_name", required = false) String lastName,
+            @RequestParam(name = "age_from", required = false, defaultValue = "0") int ageFrom,
+            @RequestParam(name = "age_to", required = false, defaultValue = "0") int ageTo,
+            @RequestParam(name = "city_id", required = false, defaultValue = "0") int cityId,
+            @RequestParam int offset,
+            @RequestParam int itemPerPage) {
+
+        System.out.println(firstName);
+        System.out.println(lastName);
+        System.out.println(ageFrom);
+        System.out.println(ageTo);
+        System.out.println(cityId);
+
+    return ResponseEntity.ok(userService.searchUsers(firstName, lastName, ageFrom, ageTo, cityId, offset, itemPerPage));
+}
+
+//    @GetMapping("/search")
+//    public ResponseEntity<?> searchUsers(  // TODO check required
+//                                       @ModelAttribute SearchRQ searchRQ,
+//                                       @RequestParam int offset,
+//                                       @RequestParam int itemPerPage) {
+//    return ResponseEntity.ok(userService.searchUsers(searchRQ, offset, itemPerPage));
+//}
 
     @PutMapping("/block/{id}")
     public ResponseEntity<?> blockUser(@PathVariable int id){

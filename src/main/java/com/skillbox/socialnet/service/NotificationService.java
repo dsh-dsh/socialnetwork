@@ -12,7 +12,12 @@ import java.util.List;
 
 @Service
 public class NotificationService {
+
     public NotificationRS getNotification(NotificationRQ notificationRQ){
+        return new NotificationRS();
+    }
+
+    public NotificationRS setNotification(NotificationRQ notificationRQ){
         return new NotificationRS();
     }
 
