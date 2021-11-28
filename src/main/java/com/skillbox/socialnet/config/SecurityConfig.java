@@ -22,6 +22,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtFilter jwtFilter;
 
 
+    private static final String[] AUTH_WHITELIST = {
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/",
+            "/",
+            "/static/**",
+            "/api/v1/auth/**",
+            "/api/v1/platform/**",
+            "/api/v1/account/register",
+            "/api/v1/account/password/",
+            "/api/v1/account/email",
+            "/profile/storage/",
+            "/storage/",
+            "api/v1/admin/login",
+            "/favicon.ico",
+            "/js/**", "/css/**"
+    };
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -30,15 +52,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/api/v1/auth/login").permitAll()
-                .antMatchers("/static/**").permitAll()
-                .antMatchers("/js/**", "/css/**").permitAll()
-                .antMatchers(Constants.API_PLATFORM + "/languages").permitAll()
-                .antMatchers(Constants.API_ACCOUNT + "/register", Constants.API_ACCOUNT + "/password/recovery").permitAll()
-
-                .antMatchers("/api/v1/auth/admin/access").hasAnyAuthority("ADMIN") // TODO удалить
-                .antMatchers("/api/v1/auth/user/access").hasAnyAuthority("USER")   // TODO удалить
-
+//                .antMatchers("/", "/api/v1/auth/login").permitAll()
+//                .antMatchers("/static/**").permitAll()
+//                .antMatchers("/js/**", "/css/**").permitAll()
+//                .antMatchers(Constants.API_PLATFORM + "/languages").permitAll()
+//                .antMatchers(Constants.API_ACCOUNT + "/register", Constants.API_ACCOUNT + "/password/recovery").permitAll()
+                .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

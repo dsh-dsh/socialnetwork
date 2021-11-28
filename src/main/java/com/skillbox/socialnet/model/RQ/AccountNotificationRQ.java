@@ -1,6 +1,7 @@
 package com.skillbox.socialnet.model.RQ;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import lombok.AllArgsConstructor;

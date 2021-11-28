@@ -4,13 +4,18 @@ import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.StatusUserDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
+import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.entity.User;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
-import liquibase.pro.packaged.L;
+import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.util.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Semen V
@@ -18,7 +23,11 @@ import java.util.List;
  */
 
 @Service
+@RequiredArgsConstructor
 public class FriendsService {
+
+    private final PersonService personService;
+    private final PersonModelMapper personModelMapper;
 
     //заглушка
     private static UserDTO userDTO;
@@ -86,17 +95,13 @@ public class FriendsService {
         return defaultRS;
     }
 
-    public DefaultRS getRecommendations(Integer offset, Integer itemPerPage) {
-        DefaultRS defaultRS = new DefaultRS<List<UserDTO>>();
+    public DefaultRS<List<UserDTO>> getRecommendations(Integer offset, Integer itemPerPage) {
+        DefaultRS<List<UserDTO>> defaultRS = new DefaultRS<List<UserDTO>>();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
         defaultRS.setOffset(offset);
         defaultRS.setPerPage(itemPerPage);
-
-        //List<UserDTO> listFriends = getFriends(name)
-
         List<UserDTO> listFriends = new ArrayList<>();
         listFriends.add(userDTO);
-
         defaultRS.setData(listFriends);
         return defaultRS;
     }

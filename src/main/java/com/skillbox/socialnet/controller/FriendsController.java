@@ -1,5 +1,7 @@
 package com.skillbox.socialnet.controller;
 
+import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.FriendsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/v1/")
 public class FriendsController {
 
-    private FriendsService friendsService;
+    private final FriendsService friendsService;
 
     //!
     @GetMapping("/friends")
@@ -50,6 +52,7 @@ public class FriendsController {
     @GetMapping("/friends/recommendations")
     public ResponseEntity<?> getRecommendations(@RequestParam(defaultValue = "0") int offset,
                                                 @RequestParam(defaultValue = "20") int itemPerPage) {
+
         return ResponseEntity.ok(friendsService.getRecommendations(offset,itemPerPage));
     }
 

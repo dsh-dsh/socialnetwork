@@ -47,10 +47,17 @@ public class AccountController {
     }
 
     //!
-    @PutMapping("/notifications")
-    public ResponseEntity<?> setNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
-        return ResponseEntity.ok(accountService.setNotifications(accountNotificationRQ));
-    }
+//    @PutMapping("/notifications")
+//    public ResponseEntity<?> setNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
+//        System.out.println(accountNotificationRQ);
+//        return ResponseEntity.ok(accountService.setNotifications(accountNotificationRQ));
+//    }
+//
+//    @PostMapping("/notifications")
+//    public ResponseEntity<?> postNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
+//        System.out.println(accountNotificationRQ);
+//        return ResponseEntity.ok("ok");
+//    }
 
 
 }

@@ -1,7 +1,6 @@
 package com.skillbox.socialnet.security;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -13,11 +12,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-
-
 @Component
 @RequiredArgsConstructor
-@Log
 public class JwtFilter extends GenericFilterBean {
 
     private final JwtProvider jwtProvider;
