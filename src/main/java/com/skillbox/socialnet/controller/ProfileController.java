@@ -25,15 +25,21 @@ public class ProfileController {
     @GetMapping("/me")
     public ResponseEntity<?> getUser(HttpServletRequest request) throws JsonProcessingException {
         if (jwtProvider.getTokenFromRequest(request) != null) {
-            return ResponseEntity.ok(userService.getUser(jwtProvider.getUserNameFromToken(jwtProvider.getTokenFromRequest(request))));
+            return ResponseEntity.ok(userService.getUser(jwtProvider.getUserNameFromToken(jwtProvider.getTokenFromRequest(request)),
+                    jwtProvider.getTokenFromRequest(request)));
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PutMapping("/me")
-    public ResponseEntity<?> editUser(@RequestBody UserChangeRQ userChangeRQ) {
-        int id = 1;//take id from auth token
-        return ResponseEntity.ok(userService.editUser(id, userChangeRQ));
+    public ResponseEntity<?> editUser(@RequestBody UserChangeRQ userChangeRQ,
+                                      HttpServletRequest request) {
+        if (jwtProvider.getTokenFromRequest(request) != null) {
+            return ResponseEntity.ok(userService.editUser(jwtProvider.getUserNameFromToken(jwtProvider.getTokenFromRequest(request)),
+                    userChangeRQ, jwtProvider.getTokenFromRequest(request)));
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
     }
 
     @DeleteMapping("/me")

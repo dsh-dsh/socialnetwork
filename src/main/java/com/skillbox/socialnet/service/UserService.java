@@ -24,10 +24,11 @@ public class UserService {
     private final PersonService personService;
 
 
-    public DefaultRS getUser(String email) {
+    public DefaultRS getUser(String email, String token) {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonByEmail(email));
+        UserDTO userDTO = personService.getUserDTOfromPerson(personService.getPersonByEmail(email));
+        userDTO.setToken(token);
         defaultRS.setData(userDTO);
         return defaultRS;
     }
@@ -36,16 +37,18 @@ public class UserService {
     public DefaultRS getUserById(int id) {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonById(id));
+        UserDTO userDTO = personService.getUserDTOfromPerson(personService.getPersonById(id));
+        //token?
         defaultRS.setData(userDTO);
         return defaultRS;
     }
 
 
-    public DefaultRS editUser(int id, UserChangeRQ userChangeRQ) {
+    public DefaultRS editUser(String email, UserChangeRQ userChangeRQ, String token) {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.editPerson(id, userChangeRQ));
+        UserDTO userDTO = personService.getUserDTOfromPerson(personService.editPerson(email, userChangeRQ));
+        userDTO.setToken(token);
         defaultRS.setData(userDTO);
         return defaultRS;
     }

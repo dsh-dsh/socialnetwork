@@ -2,6 +2,8 @@ package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.Constants;
 import com.skillbox.socialnet.exception.NoSuchUserException;
+import com.skillbox.socialnet.model.RQ.UserChangeRQ;
+import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
 import com.skillbox.socialnet.repository.PersonRepository;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +52,23 @@ public class PersonService {
 //
 //    }
 
+    public UserDTO getUserDTOfromPerson(Person person){
+        return UserDTO.builder()
+                .id(person.getId())
+                .about(person.getAbout())
+                .birthDate(person.getBirthDate().getTime())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .email(person.getEMail())
+                .registrationDate(person.getRegData().getTime())
+                .phone(person.getPhone())
+                .photo(person.getPhoto())
+                .permission(person.getMessagesPermission())
+                .lastOnlineTime(person.getLastOnlineTime().getTime())
+                .isBlocked(person.isBlocked())
+                //TODO add location
+                .build();
+    }
     public Person getPersonById(int id) {
         Person person = personRepository.getPersonById(id);
         if (person == null) {
@@ -65,6 +85,7 @@ public class PersonService {
         if (person == null) {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
         }
+        return person;
 //        Person person = Person.builder()
 //                .id(1)
 //                .firstName("user")
@@ -83,17 +104,12 @@ public class PersonService {
 //        }
 //
 //        return null;
-        return person;
-    }
-        Person person = personRepository.findByeMail(email);
-        if(person == null) {
-            throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
-        }
-        return person;
     }
 
-    public Person editPerson(int id, UserChangeRQ userChangeRQ) {
-        Person person = getPersonById(id);
+
+
+    public Person editPerson(String email, UserChangeRQ userChangeRQ) {
+        Person person = getPersonByEmail(email);
         if (person == null) {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
         }
@@ -104,9 +120,11 @@ public class PersonService {
         person.setPhoto(userChangeRQ.getPhotoId());
         person.setAbout(userChangeRQ.getAbout());
         person.setMessagesPermission(userChangeRQ.getMessagesPermission());
-        //set location
+        //TODO set location
         personRepository.save(person);
         return person;
+    }
+
     public List<Person> getAllPersons() {
         return personRepository.findAll();
     }
