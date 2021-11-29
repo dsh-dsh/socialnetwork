@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 
 
 @Data
@@ -17,7 +18,7 @@ public class UserChangeRQ {
     @JsonProperty("last_name")
     private String lastName;
     @JsonProperty("birth_date")
-    private long birthDate;
+    private Timestamp birthDate; // TODO заменил long на Timestamp не мапилось
     private String phone;
     @JsonProperty("photo_id")
     private String photoId;

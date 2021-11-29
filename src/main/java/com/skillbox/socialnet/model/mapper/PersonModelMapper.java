@@ -10,23 +10,26 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-//@Component
-//public class PersonModelMapper {
-//
-//    private final ModelMapper modelMapper;
-//
-//    private final Converter<Timestamp, Long> timestampConverter =
-//            date -> (date.getSource().getTime());
-//
-//    public PersonModelMapper() {
-//        this.modelMapper = new ModelMapper();
-//        modelMapper.createTypeMap(Person.class, UserDTO.class)
-//                .addMappings(m -> m.using(timestampConverter).map(Person::getRegData, UserDTO::setRegistrationDate))
-//                .addMappings(m -> m.using(timestampConverter).map(Person::getBirthDate, UserDTO::setBirthDate))
-//                .addMappings(m -> m.using(timestampConverter).map(Person::getLastOnlineTime, UserDTO::setLastOnlineTime));
-//    }
-//
-//    public UserDTO mapToUserDTO(Person person) {
-//        return modelMapper.map(person, UserDTO.class);
-//    }
-//}
+@Component
+public class PersonModelMapper {
+
+    private final ModelMapper modelMapper;
+
+    private final Converter<Timestamp, Long> timestampConverter =
+            date -> {
+                Timestamp timestamp = date.getSource();
+                return timestamp == null? 0 : timestamp.getTime();
+            };
+
+    public PersonModelMapper() {
+        this.modelMapper = new ModelMapper();
+        modelMapper.createTypeMap(Person.class, UserDTO.class)
+                .addMappings(m -> m.using(timestampConverter).map(Person::getRegData, UserDTO::setRegistrationDate))
+                .addMappings(m -> m.using(timestampConverter).map(Person::getBirthDate, UserDTO::setBirthDate))
+                .addMappings(m -> m.using(timestampConverter).map(Person::getLastOnlineTime, UserDTO::setLastOnlineTime));
+    }
+    
+    public UserDTO mapToUserDTO(Person person) {
+        return modelMapper.map(person, UserDTO.class);
+    }
+}

@@ -1,7 +1,6 @@
 package com.skillbox.socialnet.service;
 
-
-
+import com.skillbox.socialnet.exception.NoAnyPostsFoundException;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.dto.*;
@@ -9,19 +8,20 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
-import com.skillbox.socialnet.model.entity.PostLike;
+import com.skillbox.socialnet.model.mapper.PostModelMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PostRepository;
+import com.skillbox.socialnet.util.Constants;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -29,11 +29,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
+    private final PostModelMapper postModelMapper;
 
-    public PostService(PostRepository postRepository, CommentRepository commentRepository, LikesRepository likesRepository) {
+    public PostService(PostRepository postRepository, CommentRepository commentRepository, LikesRepository likesRepository, PostModelMapper postModelMapper) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.likesRepository = likesRepository;
+        this.postModelMapper = postModelMapper;
     }
 
 
@@ -62,9 +64,38 @@ public class PostService {
         defaultRS.setPerPage(itemPerPage);
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
 
-        defaultRS.setData(getFakePostDTO());
+        List<PostDTO> postDTOs;
+        List<Post> posts = postRepository.findAll();
+        if(posts.size() > 0) {
+            postDTOs = posts.stream()
+                    .map(postModelMapper::mapToPostDTO)
+                    .collect(Collectors.toList());
+        } else {
+            throw new NoAnyPostsFoundException(Constants.NO_ANY_POST_MESSAGE); // TODO add to ExceptionsHandler
+        }
+
+        List<PostDTO> postsDTOList = addFakeComments(postDTOs); // TODO Заглушшка Если comments: null пост не отображается фронтом
+
+        defaultRS.setData(postsDTOList);
         return defaultRS;
 
+    }
+
+    private List<PostDTO> addFakeComments(List<PostDTO> postDTOList) {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setId(1);
+        commentDTO.setCommentText("comment");
+        commentDTO.setAuthorId(3);
+
+        List<CommentDTO> commentDTOList = new ArrayList<>();
+        commentDTOList.add(commentDTO);
+
+        List<PostDTO> posts = new ArrayList<>();
+        for(PostDTO postDTO : postDTOList) {
+            postDTO.setComments(commentDTOList);
+            posts.add(postDTO);
+        }
+        return posts;
     }
 
 
@@ -312,10 +343,48 @@ public class PostService {
     {
         PostDTO postDTO = new PostDTO();
         return postDTO;
+
+    }
+
+    private List<PostDTO> getFakePostDTO() {
+
+        UserDTO userDTO3 = new UserDTO();
+        userDTO3.setId(1);
+        userDTO3.setFirstName("user");
+        userDTO3.setLastName(" 3");
+        userDTO3.setPhoto("a tut jpg");
+
+        CommentDTO commentDTO5 = new CommentDTO();
+        commentDTO5.setId(0);
+        commentDTO5.setCommentText("comment");
+        commentDTO5.setAuthorId(3);
+
+        CommentDTO commentDTO6 = new CommentDTO();
+        commentDTO6.setCommentText("sam takoi");
+        commentDTO6.setAuthorId(4);
+        commentDTO6.setId(1);
+        commentDTO6.setParentId(0);
+
+        List<CommentDTO> commentDTOList3 = new ArrayList<>();
+        commentDTOList3.add(commentDTO5);
+        commentDTOList3.add(commentDTO6);
+
+        PostDTO postDTO3 = new PostDTO();
+        postDTO3.setId(1);
+        postDTO3.setPostText("text");
+        postDTO3.setTitle("title");
+        postDTO3.setTime(Calendar.getInstance().getTimeInMillis());
+        postDTO3.setBlocked(false);
+        postDTO3.setAuthor(userDTO3);
+        postDTO3.setComments(commentDTOList3);
+
+        List<PostDTO> postDTOList = new ArrayList<>();
+        postDTOList.add(postDTO3);
+        return postDTOList;
     }
 
 
-    private List<PostDTO> getFakePostDTO()
+    private List<PostDTO> getFakePostDTO1()
     {
         List<PostDTO> postDTOList = new ArrayList<>();
         UserDTO userDTO3 = new UserDTO();

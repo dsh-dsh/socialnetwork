@@ -1,7 +1,6 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.Constants;
-import com.skillbox.socialnet.exception.NoSuchUserException;
+import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.model.RQ.AuthUserRQ;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
@@ -9,11 +8,12 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
 //import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
+import com.skillbox.socialnet.security.CustomUserDetails;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +54,14 @@ public class AuthService {
         return new UserDTO();
     }
 
-
+    public Person getPersonFromSecurityContext() {
+        try{
+            CustomUserDetails securityUser = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return personRepository.findByeMail((securityUser.getUsername()));
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 
 
 }
