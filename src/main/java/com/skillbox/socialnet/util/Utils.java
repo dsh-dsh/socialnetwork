@@ -23,5 +23,4 @@ public class Utils {
         defaultRS.setData(data);
         return defaultRS;
     }
-
 }
