@@ -41,8 +41,8 @@ public class FriendsService {
         userDTO.setEmail("petr@mail.ru");
         userDTO.setPhone( "891111111111");
         userDTO.setAbout("Родился в небольшой, но честной семье");
-        userDTO.setCity(new LocationDTO());
-        userDTO.setCountry(new LocationDTO());
+        userDTO.setCity("Москва");
+        userDTO.setCountry("Россия");
         userDTO.setPermission(MessagesPermission.ALL);
         userDTO.setLastOnlineTime(Calendar.getInstance().getTimeInMillis());
         userDTO.setBlocked(false);

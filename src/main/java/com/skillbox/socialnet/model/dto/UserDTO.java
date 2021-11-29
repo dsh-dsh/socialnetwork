@@ -26,8 +26,10 @@ public class UserDTO {
     private String phone;
     private String photo;
     private String about;
-    private LocationDTO city;
-    private LocationDTO country;
+//    private LocationDTO city;
+//    private LocationDTO country;
+    private String city;
+    private String country;
     @JsonProperty("messages_permission")
     private MessagesPermission permission;
     @JsonProperty("last_online_time")

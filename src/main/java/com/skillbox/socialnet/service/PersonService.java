@@ -56,17 +56,18 @@ public class PersonService {
         return UserDTO.builder()
                 .id(person.getId())
                 .about(person.getAbout())
-                .birthDate(person.getBirthDate().getTime())
+//                .birthDate(person.getBirthDate().getTime())
                 .firstName(person.getFirstName())
                 .lastName(person.getLastName())
                 .email(person.getEMail())
-                .registrationDate(person.getRegData().getTime())
+//                .registrationDate(person.getRegData().getTime())
                 .phone(person.getPhone())
                 .photo(person.getPhoto())
                 .permission(person.getMessagesPermission())
-                .lastOnlineTime(person.getLastOnlineTime().getTime())
+//                .lastOnlineTime(person.getLastOnlineTime().getTime())
                 .isBlocked(person.isBlocked())
-                //TODO add location
+                .city(person.getCity())
+                .country(person.getCountry())
                 .build();
     }
     public Person getPersonById(int id) {
