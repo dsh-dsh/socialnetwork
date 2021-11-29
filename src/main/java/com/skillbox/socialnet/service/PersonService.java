@@ -1,6 +1,6 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.Constants;
+import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.exception.NoSuchUserException;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.repository.PersonRepository;

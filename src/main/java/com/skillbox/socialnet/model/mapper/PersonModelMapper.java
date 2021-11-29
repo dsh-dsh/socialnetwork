@@ -16,7 +16,10 @@ public class PersonModelMapper {
     private final ModelMapper modelMapper;
 
     private final Converter<Timestamp, Long> timestampConverter =
-            date -> (date.getSource().getTime());
+            date -> {
+                Timestamp timestamp = date.getSource();
+                return timestamp == null? 0 : timestamp.getTime();
+            };
 
     public PersonModelMapper() {
         this.modelMapper = new ModelMapper();

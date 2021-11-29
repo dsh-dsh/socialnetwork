@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
+import com.skillbox.socialnet.model.RQ.SearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
@@ -176,7 +177,7 @@ public class UserService {
         return defaultRS;
     }
 
-    public Object searchUsers(String firstName, String lastName, int ageFrom, int ageTo, int cityId, int offset, int itemPerPage) {
+    public Object searchUsers(SearchRQ searchRQ, int offset, int itemPerPage) {
 //        DefaultRS defaultRS = new DefaultRS();
 //        defaultRS.setOffset(offset);
 //        defaultRS.setPerPage(itemPerPage);
