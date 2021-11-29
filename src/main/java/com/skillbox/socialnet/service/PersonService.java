@@ -22,36 +22,6 @@ public class PersonService {
 
     private final PersonRepository personRepository;
 
-
-//    public Person getPersonByEmailAndPassword(String email, String password) {
-//
-//        return personRepository.findByeMailAndPassword(email, password)
-//                .orElseThrow(() -> new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE));
-//
-//        Person person = Person.builder()
-//                .id(1)
-//                .firstName("user")
-//                .eMail("user@email.com")
-//                .password("$2a$12$xrqhhaGgQkVq9gsa59FEs.7jG40qwgdAxavIc8FA21c3kkhbwX8Ae")
-//                .birthDate(Timestamp.valueOf(LocalDateTime.of(1973, 1, 23, 8, 30)))
-//                .regData(Timestamp.valueOf(LocalDateTime.of(2021, 1, 1, 0,0)))
-//                .lastOnlineTime(Timestamp.valueOf(LocalDateTime.of(2021, 10, 1, 0,0)))
-//                .city("Krasnodar")
-//                .messagesPermission(MessagesPermission.ALL)
-//                .isBlocked(false)
-//                .build();
-//
-//        System.out.println(password);
-//
-//        if(person.getEMail().equals(email) && person.getPassword().equals(password)) {
-//            return person;
-//        } else {
-//            System.out.println("NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE)");
-//            throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
-//        }
-//
-//    }
-
     public UserDTO getUserDTOfromPerson(Person person){
         return UserDTO.builder()
                 .id(person.getId())
@@ -70,6 +40,7 @@ public class PersonService {
                 .country(person.getCountry())
                 .build();
     }
+    
     public Person getPersonById(int id) {
         Person person = personRepository.getPersonById(id);
         if (person == null) {
@@ -87,27 +58,7 @@ public class PersonService {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
         }
         return person;
-//        Person person = Person.builder()
-//                .id(1)
-//                .firstName("user")
-//                .eMail("user@email.com")
-//                .password("$2a$12$xrqhhaGgQkVq9gsa59FEs.7jG40qwgdAxavIc8FA21c3kkhbwX8Ae")
-//                .birthDate(Timestamp.valueOf(LocalDateTime.of(1973, 1, 23, 8, 30)))
-//                .regData(Timestamp.valueOf(LocalDateTime.of(2021, 1, 1, 0,0)))
-//                .lastOnlineTime(Timestamp.valueOf(LocalDateTime.of(2021, 10, 1, 0,0)))
-//                .city("Krasnodar")
-//                .messagesPermission(MessagesPermission.ALL)
-//                .isBlocked(false)
-//                .build();
-//
-//        if(person.getEMail().equals(email)) {
-//            return person;
-//        }
-//
-//        return null;
     }
-
-
 
     public Person editPerson(String email, UserChangeRQ userChangeRQ) {
         Person person = getPersonByEmail(email);
@@ -116,7 +67,8 @@ public class PersonService {
         }
         person.setFirstName(userChangeRQ.getFirstName());
         person.setLastName(userChangeRQ.getLastName());
-        person.setBirthDate(new Timestamp(userChangeRQ.getBirthDate()));
+//        person.setBirthDate(new Timestamp(userChangeRQ.getBirthDate())); // TODO заменил в UserChangeRQ Long на Timestamp, потомучто фронт отправляет Timestamp
+        person.setBirthDate(userChangeRQ.getBirthDate());
         person.setPhone(userChangeRQ.getPhone());
         person.setPhoto(userChangeRQ.getPhotoId());
         person.setAbout(userChangeRQ.getAbout());
