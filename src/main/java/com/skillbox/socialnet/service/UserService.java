@@ -1,5 +1,12 @@
 package com.skillbox.socialnet.service;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,9 +18,13 @@ import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 //import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -21,14 +32,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-//    private final PersonModelMapper personModelMapper;
+    private final PersonModelMapper personModelMapper;
     private final PersonService personService;
 
 
     public DefaultRS getUser(String email, String token) {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personService.getUserDTOfromPerson(personService.getPersonByEmail(email));
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonByEmail(email));
         userDTO.setToken(token);
         defaultRS.setData(userDTO);
         return defaultRS;
@@ -38,7 +49,7 @@ public class UserService {
     public DefaultRS getUserById(int id) {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personService.getUserDTOfromPerson(personService.getPersonById(id));
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonById(id));
         //token?
         defaultRS.setData(userDTO);
         return defaultRS;
@@ -48,7 +59,7 @@ public class UserService {
     public DefaultRS editUser(String email, UserChangeRQ userChangeRQ, String token) {
         DefaultRS defaultRS = new DefaultRS();
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personService.getUserDTOfromPerson(personService.editPerson(email, userChangeRQ));
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.editPerson(email, userChangeRQ));
         userDTO.setToken(token);
         defaultRS.setData(userDTO);
         return defaultRS;
@@ -249,5 +260,24 @@ public class UserService {
 
     private UserDTO getUserDTO(int id) {
         return new UserDTO();
+    }
+
+    private String savePhotoInCloud(File f) throws FileNotFoundException {
+        String s = RandomString.make(6);
+        Regions clientRegion = Regions.EU_CENTRAL_1;
+        String bucketName = "jevaibucket/publicprefix";
+        String fileObjKeyName = s + ".jpg";
+        String fileName = s;
+
+        AWSCredentials awsCredentials =
+                new BasicAWSCredentials("AKIAVAR2I7GKLP66SIHL", "W3dXfLlwvfj+E8ucH62wwgalYZufOXLwFx2yxWu+");
+        AmazonS3 s3Client = AmazonS3ClientBuilder
+                .standard()
+                .withRegion(clientRegion)
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .build();
+        PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, f);
+        s3Client.putObject(request);
+        return "https://jevaibucket.s3.eu-central-1.amazonaws.com/publicprefix/" + fileObjKeyName;
     }
 }
