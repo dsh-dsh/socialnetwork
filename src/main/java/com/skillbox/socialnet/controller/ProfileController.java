@@ -42,9 +42,11 @@ public class ProfileController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<?> deleteUser() {
-        int id = 1;//take id from auth token
-        return ResponseEntity.ok(userService.deleteUser(id));
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+        if (jwtProvider.getTokenFromRequest(request) != null) {
+            return ResponseEntity.ok(userService.deleteUser(jwtProvider.getUserNameFromToken(jwtProvider.getTokenFromRequest(request))));
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping("/{id}")
