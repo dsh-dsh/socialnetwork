@@ -4,6 +4,8 @@ import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.StatusUserDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
+import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.entity.User;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonModelMapper;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Semen V
@@ -39,8 +42,8 @@ public class FriendsService {
         userDTO.setEmail("petr@mail.ru");
         userDTO.setPhone( "891111111111");
         userDTO.setAbout("Родился в небольшой, но честной семье");
-        userDTO.setCity(new LocationDTO());
-        userDTO.setCountry(new LocationDTO());
+        userDTO.setCity("Москва");
+        userDTO.setCountry("Россия");
         userDTO.setPermission(MessagesPermission.ALL);
         userDTO.setLastOnlineTime(Calendar.getInstance().getTimeInMillis());
         userDTO.setBlocked(false);

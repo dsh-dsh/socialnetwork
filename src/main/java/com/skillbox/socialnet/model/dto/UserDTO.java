@@ -2,11 +2,15 @@ package com.skillbox.socialnet.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserDTO {
 
     private int id;
@@ -22,8 +26,8 @@ public class UserDTO {
     private String phone;
     private String photo;
     private String about;
-    private LocationDTO city;
-    private LocationDTO country;
+    private String city;
+    private String country;
     @JsonProperty("messages_permission")
     private MessagesPermission permission;
     @JsonProperty("last_online_time")

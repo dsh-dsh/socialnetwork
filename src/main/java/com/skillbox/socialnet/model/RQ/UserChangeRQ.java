@@ -18,7 +18,7 @@ public class UserChangeRQ {
     @JsonProperty("last_name")
     private String lastName;
     @JsonProperty("birth_date")
-    private Timestamp birthDate; // TODO заменил long на Timestamp не мапилось
+    private Timestamp birthDate; // TODO заменил long на Timestamp не мапилось. Фронт посылает Timestamp
     private String phone;
     @JsonProperty("photo_id")
     private String photoId;

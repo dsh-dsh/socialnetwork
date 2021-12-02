@@ -1,12 +1,13 @@
 package com.skillbox.socialnet.service;
 
+import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.model.RQ.AuthUserRQ;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+//import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.security.CustomUserDetails;
 import com.skillbox.socialnet.security.JwtProvider;
@@ -16,6 +17,10 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Calendar;
+
+import static com.skillbox.socialnet.config.Config.checkPassword;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +43,14 @@ public class AuthService {
         return DefaultRSMapper.of(userDTO);
     }
 
+
     public DefaultRS<MessageDTO> logout() {
         return DefaultRSMapper.of(new MessageDTO());
+    }
+
+    private UserDTO getUserDTO() {
+        return new UserDTO();
+        return DefaultRSMapper.of(userDTO);
     }
 
     public Person getPersonFromSecurityContext() {
