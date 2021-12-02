@@ -1,6 +1,5 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +16,13 @@ public class LikesController {
     private final LikeService likeService;
 
     @PutMapping
-    public ResponseEntity<DefaultRS> like() {
-        DefaultRS defaultRS = likeService.like();
-        return ResponseEntity.ok(defaultRS);
+    public ResponseEntity<?> like() {
+        return ResponseEntity.ok(likeService.like());
     }
 
     @DeleteMapping
-    public ResponseEntity<DefaultRS> dislike() {
-        DefaultRS defaultRS = likeService.dislike();
-        return ResponseEntity.ok(defaultRS);
+    public ResponseEntity<?> dislike() {
+        return ResponseEntity.ok(likeService.dislike());
     }
 
 }

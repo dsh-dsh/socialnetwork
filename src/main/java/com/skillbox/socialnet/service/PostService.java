@@ -8,6 +8,7 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
+import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PostModelMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.LikesRepository;
@@ -58,27 +59,18 @@ public class PostService {
     }
 
 
-    public DefaultRS getFeeds(String name, int offset, int itemPerPage) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setOffset(offset);
-        defaultRS.setPerPage(itemPerPage);
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-
+    public DefaultRS getFeeds(String name, Pageable pageable) {
         List<PostDTO> postDTOs;
-        List<Post> posts = postRepository.findAll();
+        List<Post> posts = postRepository.findAll(); // TODO заглушка, получать Optional и по друзьям
         if(posts.size() > 0) {
             postDTOs = posts.stream()
                     .map(postModelMapper::mapToPostDTO)
                     .collect(Collectors.toList());
+            List<PostDTO> postsDTOList = addFakeComments(postDTOs); // TODO Заглушшка Если comments: null пост не отображается фронтом
         } else {
             throw new NoAnyPostsFoundException(Constants.NO_ANY_POST_MESSAGE); // TODO add to ExceptionsHandler
         }
-
-        List<PostDTO> postsDTOList = addFakeComments(postDTOs); // TODO Заглушшка Если comments: null пост не отображается фронтом
-
-        defaultRS.setData(postsDTOList);
-        return defaultRS;
-
+        return DefaultRSMapper.of(postDTOs, pageable);
     }
 
     private List<PostDTO> addFakeComments(List<PostDTO> postDTOList) {
@@ -100,7 +92,6 @@ public class PostService {
 
 
     public DefaultRS getPostById(int id) {
-
         DefaultRS defaultRS = new DefaultRS();
         Optional<Post> optionalPost = postRepository.findPostById(id);
         if (optionalPost.isPresent()) {
@@ -111,7 +102,6 @@ public class PostService {
             defaultRS.setError("bad request");
         }
         return defaultRS;
-
     }
 
     public DefaultRS changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {

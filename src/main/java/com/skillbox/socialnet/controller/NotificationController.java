@@ -14,13 +14,13 @@ public class NotificationController {
 
         private final NotificationService notificationService;
 
-//        @GetMapping("/notifications")
-//        public ResponseEntity<NotificationRS> getNotification(NotificationRQ notificationRQ){
-//                return ResponseEntity.ok(notificationService.getNotification(notificationRQ));
-//        }
+        @GetMapping("/notifications")
+        public ResponseEntity<NotificationRS> getNotification(NotificationRQ notificationRQ){
+                return ResponseEntity.ok(notificationService.getNotification(notificationRQ));
+        }
 
-//        @PutMapping("/notifications")
-//        public ResponseEntity<?> setNotification(NotificationRQ notificationRQ) {
-//                return ResponseEntity.ok(notificationService.setNotification(notificationRQ));
-//        }
+        @PutMapping("/notifications")
+        public ResponseEntity<?> setNotification(NotificationRQ notificationRQ) {
+                return ResponseEntity.ok(notificationService.setNotification(notificationRQ));
+        }
 }
