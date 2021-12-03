@@ -5,6 +5,7 @@ import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +22,8 @@ public class PostController {
             @RequestParam(defaultValue = "") String text,
             @RequestParam (defaultValue = "0", required = false) long date_from,
             @RequestParam (defaultValue = "0", required = false) long date_to,
-            @RequestParam (defaultValue = "0", required = false) int offset,
-            @RequestParam(defaultValue = "20", required = false) int itemPerPage
-    ) {
-        postService.getPostsByText(text, date_from, date_to, offset, itemPerPage);
-        return ResponseEntity.ok(postService.getPostsByText(text, date_from, date_to, offset, itemPerPage));
+            Pageable pageable) {
+        return ResponseEntity.ok(postService.getPostsByText(text, date_from, date_to, pageable));
     }
 
     @GetMapping("/{id}")
@@ -54,13 +52,9 @@ public class PostController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<?> getCommentsByPostId(@PathVariable int id,
-                                    @RequestParam (defaultValue = "0")  int offset,
-                                    @RequestParam(defaultValue = "20") int itemPerPage
+    public ResponseEntity<?> getCommentsByPostId(@PathVariable int id, Pageable pageable){
 
-    ){
-
-        return ResponseEntity.ok(postService.getCommentsToPost(id, offset, itemPerPage));
+        return ResponseEntity.ok(postService.getCommentsToPost(id, pageable));
 
     }
 

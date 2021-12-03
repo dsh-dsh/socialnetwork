@@ -7,9 +7,10 @@ import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.User;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
-//import com.skillbox.socialnet.model.mapper.PersonModelMapper;
-import com.skillbox.socialnet.util.Utils;
+import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
+import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 public class FriendsService {
 
     private final PersonService personService;
-//    private final PersonModelMapper personModelMapper;
+    private final PersonModelMapper personModelMapper;
 
     //заглушка
     private static UserDTO userDTO;
@@ -51,59 +52,32 @@ public class FriendsService {
     }
 
 
-    public DefaultRS getAllFriends(String name, int offset, int itemPerPage) {
-        DefaultRS defaultRS = new DefaultRS<List<UserDTO>>();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setOffset(offset);
-        defaultRS.setPerPage(itemPerPage);
-
+    public DefaultRS<?> getAllFriends(String name, Pageable pageable) {
         //List<UserDTO> listFriends = getFriends(name)
-
         List<UserDTO> listFriends = new ArrayList<>();
         listFriends.add(userDTO);
-
-        defaultRS.setData(listFriends);
-        return defaultRS;
+        return DefaultRSMapper.of(listFriends, pageable);
     }
 
-    public DefaultRS deleteFriend(int id) {
-        DefaultRS defaultRS = new DefaultRS<List<UserDTO>>();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(new MessageDTO());
-        return defaultRS;
+    public DefaultRS<?> deleteFriend(int id) {
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
-    public DefaultRS addFriend(int id) {
-        DefaultRS defaultRS = new DefaultRS<List<UserDTO>>();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(new MessageDTO());
-        return defaultRS;
+    public DefaultRS<?> addFriend(int id) {
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
-    public DefaultRS getRequests(String name, Integer offset, Integer itemPerPage) {
-        DefaultRS defaultRS = new DefaultRS<List<UserDTO>>();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setOffset(offset);
-        defaultRS.setPerPage(itemPerPage);
-
+    public DefaultRS<?> getRequests(String name, Pageable pageable) {
         //List<UserDTO> listFriends = getFriends(name)
-
         List<UserDTO> listFriends = new ArrayList<>();
         listFriends.add(userDTO);
-
-        defaultRS.setData(listFriends);
-        return defaultRS;
+        return DefaultRSMapper.of(listFriends, pageable);
     }
 
-    public DefaultRS<List<UserDTO>> getRecommendations(Integer offset, Integer itemPerPage) {
-        DefaultRS<List<UserDTO>> defaultRS = new DefaultRS<List<UserDTO>>();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setOffset(offset);
-        defaultRS.setPerPage(itemPerPage);
+    public DefaultRS<?> getRecommendations(Pageable pageable) {
         List<UserDTO> listFriends = new ArrayList<>();
         listFriends.add(userDTO);
-        defaultRS.setData(listFriends);
-        return defaultRS;
+        return DefaultRSMapper.of(listFriends, pageable);
     }
 
     public List<StatusUserDTO> isFriends(List<Integer> user_ids) {

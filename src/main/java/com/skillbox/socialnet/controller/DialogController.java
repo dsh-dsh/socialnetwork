@@ -14,7 +14,7 @@ public class DialogController {
 
     @PostMapping
     public ResponseEntity<?> dialog() {
-        return ResponseEntity.ok(new DefaultRS());
+        return ResponseEntity.ok(new DefaultRS<>());
     }
 
 }

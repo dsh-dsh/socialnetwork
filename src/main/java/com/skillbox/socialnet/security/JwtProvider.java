@@ -1,6 +1,7 @@
 package com.skillbox.socialnet.security;
 
 import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.util.Constants;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -19,11 +20,11 @@ import static org.springframework.util.StringUtils.hasText;
 @Log
 public class JwtProvider {
 
-    @Value("$(jwt.secret)")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
-    //@Value("$(jwt.expired.milliseconds)")
-    private Long expired = 18400000l;
+    @Value("${jwt.expired.milliseconds}")
+    private int expired;
 
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -41,20 +42,14 @@ public class JwtProvider {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
-            // TODO обработать в ExceptionsHandler
         } catch (ExpiredJwtException expiredJwtException) {
-
-            log.severe("Token expired");
-        } catch (UnsupportedJwtException unsupportedJwtException) {
-            log.severe("Unsupported jwt");
-        } catch (MalformedJwtException malformedJwtException) {
-            log.severe("Malformed jwt");
-        } catch (SignatureException signatureException) {
-            log.severe("Invalid signature");
-        } catch (Exception exception) {
-            log.severe("invalid token");
+            log.warning(Constants.TOKEN_EXPIRED_MESSAGE);
+            return false;
+        } catch (RuntimeException exception) {
+            // UnsupportedJwtException MalformedJwtException SignatureException
+            log.warning(Constants.INVALID_TOKEN_MESSAGE);
+            return false;
         }
-        return false;
     }
 
     public String getUserNameFromToken(String token) {

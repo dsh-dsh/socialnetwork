@@ -14,27 +14,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
-@Log
 public class AuthController {
 
     private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthUserRQ authUserRQ) {
-        DefaultRS<UserDTO> defaultRS = authService.loginJwt(authUserRQ);
+        DefaultRS<UserDTO> defaultRS = authService.login(authUserRQ);
         return ResponseEntity.ok(defaultRS);
     }
-
-    @GetMapping("/admin/access")
-    public String adminAccess() {
-        return "admin access";
-    }
-
-    @GetMapping("/user/access")
-    public String userAccess() {
-        return "user access";
-    }
-
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout () {
