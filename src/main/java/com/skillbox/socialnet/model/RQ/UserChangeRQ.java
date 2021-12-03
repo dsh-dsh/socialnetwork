@@ -20,13 +20,13 @@ public class UserChangeRQ {
     @JsonProperty("birth_date")
     private Timestamp birthDate; // TODO заменил long на Timestamp не мапилось. Фронт посылает Timestamp
     private String phone;
-    @JsonProperty("photo_id")
-    private String photoId;
+//    @JsonProperty("photo_id")
+//    private String photoId;
     private String about;
-    @JsonProperty("town_id")
-    private int townId;
-    @JsonProperty("country_id")
-    private int countryId;
+    @JsonProperty("city")
+    private String city;
+    @JsonProperty("country")
+    private String country;
     @JsonProperty("message_permission")
     private MessagesPermission messagesPermission;
 }

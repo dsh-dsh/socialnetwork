@@ -21,6 +21,7 @@ import java.util.List;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final UserService userService;
 
 
     public Person getPersonById(int id) {
@@ -34,6 +35,7 @@ public class PersonService {
     }
 
     public Person getPersonByEmail(String email) {
+
         Person person = personRepository.findByeMail(email);
         if (person == null) {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
@@ -48,12 +50,14 @@ public class PersonService {
         }
         person.setFirstName(userChangeRQ.getFirstName());
         person.setLastName(userChangeRQ.getLastName());
+        person.setBirthDate(new Timestamp(userChangeRQ.getBirthDate().getTime()));
         person.setBirthDate(userChangeRQ.getBirthDate());
         person.setPhone(userChangeRQ.getPhone());
-        person.setPhoto(userChangeRQ.getPhotoId());
+//        person.setPhoto(userChangeRQ.getPhotoId());
         person.setAbout(userChangeRQ.getAbout());
         person.setMessagesPermission(userChangeRQ.getMessagesPermission());
-        //TODO set location
+        person.setCity(userChangeRQ.getCity());
+        person.setCountry(userChangeRQ.getCountry());
         personRepository.save(person);
         return person;
     }

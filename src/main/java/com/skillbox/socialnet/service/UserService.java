@@ -17,8 +17,11 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
+//import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.data.domain.Pageable;
@@ -35,9 +38,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final PersonModelMapper personModelMapper;
     private final PersonService personService;
+    private final PersonRepository personRepository;
     private final AuthService authService;
 
 //    public DefaultRS<?> getUser(String email, String token) {
@@ -69,6 +72,12 @@ public class UserService {
 
     public DefaultRS<?> deleteUser(int id) {
         return DefaultRSMapper.of(getMessage());
+    public DefaultRS deleteUser(String email) {
+        personRepository.delete(personService.getPersonByEmail(email));
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getMessage());
+        return defaultRS;
     }
 
     private MessageDTO getMessage() {
@@ -238,13 +247,23 @@ public class UserService {
         return users;
     }
 
-    public DefaultRS<?> blockUser(int id) {
-        getUserDTO(id);//block him
+    public DefaultRS blockUser(int id) {
+        Person person = personService.getPersonById(id);
+        person.setBlocked(true);
+        personRepository.save(person);
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getMessage());
         return DefaultRSMapper.of(getMessage());
     }
 
-    public DefaultRS<?> unblockUser(int id) {
-        getUserDTO(id);//unblock him
+    public DefaultRS unblockUser(int id) {
+        Person person = personService.getPersonById(id);
+        person.setBlocked(false);
+        personRepository.save(person);
+        DefaultRS defaultRS = new DefaultRS();
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setData(getMessage());
         return DefaultRSMapper.of(getMessage());
     }
 
