@@ -25,7 +25,7 @@ public class ProfileController {
     private final JwtProvider jwtProvider;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUser() throws JsonProcessingException {
+    public ResponseEntity<?> getUser() {
         return ResponseEntity.ok(userService.getUser());
     }
 
@@ -35,11 +35,8 @@ public class ProfileController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
-        if (jwtProvider.getTokenFromRequest(request) != null) {
-            return ResponseEntity.ok(userService.deleteUser(jwtProvider.getUserNameFromToken(jwtProvider.getTokenFromRequest(request))));
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> deleteUser() {
+        return ResponseEntity.ok(userService.deleteUser());
     }
 
     @GetMapping("/{id}")

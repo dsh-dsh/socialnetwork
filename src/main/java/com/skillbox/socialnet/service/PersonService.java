@@ -3,17 +3,11 @@ package com.skillbox.socialnet.service;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.exception.NoSuchUserException;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.enums.MessagesPermission;
 import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,21 +15,16 @@ import java.util.List;
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private final UserService userService;
-
 
     public Person getPersonById(int id) {
         Person person = personRepository.getPersonById(id);
         if (person == null) {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
         }
-
         return person;
-
     }
 
     public Person getPersonByEmail(String email) {
-
         Person person = personRepository.findByeMail(email);
         if (person == null) {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);

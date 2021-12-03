@@ -43,10 +43,6 @@ public class UserService {
     private final PersonRepository personRepository;
     private final AuthService authService;
 
-//    public DefaultRS<?> getUser(String email, String token) {
-//        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonByEmail(email));
-//        return DefaultRSMapper.of(userDTO);
-//    }
     public DefaultRS<?> getUser() {
         String email = authService.getPersonFromSecurityContext().getEMail();
         UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonByEmail(email));
@@ -59,25 +55,16 @@ public class UserService {
         return DefaultRSMapper.of(userDTO);
     }
 
-//    public DefaultRS<?> editUser(String email, UserChangeRQ userChangeRQ, String token) {
-//        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.editPerson(email, userChangeRQ));
-//        userDTO.setToken(token);
-//        return DefaultRSMapper.of(userDTO);
-//    }
     public DefaultRS<?> editUser(UserChangeRQ userChangeRQ) {
         String email = authService.getPersonFromSecurityContext().getEMail();
         UserDTO userDTO = personModelMapper.mapToUserDTO(personService.editPerson(email, userChangeRQ));
         return DefaultRSMapper.of(userDTO);
     }
 
-    public DefaultRS<?> deleteUser(int id) {
-        return DefaultRSMapper.of(getMessage());
-    public DefaultRS deleteUser(String email) {
+    public DefaultRS<?> deleteUser() {
+        String email = authService.getPersonFromSecurityContext().getEMail();
         personRepository.delete(personService.getPersonByEmail(email));
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(getMessage());
-        return defaultRS;
+        return DefaultRSMapper.of(getMessage());
     }
 
     private MessageDTO getMessage() {
@@ -247,23 +234,17 @@ public class UserService {
         return users;
     }
 
-    public DefaultRS blockUser(int id) {
+    public DefaultRS<?> blockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(true);
         personRepository.save(person);
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(getMessage());
         return DefaultRSMapper.of(getMessage());
     }
 
-    public DefaultRS unblockUser(int id) {
+    public DefaultRS<?> unblockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(getMessage());
         return DefaultRSMapper.of(getMessage());
     }
 

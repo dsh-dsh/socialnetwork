@@ -20,17 +20,17 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     protected ResponseEntity<?> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(NoAnyPostsFoundException.class)
-    protected ResponseEntity<?> handleNoSuchUserException(NoAnyPostsFoundException ex) {
+    protected ResponseEntity<?> handleNoAnyPostsFoundException(NoAnyPostsFoundException ex) {
         return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NoSuchPostException.class)
-    protected ResponseEntity<?> handleNoSuchUserException(NoSuchPostException ex) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.NOT_FOUND);
+    protected ResponseEntity<?> handleNoSuchPostException(NoSuchPostException ex) {
+        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 }
