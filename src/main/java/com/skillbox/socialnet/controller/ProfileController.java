@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.SearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
+import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,23 +25,13 @@ public class ProfileController {
     private final JwtProvider jwtProvider;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUser(HttpServletRequest request) throws JsonProcessingException {
-        if (jwtProvider.getTokenFromRequest(request) != null) {
-            return ResponseEntity.ok(userService.getUser(jwtProvider.getUserNameFromToken(jwtProvider.getTokenFromRequest(request)),
-                    jwtProvider.getTokenFromRequest(request)));
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> getUser() throws JsonProcessingException {
+        return ResponseEntity.ok(userService.getUser());
     }
 
     @PutMapping("/me")
-    public ResponseEntity<?> editUser(@RequestBody UserChangeRQ userChangeRQ,
-                                      HttpServletRequest request) {
-        if (jwtProvider.getTokenFromRequest(request) != null) {
-            return ResponseEntity.ok(userService.editUser(jwtProvider.getUserNameFromToken(jwtProvider.getTokenFromRequest(request)),
-                    userChangeRQ, jwtProvider.getTokenFromRequest(request)));
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
+    public ResponseEntity<?> editUser(@RequestBody UserChangeRQ userChangeRQ, HttpServletRequest request) {
+        return ResponseEntity.ok(userService.editUser(userChangeRQ));
     }
 
     @DeleteMapping("/me")
@@ -54,10 +47,8 @@ public class ProfileController {
 
     @GetMapping("/{id}/wall")
     public ResponseEntity<?> getUserWall(
-            @PathVariable int id,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage) {
-        return ResponseEntity.ok(userService.getUserWall(id, offset, itemPerPage));
+            @PathVariable int id, Pageable pageable) {
+        return ResponseEntity.ok(userService.getUserWall(id, pageable));
     }
 
     @PostMapping("/{id}/wall")
@@ -70,11 +61,8 @@ public class ProfileController {
 
     @GetMapping("/search")
     public ResponseEntity<?> searchUsers(
-            @ModelAttribute SearchRQ searchRQ,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage) {
-        System.out.println(searchRQ);
-        return ResponseEntity.ok(userService.searchUsers(searchRQ, offset, itemPerPage));
+            @ModelAttribute SearchRQ searchRQ, Pageable pageable) {
+        return ResponseEntity.ok(userService.searchUsers(searchRQ, pageable));
     }
 
     @PutMapping("/block/{id}")

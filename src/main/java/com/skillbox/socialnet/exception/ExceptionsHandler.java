@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
-    // TODO прописать правильные сообщения об ошибках в Константах
+    // TODO прописать правильные сообщения об ошибках в Константах и возвращать правильные HttpStatus
 
     @ExceptionHandler(NoSuchUserException.class)
     protected ResponseEntity<?> handleNoSuchUserException(NoSuchUserException ex) {
@@ -21,6 +21,16 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     protected ResponseEntity<?> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex) {
         return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(NoAnyPostsFoundException.class)
+    protected ResponseEntity<?> handleNoSuchUserException(NoAnyPostsFoundException ex) {
+        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoSuchPostException.class)
+    protected ResponseEntity<?> handleNoSuchUserException(NoSuchPostException ex) {
+        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
 }

@@ -7,7 +7,6 @@ import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
-//import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.security.CustomUserDetails;
 import com.skillbox.socialnet.security.JwtProvider;
@@ -18,9 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-
-import static com.skillbox.socialnet.config.Config.checkPassword;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,17 +45,16 @@ public class AuthService {
         return DefaultRSMapper.of(new MessageDTO());
     }
 
-    private UserDTO getUserDTO() {
-        return new UserDTO();
-        return DefaultRSMapper.of(userDTO);
-    }
+//    private UserDTO getUserDTO() {
+//        return new UserDTO();
+//    }
 
     public Person getPersonFromSecurityContext() {
         try{
             CustomUserDetails securityUser = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             return personRepository.findByeMail((securityUser.getUsername()));
         } catch (Exception ex) {
-            return null;
+            throw new AuthenticationCredentialsNotFoundException(Constants.NO_SUCH_USER_MESSAGE);
         }
     }
 

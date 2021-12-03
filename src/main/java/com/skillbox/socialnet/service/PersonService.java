@@ -34,7 +34,6 @@ public class PersonService {
     }
 
     public Person getPersonByEmail(String email) {
-
         Person person = personRepository.findByeMail(email);
         if (person == null) {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
@@ -44,12 +43,11 @@ public class PersonService {
 
     public Person editPerson(String email, UserChangeRQ userChangeRQ) {
         Person person = getPersonByEmail(email);
-        if (person == null) {
+        if (person == null) { // TODO можно удалить в getPersonByEmail(email) уже проверяется
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
         }
         person.setFirstName(userChangeRQ.getFirstName());
         person.setLastName(userChangeRQ.getLastName());
-//        person.setBirthDate(new Timestamp(userChangeRQ.getBirthDate())); // TODO заменил в UserChangeRQ Long на Timestamp, потомучто фронт отправляет Timestamp
         person.setBirthDate(userChangeRQ.getBirthDate());
         person.setPhone(userChangeRQ.getPhone());
         person.setPhoto(userChangeRQ.getPhotoId());

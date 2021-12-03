@@ -7,7 +7,9 @@ import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -21,17 +23,12 @@ import static com.skillbox.socialnet.config.Config.bcrypt;
  */
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
 
     private final PersonRepository personRepository;
 
-    public AccountService(PersonRepository userRepository) {
-        this.personRepository = userRepository;
-    }
-
-
-    public DefaultRS register(AccountRegisterRQ accountRegisterRQ) {
-        DefaultRS defaultRS = new DefaultRS();
+    public DefaultRS<?> register(AccountRegisterRQ accountRegisterRQ) {
         if (!isEmailExist(accountRegisterRQ.getEmail())) {
             Person person = new Person();
             person.setEMail(accountRegisterRQ.getEmail());
@@ -39,13 +36,10 @@ public class AccountService {
             person.setLastName(accountRegisterRQ.getLastName());
             person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
             personRepository.save(person);
-            defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-            defaultRS.setData(new MessageDTO());
-            return defaultRS;
+            return DefaultRSMapper.of(new MessageDTO());
         }
-        defaultRS.setError("User already exist!");
-        defaultRS.setErrorDesc("Email is already in use.");
-        return defaultRS;
+//        defaultRS.setErrorDesc("Email is already in use."); // TODO добавить в DefaultRSMapper.error .setErrorDesc
+        return DefaultRSMapper.error("User already exist!");
     }
 
     private boolean isEmailExist(String email) {
@@ -53,32 +47,20 @@ public class AccountService {
         return (person != null)? true : false;
     }
 
-    public DefaultRS recoveryPassword() {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(new MessageDTO());
-        return defaultRS;
+    public DefaultRS<?> recoveryPassword() {
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
-    public DefaultRS setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(new MessageDTO());
-        return defaultRS;
+    public DefaultRS<?> setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
-    public DefaultRS setEmail(AccountEmailRQ acctEmailRequest) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(new MessageDTO());
-        return defaultRS;
+    public DefaultRS<?> setEmail(AccountEmailRQ acctEmailRequest) {
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
-    public DefaultRS setNotifications(AccountNotificationRQ accountNotificationRQ) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(new MessageDTO());
-        return defaultRS;
+    public DefaultRS<?> setNotifications(AccountNotificationRQ accountNotificationRQ) {
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
 
