@@ -47,6 +47,11 @@ public class AccountController {
         return ResponseEntity.ok(accountService.setPassword(accountPasswordSetRQ));
     }
 
+    @PutMapping("/shift-email")
+    public ResponseEntity<?> shiftEmail(HttpServletRequest servletRequest) {
+        return ResponseEntity.ok(accountService.shiftEmail(servletRequest));
+    }
+
     @PutMapping("/email")
     public ResponseEntity<?> setEmail(@RequestBody AccountEmailRQ accountEmailRQ) {
         return ResponseEntity.ok(accountService.setEmail(accountEmailRQ));

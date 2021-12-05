@@ -14,13 +14,11 @@ import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
 
@@ -38,6 +36,7 @@ public class AccountService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final AuthService authService;
 
     public DefaultRS<?> register(AccountRegisterRQ accountRegisterRQ) {
         if (!isEmailExist(accountRegisterRQ.getEmail())) {
@@ -64,11 +63,9 @@ public class AccountService {
         String email = accountEmailRQ.getEmail();
         String recoveryLink = servletRequest.getRequestURL().toString()
                 .replace(servletRequest.getServletPath(), "") +
-                "/change-password?code=" +
-                getConfirmationCode(email);
-
-        emailService.send(email, Constants.EMAIL_RECOVERY_SUBJECT,
-                    String.format(Constants.EMAIL_RECOVERY_TEXT, recoveryLink));
+                "/change-password?code=" + getConfirmationCode(email);
+        emailService.send(email, Constants.PASSWWORD_RECOVERY_SUBJECT,
+                    String.format(Constants.PASSWWORD_RECOVERY_TEXT, recoveryLink));
         return DefaultRSMapper.of(new MessageDTO());
     }
 
@@ -92,13 +89,28 @@ public class AccountService {
         return DefaultRSMapper.of(new MessageDTO());
     }
 
-    public DefaultRS<?> setEmail(AccountEmailRQ acctEmailRequest) {
+    public DefaultRS<?> shiftEmail(HttpServletRequest servletRequest) throws MailException{
+        String email = authService.getPersonFromSecurityContext().getEMail();
+        String recoveryLink = servletRequest.getRequestURL().toString()
+                .replace(servletRequest.getServletPath(), "") +
+                "/shift-email";
+        emailService.send(email, Constants.EMAIL_RECOVERY_SUBJECT,
+                String.format(Constants.EMAIL_RECOVERY_TEXT, recoveryLink));
+        return DefaultRSMapper.of(new MessageDTO());
+    }
+
+    public DefaultRS<?> setEmail(AccountEmailRQ accountEmailRQ) {
+        String email = accountEmailRQ.getEmail();
+        if(isEmailExist(email)) {
+            throw new BadRequestException();
+        }
+        Person person = authService.getPersonFromSecurityContext();
+        person.setEMail(email);
+        personRepository.save(person);
         return DefaultRSMapper.of(new MessageDTO());
     }
 
     public DefaultRS<?> setNotifications(AccountNotificationRQ accountNotificationRQ) {
         return DefaultRSMapper.of(new MessageDTO());
     }
-
-
 }

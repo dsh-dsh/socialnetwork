@@ -41,7 +41,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/favicon.ico",
             "/js/**", "/css/**",
             "/change-password",
-            "/login"
+            "/login",
+            "/shift-email"
     };
 
     @Override

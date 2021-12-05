@@ -22,7 +22,7 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         String token = jwtProvider.getTokenFromRequest((HttpServletRequest) servletRequest);
         if (token != null && jwtProvider.validateToken(token)) {
-            UsernamePasswordAuthenticationToken auth = jwtProvider.getAuthentication(token); //TODO add Roles
+            UsernamePasswordAuthenticationToken auth = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(servletRequest, servletResponse);

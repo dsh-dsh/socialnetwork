@@ -10,12 +10,19 @@ public class Constants {
     public static final String INVALID_TOKEN_MESSAGE = "Invalid token";
     public static final String BAD_REQUEST_MESSAGE = "invalid_request";
 
-    public static final String EMAIL_RECOVERY_SUBJECT = "Востановление пароля";
-    public static final String EMAIL_RECOVERY_TEXT =
+    public static final String PASSWWORD_RECOVERY_SUBJECT = "Востановление пароля";
+    public static final String PASSWWORD_RECOVERY_TEXT =
             "Здравствуйте,\n" +
             "Мы получили запрос на изменение пароля вашей учётной записи ZERON.\n" +
             "Если вы не отправляли его, пожалуйста, игнорируйте это письмо и продолжайте использовать текущий пароль.\n" +
             "Чтобы сбросить пароль, перейдите по следующей ссылке в течение 24 часов: \n%s\n";
+
+    public static final String EMAIL_RECOVERY_SUBJECT = "Смена почты";
+    public static final String EMAIL_RECOVERY_TEXT =
+            "Здравствуйте,\n" +
+            "Мы получили запрос на изменение почты в вашей учётной записи ZERON.\n" +
+            "Если вы не отправляли его, пожалуйста, игнорируйте это письмо.\n" +
+            "Чтобы изменить вашу почту, перейдите по следующей ссылке в течение 24 часов: \n%s\n";
 
     public static final String API_ACCOUNT = "/api/v1/account";
     public static final String API_PLATFORM = "/api/v1/platform";

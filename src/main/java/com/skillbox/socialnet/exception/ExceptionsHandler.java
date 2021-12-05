@@ -29,6 +29,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NoSuchUserException.class)
     protected ResponseEntity<?> handleNoSuchUserException(NoSuchUserException ex) {
+        System.out.println("handleNoSuchUserException");
         return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 

@@ -19,10 +19,10 @@ public class DefaultController {
         return "index";
     }
 
-//    @GetMapping(value = "/**/{path:[^\\\\.]*}")
-//    public String redirectToIndex() {
-//        return "forward:/";
-//    }
+    @GetMapping("/shift-email")
+    public String shiftEmail() {
+        return "index";
+    }
 
     @RequestMapping(method = {RequestMethod.OPTIONS, RequestMethod.GET}, value = "/**/{path:[^\\\\.]*}")
     public String redirectToIndex() {
