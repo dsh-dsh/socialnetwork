@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.repository;
 
+import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> findPostByPostText(String text, Pageable pageable);
 
     Optional<Post> findPostById(int id);
+
+    Page<Post> findPostsByAuthor(Person author, Pageable pageable);
 
 //    @Query(value = "select p from Post p where p.postText LIKE %:queryText%" )
 //    Page<Post> findPostByPostText(Pageable pageable, String queryText);

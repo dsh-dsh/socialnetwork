@@ -8,9 +8,10 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.UserService;
+import liquibase.pro.packaged.T;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.HttpStatus;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,11 +59,11 @@ public class ProfileController {
         return ResponseEntity.ok(userService.addPostToUserWall(id, publishDate, postChangeRQ));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<?> searchUsers(
-            @ModelAttribute SearchRQ searchRQ, Pageable pageable) {
-        return ResponseEntity.ok(userService.searchUsers(searchRQ, pageable));
-    }
+//    @GetMapping("/search")
+//    public ResponseEntity<?> searchUsers(
+//            @ModelAttribute SearchRQ searchRQ, Pageable pageable) {
+//        return ResponseEntity.ok(userService.searchUsers(searchRQ, pageable));
+//    }
 
     @PutMapping("/block/{id}")
     public ResponseEntity<?> blockUser(@PathVariable int id) {
