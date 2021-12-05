@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.security;
 
+import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.util.Constants;
 import io.jsonwebtoken.*;
@@ -24,7 +25,10 @@ public class JwtProvider {
     private String jwtSecret;
 
     @Value("${jwt.expired.milliseconds}")
-    private int expired;
+    private long expired;
+
+    @Value("${jwt.expired.confirmation.code.milliseconds}")
+    private long expiredConfirmationCode;
 
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -48,6 +52,25 @@ public class JwtProvider {
         } catch (RuntimeException exception) {
             // UnsupportedJwtException MalformedJwtException SignatureException
             log.warning(Constants.INVALID_TOKEN_MESSAGE);
+            return false;
+        }
+    }
+
+    public String generateConfirmationCode(Person person) {
+        Date expiration = new Date(new Date().getTime() + expiredConfirmationCode);
+        Claims claims = Jwts.claims().setSubject(person.getEMail());
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(expiration)
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .compact();
+    }
+
+    public boolean validateConfirmationCode(String code) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(code);
+            return true;
+        } catch (RuntimeException exception) {
             return false;
         }
     }

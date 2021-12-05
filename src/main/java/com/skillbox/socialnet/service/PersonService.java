@@ -17,7 +17,7 @@ public class PersonService {
     private final PersonRepository personRepository;
 
     public Person getPersonById(int id) {
-        Person person = personRepository.getPersonById(id);
+        Person person = personRepository.findPersonById(id);
         if (person == null) {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
         }
@@ -25,11 +25,7 @@ public class PersonService {
     }
 
     public Person getPersonByEmail(String email) {
-        Person person = personRepository.findByeMail(email);
-        if (person == null) {
-            throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
-        }
-        return person;
+        return personRepository.findByeMail(email).orElseThrow(NoSuchUserException::new);
     }
 
     public Person editPerson(String email, UserChangeRQ userChangeRQ) {
