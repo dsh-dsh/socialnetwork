@@ -40,7 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "api/v1/admin/login",
             "/favicon.ico",
             "/js/**", "/css/**",
-            "/change-password"
+            "/change-password",
+            "/login"
     };
 
     @Override
