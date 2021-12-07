@@ -113,22 +113,5 @@ public class UserService {
 
 
 
-    private String savePhotoInCloud(File f) throws FileNotFoundException {
-        String s = RandomString.make(6);
-        Regions clientRegion = Regions.EU_CENTRAL_1;
-        String bucketName = "jevaibucket/publicprefix";
-        String fileObjKeyName = s + ".jpg";
-        String fileName = s;
 
-        AWSCredentials awsCredentials =
-                new BasicAWSCredentials("AKIAVAR2I7GKLP66SIHL", "W3dXfLlwvfj+E8ucH62wwgalYZufOXLwFx2yxWu+");
-        AmazonS3 s3Client = AmazonS3ClientBuilder
-                .standard()
-                .withRegion(clientRegion)
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                .build();
-        PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, f);
-        s3Client.putObject(request);
-        return "https://jevaibucket.s3.eu-central-1.amazonaws.com/publicprefix/" + fileObjKeyName;
-    }
 }

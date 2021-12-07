@@ -5,6 +5,7 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 public class StorageController {
 
     @PostMapping("/storage")
-    public ResponseEntity<?> storage(@RequestParam String type) {
+    public ResponseEntity<?> storage(@RequestParam("type") String type,
+                                     @RequestPart("file") MultipartFile file) {
         return ResponseEntity.ok(new DefaultRS<>());
     }
 
