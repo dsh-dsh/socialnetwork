@@ -13,10 +13,10 @@ import javax.persistence.*;
 @Table(name = "friendship")
 public class Friendship {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id")
     private FriendshipStatus status;
     @ManyToOne(fetch = FetchType.LAZY)
