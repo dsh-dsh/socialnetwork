@@ -9,7 +9,9 @@ import com.skillbox.socialnet.model.entity.User;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,7 @@ public class FriendsService {
 
     private final PersonService personService;
     private final PersonModelMapper personModelMapper;
+    private final PersonRepository personRepository;
 
     //заглушка
     private static UserDTO userDTO;
@@ -75,9 +78,10 @@ public class FriendsService {
     }
 
     public DefaultRS<?> getRecommendations(Pageable pageable) {
-        List<UserDTO> listFriends = new ArrayList<>();
-        listFriends.add(userDTO);
-        return DefaultRSMapper.of(listFriends, pageable);
+        Page<Person> personPage = personRepository.findAll(pageable);
+        List<UserDTO> friends = personPage.stream()
+                .map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
+        return DefaultRSMapper.of(friends, personPage);
     }
 
     public List<StatusUserDTO> isFriends(List<Integer> user_ids) {
