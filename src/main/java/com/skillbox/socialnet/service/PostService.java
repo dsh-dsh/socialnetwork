@@ -1,7 +1,6 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.NoAnyPostsFoundException;
-import com.skillbox.socialnet.exception.NoSuchPostException;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.dto.*;
@@ -16,14 +15,11 @@ import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,27 +31,13 @@ public class PostService {
     private final LikesRepository likesRepository;
     private final PostModelMapper postModelMapper;
 
-//    public PostService(PostRepository postRepository, CommentRepository commentRepository, LikesRepository likesRepository, PostModelMapper postModelMapper) {
-//        this.postRepository = postRepository;
-//        this.commentRepository = commentRepository;
-//        this.likesRepository = likesRepository;
-//        this.postModelMapper = postModelMapper;
-//    }
-
-
     public DefaultRS<?> getPostsByText(String text, long dateFrom, long dateTo, Pageable pageable) {
-        List<Post> postList;
-        if (dateFrom == 0){
-            postList = postRepository.findPostByPostText(text, pageable).getContent();
-        }
-        else{
-            postList = postRepository.findPostByPostTextAndTimeBetween(new Timestamp(dateFrom), new Timestamp(dateTo), text, pageable).getContent();
-        }
-        List<PostDTO> postsDTOList = getPostsDTOList(postList);
-        return DefaultRSMapper.of(postsDTOList, pageable);
-
+        dateTo = dateTo == 0 ? new Date().getTime() : dateTo;
+        Page<Post> postPage = postRepository.findPostBySearchRequest(text, new Timestamp(dateFrom), new Timestamp(dateTo), pageable);
+        List<PostDTO> postsDTOList = postPage.stream()
+                .map(postModelMapper::mapToPostDTO).collect(Collectors.toList());
+        return DefaultRSMapper.of(postsDTOList, postPage);
     }
-
 
     public DefaultRS<?> getFeeds(String name, Pageable pageable) {
         List<PostDTO> postDTOs;
@@ -262,15 +244,15 @@ public class PostService {
         return commentDTO;
     }
 
-    private List<PostDTO> getPostsDTOList(List<Post> postList) {
-        List<PostDTO> postDTOList = new ArrayList<>();
-        postList.forEach(post -> {
-            PostDTO postDTO = getPostDTO(post);
-            postDTOList.add(postDTO);
-
-        });
-        return postDTOList;
-    }
+//    private List<PostDTO> getPostsDTOList(List<Post> postList) {
+//        List<PostDTO> postDTOList = new ArrayList<>();
+//        postList.forEach(post -> {
+//            PostDTO postDTO = getPostDTO(post);
+//            postDTOList.add(postDTO);
+//
+//        });
+//        return postDTOList;
+//    }
 
     private PostDTO getPostDTO(Post post)
     {

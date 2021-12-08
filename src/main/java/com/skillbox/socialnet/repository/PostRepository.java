@@ -12,12 +12,10 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
-
-    @Query(value = "select p from Post p where (p.postText like %:text% or p.title like %:text%) and p.time between :postTime and :stopTime and p.isBlocked = false order by p.time desc" )
-    Page<Post> findPostByPostTextAndTimeBetween(Timestamp postTime, Timestamp stopTime, String text, Pageable pageable);
-
-    @Query(value = "select p from Post p where (p.postText like %:text% or p.title like %:text%) and p.isBlocked = false order by p.time desc" )
-    Page<Post> findPostByPostText(String text, Pageable pageable);
+    @Query("SELECT post FROM Post AS post " +
+            "WHERE (:text is null OR post.postText LIKE %:text% OR post.title LIKE %:text%) " +
+            "AND post.time BETWEEN :timeFrom AND :timeTo")
+    Page<Post> findPostBySearchRequest(String text, Timestamp timeFrom, Timestamp timeTo, Pageable pageable);
 
     Optional<Post> findPostById(int id);
 
