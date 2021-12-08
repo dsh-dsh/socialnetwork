@@ -34,7 +34,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/v1/platform/**",
             "/api/v1/account/register",
             "/api/v1/account/password/**",
-            //"/api/v1/account/email",
             "/profile/storage/",
             "/storage/",
             "api/v1/admin/login",

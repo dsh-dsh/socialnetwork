@@ -37,6 +37,17 @@ public class DefaultRSMapper {
         return defaultRS;
     }
 
+    public static DefaultRS<List<?>> of(List<?> data, Page<?> page) {
+        DefaultRS<List<?>> defaultRS = new DefaultRS<>();
+        defaultRS.setError("string");
+        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
+        defaultRS.setTotal(page.getTotalPages()); // TODO или page.getTotalElements()
+        defaultRS.setOffset(page.getNumber());
+        defaultRS.setPerPage(page.getSize());
+        defaultRS.setData(data);
+        return defaultRS;
+    }
+
     public static DefaultRS<List<?>> of(List<?> data, Pageable pageable) {
         DefaultRS<List<?>> defaultRS = new DefaultRS<>();
         defaultRS.setError("string");
