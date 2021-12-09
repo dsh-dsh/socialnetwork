@@ -35,6 +35,8 @@ public class FriendsService {
 
     public DefaultRS getAllFriends(String name, Pageable pageable) {
         Person currentPerson = getCurrentPerson();
+        if(currentPerson == null)
+            return DefaultRSMapper.error("invalid_request");
 
         List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson);
         List<UserDTO> friends;
@@ -54,7 +56,9 @@ public class FriendsService {
 
     public DefaultRS deleteFriend(int id) {
         Person currentPerson = getCurrentPerson();
-        Person dstPerson = personRepository.getPersonById(id);
+        Person dstPerson = personRepository.getPersonById(20);
+        if(dstPerson == null || currentPerson == null)
+            return DefaultRSMapper.error("invalid_request");
 
         List<Friendship> friendships = friendshipRepository.isRelationship(currentPerson, dstPerson);
         Optional<Friendship> friendshipOptional = friendships.stream().filter(f -> f.getSrcPerson().equals(dstPerson) || f.getDstPerson().equals(dstPerson)).findFirst();
@@ -70,6 +74,8 @@ public class FriendsService {
     public DefaultRS addFriend(int id) {
         Person currentPerson = getCurrentPerson();
         Person dstPerson = personRepository.getPersonById(id);
+        if(dstPerson == null || currentPerson == null)
+            return DefaultRSMapper.error("invalid_request");
 
         DefaultRS defaultRS = DefaultRSMapper.of(new MessageDTO());
 
@@ -102,6 +108,9 @@ public class FriendsService {
 
     public DefaultRS getRequests(String name, Pageable pageable) {
         Person currentPerson = getCurrentPerson();
+        if(currentPerson == null)
+            return DefaultRSMapper.error("invalid_request");
+
         List<Friendship> friendships = friendshipRepository.findAllRequest(currentPerson);
         Stream<Person> personStream = friendships.stream().map(Friendship::getSrcPerson);
 
@@ -120,6 +129,8 @@ public class FriendsService {
 
     public DefaultRS getRecommendations(Pageable pageable) {
         Person currentPerson = getCurrentPerson();
+        if(currentPerson == null)
+            return DefaultRSMapper.error("invalid_request");
 
         //TODO лютая заплатка, создать метод в FriendshipRepository, переписать на sql запрос
         List<UserDTO> recommendations =
@@ -135,8 +146,10 @@ public class FriendsService {
         return defaultRS;
     }
 
-    public List<StatusUserDTO> isFriends(List<Integer> user_ids) {
+    public DefaultRS isFriends(List<Integer> user_ids) {
         Person currentPerson = getCurrentPerson();
+        if(currentPerson == null)
+            return DefaultRSMapper.error("invalid_request");
 
         List<Integer> friends = user_ids.stream().map(i -> personRepository.getPersonById(i))
                 .filter(p -> isFriend(currentPerson, p))
@@ -151,7 +164,9 @@ public class FriendsService {
                     statusUserDTOS.add(status);
                 });
 
-        return statusUserDTOS;
+        DefaultRS defaultRS = DefaultRSMapper.of(statusUserDTOS);
+
+        return defaultRS;
     }
 
     private boolean isFriend(Person currentPerson, Person dstPerson) {
