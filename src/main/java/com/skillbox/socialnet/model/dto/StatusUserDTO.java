@@ -13,5 +13,5 @@ public class StatusUserDTO {
 
     @JsonProperty("user_id")
     private Integer userId;
-    private String status;
+    private String status = "FRIEND";
 }
