@@ -32,6 +32,7 @@ public class FriendsService {
     private final PersonService personService;
     private final PersonModelMapper personModelMapper;
     private final PersonRepository personRepository;
+    private final AuthService authService;
 
     //заглушка
     private static UserDTO userDTO;
@@ -78,8 +79,10 @@ public class FriendsService {
     }
 
     public DefaultRS<?> getRecommendations(Pageable pageable) {
+        Person me = authService.getPersonFromSecurityContext();
         Page<Person> personPage = personRepository.findAll(pageable);
         List<UserDTO> friends = personPage.stream()
+                .filter(person -> !person.getEMail().equals(me.getEMail()))
                 .map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
         return DefaultRSMapper.of(friends, personPage);
     }
