@@ -30,5 +30,6 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     Page<Person> findBySearchRequest(String firstName, String lastName, String country, String city, Date from, Date to, Pageable pageable);
 
 
+    Person getPersonById(int id);
 }
 

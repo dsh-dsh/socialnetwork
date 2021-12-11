@@ -34,10 +34,16 @@ public class FriendsService {
     private final PersonRepository personRepository;
     private final UserService userService;
     private final PersonModelMapper personModelMapper;
-    private final PersonRepository personRepository;
     private final AuthService authService;
 
     public DefaultRS getAllFriends(String name, Pageable pageable) {
+
+        // Можно получать currentPerson из authService.getPersonFromSecurityContext()
+        // тогда строчка if(currentPerson == null)
+        //            return DefaultRSMapper.error("invalid_request"); не нужна
+        // getPersonFromSecurityContext в случае currentPerson == null бросает исключение
+        // а @ControllerAdvice ExceptionsHandler обрабатывает его и отправляет нужный DefaultRS
+
         Person currentPerson = getCurrentPerson();
         if(currentPerson == null)
             return DefaultRSMapper.error("invalid_request");
@@ -48,10 +54,15 @@ public class FriendsService {
                 .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson());
 
         if (name.equals("")) {
+
+            // здесь можно лямбду в метод референс переделать и идея подчеркивает
+
             friends = personStream.map(p -> personModelMapper.mapToUserDTO(p)).collect(Collectors.toList());
         } else {
             friends = personStream.filter(p -> p.getFirstName().equals(name)).map(p -> personModelMapper.mapToUserDTO(p)).collect(Collectors.toList());
         }
+
+        // можно сразу return DefaultRSMapper.of(friends, pageable); и тоже идея подчеркивает
 
         DefaultRS defaultRS = DefaultRSMapper.of(friends, pageable);
 
@@ -60,9 +71,20 @@ public class FriendsService {
 
     public DefaultRS deleteFriend(int id) {
         Person currentPerson = getCurrentPerson();
+
+        // Здесь лучше переделать в personRepository Optional<Person> getPersonById(int id);
+        // и писать так Person dstPerson = personRepository.getPersonById(20).orElseThrow(BadRequestException::new);
+        // то есть проверка на null уже не нужна
+        // BadRequestException сейчас у меня в ветке уже есть и его обработка соответственно тоже
+
         Person dstPerson = personRepository.getPersonById(20);
         if(dstPerson == null || currentPerson == null)
             return DefaultRSMapper.error("invalid_request");
+
+        // Здесь тоже можно сократить до двух строк если возвращать Optional прямо из репозитория
+        // Friendship friendships = friendshipRepository.isRelationship(currentPerson, dstPerson).orElseThrow(BadRequestException::new);
+        // friendshipRepository.delete(friendship);
+        // и я бы переименовал isRelationship getRelationship
 
         List<Friendship> friendships = friendshipRepository.isRelationship(currentPerson, dstPerson);
         Optional<Friendship> friendshipOptional = friendships.stream().filter(f -> f.getSrcPerson().equals(dstPerson) || f.getDstPerson().equals(dstPerson)).findFirst();
@@ -86,6 +108,8 @@ public class FriendsService {
         if (isFriend(currentPerson, dstPerson))
             return defaultRS;
 
+        // лучше переименовать в requests
+
         List<Friendship> friendships = friendshipRepository.findRequestFromDstPersonToSrcPerson(currentPerson, dstPerson);
 
         Friendship friendship = new Friendship();
@@ -108,13 +132,6 @@ public class FriendsService {
         friendshipRepository.save(friendship);
 
         return defaultRS;
-    public DefaultRS<?> getRecommendations(Pageable pageable) {
-        Person me = authService.getPersonFromSecurityContext();
-        Page<Person> personPage = personRepository.findAll(pageable);
-        List<UserDTO> friends = personPage.stream()
-                .filter(person -> !person.getEMail().equals(me.getEMail()))
-                .map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(friends, personPage);
     }
 
     public DefaultRS getRequests(String name, Pageable pageable) {
@@ -138,23 +155,36 @@ public class FriendsService {
         return defaultRS;
     }
 
-    public DefaultRS getRecommendations(Pageable pageable) {
-        Person currentPerson = getCurrentPerson();
-        if(currentPerson == null)
-            return DefaultRSMapper.error("invalid_request");
+//    public DefaultRS getRecommendations(Pageable pageable) {
+//        Person currentPerson = getCurrentPerson();
+//        if(currentPerson == null)
+//            return DefaultRSMapper.error("invalid_request");
+//
+//        //TODO лютая заплатка, создать метод в FriendshipRepository, переписать на sql запрос
+//        List<UserDTO> recommendations =
+//                friendshipRepository.findAllFriends(currentPerson).stream()
+//                        .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson())
+//                        .map(p -> friendshipRepository.findAllFriends(p).stream()
+//                                .map(f -> f.getSrcPerson().equals(p) ? f.getDstPerson() : f.getSrcPerson()).collect(Collectors.toList()))
+//                        .flatMap(l -> l.stream()).filter(p -> !p.equals(currentPerson)).map(p -> personModelMapper.mapToUserDTO(p)).collect(Collectors.toList());
+//        /////
+//
+//        DefaultRS defaultRS = DefaultRSMapper.of(recommendations, pageable);
+//
+//        return defaultRS;
+//    }
 
-        //TODO лютая заплатка, создать метод в FriendshipRepository, переписать на sql запрос
-        List<UserDTO> recommendations =
-                friendshipRepository.findAllFriends(currentPerson).stream()
-                        .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson())
-                        .map(p -> friendshipRepository.findAllFriends(p).stream()
-                        .map(f -> f.getSrcPerson().equals(p) ? f.getDstPerson() : f.getSrcPerson()).collect(Collectors.toList()))
-                        .flatMap(l -> l.stream()).filter(p -> !p.equals(currentPerson)).map(p -> personModelMapper.mapToUserDTO(p)).collect(Collectors.toList());
-        /////
+    public DefaultRS<?> getRecommendations(Pageable pageable) {
+        Person currentPerson = authService.getPersonFromSecurityContext();
 
-        DefaultRS defaultRS = DefaultRSMapper.of(recommendations, pageable);
+        Page<Person> personPage = personRepository.findAll(pageable);
 
-        return defaultRS;
+        List<UserDTO> friends = personPage.stream()
+                .filter(person -> !person.getEMail().equals(currentPerson.getEMail()))
+                .map(personModelMapper::mapToUserDTO)
+                .collect(Collectors.toList());
+
+        return DefaultRSMapper.of(friends, personPage);
     }
 
     public DefaultRS isFriends(List<Integer> user_ids) {
@@ -162,10 +192,20 @@ public class FriendsService {
         if(currentPerson == null)
             return DefaultRSMapper.error("invalid_request");
 
+        // тут можно использовать такой именованный запрос List<Person> findByIdIn(List<Integer> idList) в PersonRepository
+        // чтобы не делать запрос по каждому id в базу
+
         List<Integer> friends = user_ids.stream().map(i -> personRepository.getPersonById(i))
                 .filter(p -> isFriend(currentPerson, p))
                 .map(p -> p.getId())
                 .collect(Collectors.toList());
+
+        // здесь чтобы не менять из стрима по сути сторонний список statusUserDTOS
+        // лучше добавить конструктор StatusUserDTO(int userId)
+        // и написать так
+        // List<StatusUserDTO> statusUserDTOS = friends.stream()
+        //                              .map(StatusUserDTO::new)
+        //                              .collect(Collectors.toList());
 
         List<StatusUserDTO> statusUserDTOS = new ArrayList<>();
         friends.stream()
@@ -192,3 +232,4 @@ public class FriendsService {
         return currentPerson;
     }
 }
+
