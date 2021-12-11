@@ -7,30 +7,37 @@ import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PlatformService {
 
 
     public DefaultRS<?> getLanguage(String language, Pageable pageable) {
-        LocationDTO languageDTO = new LocationDTO();
-        languageDTO.setTitle("language");
-        languageDTO.setId(1);
-        return DefaultRSMapper.of(languageDTO, pageable);
+
+        List<LocationDTO> languages = List.of(new LocationDTO(1, "Русский"));
+
+        return DefaultRSMapper.of(languages, pageable);
     }
 
     public DefaultRS<?> getCity(String city, Pageable pageable) {
-        LocationDTO cityDTO = new LocationDTO();
-        cityDTO.setTitle("city");
-        cityDTO.setId(1);
-        return DefaultRSMapper.of(cityDTO, pageable);
+
+        List<LocationDTO> cities = List.of(
+                new LocationDTO(1, "Москва"),
+                new LocationDTO(1, "Краснодар"),
+                new LocationDTO(1, "Тель-Авив"),
+                new LocationDTO(1, "Серов"));
+
+        return DefaultRSMapper.of(cities, pageable);
     }
 
     public DefaultRS<?> getCountry(String country, Pageable pageable) {
-        LocationDTO countryDTO = new LocationDTO();
-//        countryDTO.setTitle(country);
-        countryDTO.setTitle("country");
-        countryDTO.setId(1);
-        return DefaultRSMapper.of(countryDTO, pageable);
+
+        List<LocationDTO> countries = List.of(
+                new LocationDTO(1, "Россия"),
+                new LocationDTO(1, "Израиль"));
+
+        return DefaultRSMapper.of(countries, pageable);
     }
 
 }
