@@ -76,4 +76,9 @@ public class ProfileController {
     public ResponseEntity<?> unblockUser(@PathVariable int id) {
         return ResponseEntity.ok(userService.unblockUser(id));
     }
+
+    @PutMapping("/checkonline")
+    public ResponseEntity<?> checkOnline(@PathVariable int id) {
+        return ResponseEntity.ok("");
+    }
 }

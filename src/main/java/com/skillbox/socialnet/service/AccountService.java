@@ -8,9 +8,13 @@ import com.skillbox.socialnet.model.RQ.AccountPasswordSetRQ;
 import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
+import com.skillbox.socialnet.model.entity.NotificationSetting;
 import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.enums.MessagesPermission;
+import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
+import com.skillbox.socialnet.repository.SettingsRepository;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
 
@@ -37,6 +44,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final AuthService authService;
+    private final SettingsRepository settingsRepository;
 
     public DefaultRS<?> register(AccountRegisterRQ accountRegisterRQ) {
         if (!isEmailExist(accountRegisterRQ.getEmail())) {
@@ -111,6 +119,19 @@ public class AccountService {
     }
 
     public DefaultRS<?> setNotifications(AccountNotificationRQ accountNotificationRQ) {
+        Person currentPerson = authService.getPersonFromSecurityContext();
+        NotificationTypeCode notificationTypeCode = NotificationTypeCode.valueOf(accountNotificationRQ.getNotificationType());
+
+        NotificationSetting notificationSetting = getNotificationSetting(currentPerson, notificationTypeCode);
+        notificationSetting.setPermission(!notificationSetting.isPermission());
+        settingsRepository.save(notificationSetting);
+
         return DefaultRSMapper.of(new MessageDTO());
+    }
+
+    private NotificationSetting getNotificationSetting(Person person, NotificationTypeCode notificationTypeCode) {
+        return settingsRepository
+                .findByPersonAndNotificationTypeCode(person, notificationTypeCode)
+                .orElse(new NotificationSetting(person, notificationTypeCode, false));
     }
 }
