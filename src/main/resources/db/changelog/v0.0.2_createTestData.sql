@@ -1,17 +1,18 @@
 --liquibase formatted sql
 --changeset alexanderkochurov:create-testData
+
 -- users accounts
 INSERT INTO person
 (first_name, last_name, reg_date, birth_date, e_mail, phone, password, about, city, country, confirmation_code, is_approved, messages_permission, last_online_time, is_blocked)
-VALUES('Василий', 'Пупкин', '2021-11-10T14:55:56', '1990-11-16T14:55:56', 'p1@mail.ru', '89991234567', '12345678', 'Родился в небольшой, но честной семье', 'Серов', 'Россия', '123456', true, 'ALL', '2021-11-16T14:55:56', false);
+VALUES('Василий', 'Пупкин', '2021-11-10T14:55:56', '1990-11-16T14:55:56', 'p1@mail.ru', '89991234567', '$2y$12$NKArmf9agtEQw7rPDN4zb.rE90zeewGAUWNRkSrYW662FwL77NyCS', 'Родился в небольшой, но честной семье', 'Серов', 'Россия', '123456', true, 'ALL', '2021-11-16T14:55:56', false);
 
 INSERT INTO person
 (first_name, last_name, reg_date, birth_date, e_mail, phone, password, about, city, country, confirmation_code, is_approved, messages_permission, last_online_time, is_blocked)
-VALUES('Иван', 'Иванов', '2021-11-11T14:55:56', '1992-11-16T14:55:56', 'p2@mail.ru', '89992345678', '12345678', 'Родился в большой, но нечестной семье', 'Москва', 'Россия', '123456', true, 'ALL', '2021-11-16T14:55:56', false);
+VALUES('Иван', 'Иванов', '2021-11-11T14:55:56', '1992-11-16T14:55:56', 'p2@mail.ru', '89992345678', '$2y$12$NKArmf9agtEQw7rPDN4zb.rE90zeewGAUWNRkSrYW662FwL77NyCS', 'Родился в большой, но нечестной семье', 'Москва', 'Россия', '123456', true, 'ALL', '2021-11-16T14:55:56', false);
 
 INSERT INTO person
 (first_name, last_name, reg_date, birth_date, e_mail, phone, password, about, city, country, confirmation_code, is_approved, messages_permission, last_online_time, is_blocked)
-VALUES('Феликс', 'Абрамов', '2021-11-12T14:55:56', '1994-11-16T14:55:56', 'p3@mail.ru', '89991234567', '12345678', 'Родился в небольшой и нечестной семье', 'Тель-Авив', 'Израиль', '123456', true, 'ALL', '2021-11-16T14:55:56', false);
+VALUES('Феликс', 'Абрамов', '2021-11-12T14:55:56', '1994-11-16T14:55:56', 'p3@mail.ru', '89991234567', '$2y$12$NKArmf9agtEQw7rPDN4zb.rE90zeewGAUWNRkSrYW662FwL77NyCS', 'Родился в небольшой и нечестной семье', 'Тель-Авив', 'Израиль', '123456', true, 'ALL', '2021-11-16T14:55:56', false);
 
 -- posts
 INSERT INTO post
