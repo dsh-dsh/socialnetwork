@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,7 +30,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "ORDER BY person.firstName, person.lastName")
     Page<Person> findBySearchRequest(String firstName, String lastName, String country, String city, Date from, Date to, Pageable pageable);
 
+    List<Person> findByIdIn(List<Integer> idList);
 
-    Person getPersonById(int id);
+    Optional<Person> getPersonById(int id);;
 }
 

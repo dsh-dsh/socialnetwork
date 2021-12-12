@@ -64,8 +64,8 @@ public class FriendsController {
     }
 
     @PostMapping("/is/friends")
-    public ResponseEntity<?> isFriends(@RequestBody List<Integer> user_ids) {
-        return ResponseEntity.ok(friendsService.isFriends(user_ids));
+    public ResponseEntity<?> isFriends(@RequestBody List<Integer> userIds) {
+        return ResponseEntity.ok(friendsService.isFriends(userIds));
     }
 
 

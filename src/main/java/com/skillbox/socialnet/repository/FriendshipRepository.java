@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Semen V
@@ -23,10 +24,10 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     public List<Friendship> findAllRequest(Person person);
 
     @Query("FROM Friendship WHERE dstPerson = :currentPerson and srcPerson = :dstPerson and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.REQUEST")
-    public List<Friendship> findRequestFromDstPersonToSrcPerson(Person currentPerson, Person dstPerson);
+    public List<Friendship> requests(Person currentPerson, Person dstPerson);
 
     @Query("FROM Friendship WHERE ((dstPerson = :currentPerson and srcPerson = :dstPerson) or (dstPerson = :dstPerson and srcPerson = :currentPerson))")
-    public List<Friendship> isRelationship(Person currentPerson, Person dstPerson);
+    public Optional<Friendship> getRelationship(Person currentPerson, Person dstPerson);
 
     @Query("FROM Friendship WHERE ((dstPerson = :currentPerson and srcPerson = :dstPerson)" +
              "or (dstPerson = :dstPerson and srcPerson = :currentPerson)) and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND")
