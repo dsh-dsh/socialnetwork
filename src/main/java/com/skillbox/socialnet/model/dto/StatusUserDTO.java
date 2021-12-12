@@ -2,6 +2,7 @@ package com.skillbox.socialnet.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Semen V
@@ -9,9 +10,14 @@ import lombok.Data;
  */
 
 @Data
+@NoArgsConstructor
 public class StatusUserDTO {
 
     @JsonProperty("user_id")
     private Integer userId;
-    private String status;
+    private String status = "FRIEND";
+
+    public StatusUserDTO(Integer userId) {
+        this.userId = userId;
+    }
 }
