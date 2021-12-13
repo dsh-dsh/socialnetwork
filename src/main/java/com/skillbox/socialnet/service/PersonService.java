@@ -17,7 +17,7 @@ public class PersonService {
     private final PersonRepository personRepository;
 
     public Person getPersonById(int id) {
-        Person person = personRepository.getPersonById(id);
+        Person person = personRepository.findPersonById(id);
         if (person == null) {
             throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
         }
@@ -25,11 +25,13 @@ public class PersonService {
     }
 
     public Person getPersonByEmail(String email) {
-        Person person = personRepository.findByeMail(email);
-        if (person == null) {
-            throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
-        }
-        return person;
+        return personRepository.findByeMail(email).orElseThrow(NoSuchUserException::new);
+        // FIXME не правильно отрабатал при смене имейла(при ошибке фронта с токеном) ошибка 500,
+        //  проверить когда исправим фронт
+        //  при переходе из письма для смены почты открывается новая вкладка
+        //  и там смена почты отрабатывает нормально
+        //  но предыдущая вкладка продолжает отправлять запросы со старым токеном
+        //  и соответственно со старым емейлом
     }
 
     public Person editPerson(String email, UserChangeRQ userChangeRQ) {

@@ -33,13 +33,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/v1/auth/**",
             "/api/v1/platform/**",
             "/api/v1/account/register",
-            "/api/v1/account/password/",
-            "/api/v1/account/email",
+            "/api/v1/account/password/**",
+            //"/api/v1/account/email",
             "/profile/storage/",
             "/storage/",
             "api/v1/admin/login",
             "/favicon.ico",
-            "/js/**", "/css/**"
+            "/js/**", "/css/**",
+            "/change-password",
+            "/login",
+            "/shift-email"
     };
 
     @Override
@@ -50,11 +53,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-//                .antMatchers("/", "/api/v1/auth/login").permitAll()
-//                .antMatchers("/static/**").permitAll()
-//                .antMatchers("/js/**", "/css/**").permitAll()
-//                .antMatchers(Constants.API_PLATFORM + "/languages").permitAll()
-//                .antMatchers(Constants.API_ACCOUNT + "/register", Constants.API_ACCOUNT + "/password/recovery").permitAll()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated()
                 .and()

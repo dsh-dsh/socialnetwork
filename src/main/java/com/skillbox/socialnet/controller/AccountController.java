@@ -6,7 +6,11 @@ import com.skillbox.socialnet.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 
 /**
@@ -32,8 +36,10 @@ public class AccountController {
     }
 
     @PutMapping("/password/recovery")
-    public ResponseEntity<?> passwordRecovery(@RequestBody AccountEmailRQ acctEmailRequest) {
-        return ResponseEntity.ok(accountService.recoveryPassword());
+    public ResponseEntity<?> passwordRecovery(
+            @RequestBody @Valid AccountEmailRQ accountEmailRQ,
+            HttpServletRequest servletRequest) {
+        return ResponseEntity.ok(accountService.recoveryPassword(accountEmailRQ, servletRequest));
     }
 
     @PutMapping("/password/set")
@@ -41,9 +47,14 @@ public class AccountController {
         return ResponseEntity.ok(accountService.setPassword(accountPasswordSetRQ));
     }
 
+    @PutMapping("/shift-email")
+    public ResponseEntity<?> shiftEmail(HttpServletRequest servletRequest) {
+        return ResponseEntity.ok(accountService.shiftEmail(servletRequest));
+    }
+
     @PutMapping("/email")
-    public ResponseEntity<?> setEmail(@RequestBody AccountEmailRQ acctEmailRequest) {
-        return ResponseEntity.ok(accountService.setEmail(acctEmailRequest));
+    public ResponseEntity<?> setEmail(@RequestBody AccountEmailRQ accountEmailRQ) {
+        return ResponseEntity.ok(accountService.setEmail(accountEmailRQ));
     }
 
     @PutMapping("/notifications")

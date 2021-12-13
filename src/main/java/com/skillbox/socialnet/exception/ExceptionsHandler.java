@@ -1,11 +1,15 @@
 package com.skillbox.socialnet.exception;
 
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
@@ -13,8 +17,19 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     // TODO прописать правильные сообщения об ошибках в Константах и возвращать правильные HttpStatus
 
+    @ExceptionHandler(BadRequestException.class)
+    protected ResponseEntity<?> handleBadRequestException(BadRequestException ex) {
+        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MailException.class)
+    protected ResponseEntity<?> handleMailException(MailException ex) {
+        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(NoSuchUserException.class)
     protected ResponseEntity<?> handleNoSuchUserException(NoSuchUserException ex) {
+        System.out.println("handleNoSuchUserException");
         return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -33,4 +48,11 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+        System.out.println(ex.getMessage());
+
+        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 }

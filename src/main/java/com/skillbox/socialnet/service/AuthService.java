@@ -52,7 +52,7 @@ public class AuthService {
     public Person getPersonFromSecurityContext() {
         try{
             CustomUserDetails securityUser = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            return personRepository.findByeMail((securityUser.getUsername()));
+            return personRepository.findByeMail((securityUser.getUsername())).get();
         } catch (Exception ex) {
             throw new AuthenticationCredentialsNotFoundException(Constants.NO_SUCH_USER_MESSAGE);
         }
