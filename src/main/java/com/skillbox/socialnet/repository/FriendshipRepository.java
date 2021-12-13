@@ -18,24 +18,27 @@ import java.util.Optional;
 public interface FriendshipRepository extends JpaRepository<Friendship, Integer> {
 
     @Query("FROM Friendship WHERE (srcPerson = :person or dstPerson = :person) and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND")
-    public List<Friendship> findAllFriends(Person person);
+    List<Friendship> findAllFriends(Person person);
 
     @Query("FROM Friendship WHERE dstPerson = :person and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.REQUEST")
-    public List<Friendship> findAllRequest(Person person);
+    List<Friendship> findAllRequest(Person person);
 
     @Query("FROM Friendship WHERE dstPerson = :currentPerson and srcPerson = :dstPerson and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.REQUEST")
-    public List<Friendship> requests(Person currentPerson, Person dstPerson);
+    List<Friendship> requests(Person currentPerson, Person dstPerson);
 
     @Query("FROM Friendship WHERE ((dstPerson = :currentPerson and srcPerson = :dstPerson) or (dstPerson = :dstPerson and srcPerson = :currentPerson))")
-    public Optional<Friendship> getRelationship(Person currentPerson, Person dstPerson);
+    Optional<Friendship> getRelationship(Person currentPerson, Person dstPerson);
 
     @Query("FROM Friendship WHERE ((dstPerson = :currentPerson and srcPerson = :dstPerson)" +
              "or (dstPerson = :dstPerson and srcPerson = :currentPerson)) and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND")
-    public List<Friendship> isFriends(Person currentPerson, Person dstPerson);
+    List<Friendship> isFriends(Person currentPerson, Person dstPerson);
 
-    @Override
-    void delete(Friendship friendship);
+    @Query("FROM Friendship WHERE srcPerson IN :persons OR dstPerson IN :persons")
+    List<Friendship> findAllFriendsOfMyFriends(List<Person> persons);
 
-    @Override
-    <S extends Friendship> S save(S s);
+//    @Override
+//    void delete(Friendship friendship);
+//
+//    @Override
+//    <S extends Friendship> S save(S s);
 }
