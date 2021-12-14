@@ -1,7 +1,6 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.NoAnyPostsFoundException;
-import com.skillbox.socialnet.exception.NoSuchPostException;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.dto.*;
@@ -16,15 +15,11 @@ import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,31 +31,18 @@ public class PostService {
     private final LikesRepository likesRepository;
     private final PostModelMapper postModelMapper;
 
-//    public PostService(PostRepository postRepository, CommentRepository commentRepository, LikesRepository likesRepository, PostModelMapper postModelMapper) {
-//        this.postRepository = postRepository;
-//        this.commentRepository = commentRepository;
-//        this.likesRepository = likesRepository;
-//        this.postModelMapper = postModelMapper;
-//    }
-
-
     public DefaultRS<?> getPostsByText(String text, long dateFrom, long dateTo, Pageable pageable) {
-        List<Post> postList;
-        if (dateFrom == 0) {
-            postList = postRepository.findPostByPostText(text, pageable).getContent();
-        } else {
-            postList = postRepository.findPostByPostTextAndTimeBetween(new Timestamp(dateFrom), new Timestamp(dateTo), text, pageable).getContent();
-        }
-        List<PostDTO> postsDTOList = getPostsDTOList(postList);
-        return DefaultRSMapper.of(postsDTOList, pageable);
-
+        dateTo = dateTo == 0 ? new Date().getTime() : dateTo;
+        Page<Post> postPage = postRepository.findPostBySearchRequest(text, new Timestamp(dateFrom), new Timestamp(dateTo), pageable);
+        List<PostDTO> postsDTOList = postPage.stream()
+                .map(postModelMapper::mapToPostDTO).collect(Collectors.toList());
+        return DefaultRSMapper.of(postsDTOList, postPage);
     }
-
 
     public DefaultRS<?> getFeeds(String name, Pageable pageable) {
         List<PostDTO> postDTOs;
         List<Post> posts = postRepository.findAll(); // TODO заглушка, получать Optional и по друзьям
-        if (posts.size() > 0) {
+        if(posts.size() > 0) {
             postDTOs = posts.stream()
                     .map(postModelMapper::mapToPostDTO)
                     .collect(Collectors.toList());
@@ -81,7 +63,7 @@ public class PostService {
         commentDTOList.add(commentDTO);
 
         List<PostDTO> posts = new ArrayList<>();
-        for (PostDTO postDTO : postDTOList) {
+        for(PostDTO postDTO : postDTOList) {
             postDTO.setComments(commentDTOList);
             posts.add(postDTO);
         }
@@ -94,7 +76,8 @@ public class PostService {
         if (optionalPost.isPresent()) {
             defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
             defaultRS.setData(getPostDTO(optionalPost.get()));
-        } else {
+            }
+        else {
             defaultRS.setError("bad request");
         }
         return defaultRS;
@@ -110,22 +93,25 @@ public class PostService {
             if (publishDate != 0) {
                 post.setTime(new Timestamp(publishDate));
             }
-            if (!postChangeRQ.getPostText().isEmpty()) {
+            if(!postChangeRQ.getPostText().isEmpty()) {
                 post.setPostText(postChangeRQ.getPostText());
             }
-            if (!postChangeRQ.getTitle().isEmpty()) {
+            if(!postChangeRQ.getTitle().isEmpty()) {
                 post.setTitle(postChangeRQ.getTitle());
             }
             postRepository.save(post);
             defaultRS.setData(getPostDTO(post));
 
-        } else {
+        }
+        else {
             defaultRS.setError("bad request");
         }
         return defaultRS;
 
 
+
     }
+
 
 
     public DefaultRS deletePostById(int id) {
@@ -142,7 +128,8 @@ public class PostService {
             LocationDTO locationDTO = new LocationDTO();
             locationDTO.setId(id);
             defaultRS.setData(locationDTO);
-        } else {
+        }
+        else {
             defaultRS.setError("bad request");
         }
         return defaultRS;
@@ -166,7 +153,7 @@ public class PostService {
             Post post = optionalPost.get();
             PostComment postComment = new PostComment();
             postComment.setCommentText(commentRQ.getCommentText());
-            if (commentRQ.getParentId() != null) {
+            if (commentRQ.getParentId() != null ){
                 Optional<PostComment> optionalParentComment = commentRepository.findById(commentRQ.getParentId());
                 if (optionalParentComment.isPresent()) {
                     postComment.setParent(optionalParentComment.get());
@@ -178,7 +165,8 @@ public class PostService {
 //            ДОПИСАТЬ АВТОРА КОГДА БУДЕТ АВТОРИЗАЦИЯ ЧЕРЕЗ СЕКЬЮРИТИ
             commentRepository.save(postComment);
             defaultRS.setData(getCommentDTO(postComment));
-        } else {
+        }
+        else {
             defaultRS.setError("bad request");
         }
         return defaultRS;
@@ -194,7 +182,8 @@ public class PostService {
             postComment.setCommentText(commentRQ.getCommentText());
             commentRepository.save(postComment);
             defaultRS.setData(getCommentDTO(postComment));
-        } else {
+        }
+        else {
             defaultRS.setError("bad request");
         }
         return defaultRS;
@@ -212,7 +201,8 @@ public class PostService {
             LocationDTO locationDTO = new LocationDTO();
             locationDTO.setId(commentId);
             defaultRS.setData(locationDTO);
-        } else {
+        }
+        else {
             defaultRS.setError("bad request");
         }
         return defaultRS;
@@ -240,7 +230,7 @@ public class PostService {
     }
 
 
-    private CommentDTO getCommentDTO(PostComment postComment) {
+    private CommentDTO getCommentDTO(PostComment postComment){
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setId(postComment.getId());
         commentDTO.setCommentText(postComment.getCommentText());
@@ -248,23 +238,24 @@ public class PostService {
         commentDTO.setTime(postComment.getTime().getTime());
         commentDTO.setPostId(String.valueOf(postComment.getPost().getId()));
         commentDTO.setAuthorId(postComment.getAuthor().getId());
-        if (postComment.getParent() != null) {
+        if (postComment.getParent() != null){
             commentDTO.setParentId(postComment.getParent().getId());
         }
         return commentDTO;
     }
 
-    private List<PostDTO> getPostsDTOList(List<Post> postList) {
-        List<PostDTO> postDTOList = new ArrayList<>();
-        postList.forEach(post -> {
-            PostDTO postDTO = getPostDTO(post);
-            postDTOList.add(postDTO);
+//    private List<PostDTO> getPostsDTOList(List<Post> postList) {
+//        List<PostDTO> postDTOList = new ArrayList<>();
+//        postList.forEach(post -> {
+//            PostDTO postDTO = getPostDTO(post);
+//            postDTOList.add(postDTO);
+//
+//        });
+//        return postDTOList;
+//    }
 
-        });
-        return postDTOList;
-    }
-
-    private PostDTO getPostDTO(Post post) {
+    private PostDTO getPostDTO(Post post)
+    {
         PostDTO postDTO = new PostDTO();
         postDTO.setId(post.getId());
         postDTO.setPostText(post.getPostText());
@@ -297,11 +288,4 @@ public class PostService {
         return userDTO;
     }
 
-    public List<PostDTO> getListDTOFromPostList(List<Post> postList) {
-        List<PostDTO> postDTOList = new ArrayList<>();
-        postList.forEach(post -> {
-            postDTOList.add(postModelMapper.mapToPostDTO(post));
-        });
-        return postDTOList;
-    }
 }

@@ -20,10 +20,10 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?> getPosts(
             @RequestParam(defaultValue = "") String text,
-            @RequestParam (defaultValue = "0", required = false) long date_from,
-            @RequestParam (defaultValue = "0", required = false) long date_to,
+            @RequestParam (name = "date_from", defaultValue = "0") long dateFrom,
+            @RequestParam (name = "date_to", defaultValue = "0") long dateTo,
             Pageable pageable) {
-        return ResponseEntity.ok(postService.getPostsByText(text, date_from, date_to, pageable));
+        return ResponseEntity.ok(postService.getPostsByText(text, dateFrom, dateTo, pageable));
     }
 
     @GetMapping("/{id}")

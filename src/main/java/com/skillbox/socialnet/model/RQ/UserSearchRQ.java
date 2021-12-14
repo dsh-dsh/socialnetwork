@@ -1,10 +1,13 @@
 package com.skillbox.socialnet.model.RQ;
 
+//import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class SearchRQ {
+@AllArgsConstructor
+public class UserSearchRQ {
 
     //  TODO мапятся только поля с совпадающими именами, @JsonProperty не работает
 

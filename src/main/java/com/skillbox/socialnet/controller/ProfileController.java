@@ -1,16 +1,11 @@
 package com.skillbox.socialnet.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.SearchRQ;
+import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.UserService;
-import liquibase.pro.packaged.T;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.HttpStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,11 +54,18 @@ public class ProfileController {
         return ResponseEntity.ok(userService.addPostToUserWall(id, publishDate, postChangeRQ));
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity<?> searchUsers(
-//            @ModelAttribute SearchRQ searchRQ, Pageable pageable) {
-//        return ResponseEntity.ok(userService.searchUsers(searchRQ, pageable));
-//    }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchUsers(
+            @RequestParam(name = "first_name", required = false) String firstName,
+            @RequestParam(name = "last_name", required = false) String lastName,
+            @RequestParam(name = "age_from", defaultValue = "0") int ageFrom,
+            @RequestParam(name = "age_to", defaultValue = "0") int ageTo,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) String city,
+            Pageable pageable) {
+        UserSearchRQ userSearchRQ = new UserSearchRQ(firstName, lastName, ageFrom, ageTo, country, city);
+        return ResponseEntity.ok(userService.searchUsers(userSearchRQ, pageable));
+    }
 
     @PutMapping("/block/{id}")
     public ResponseEntity<?> blockUser(@PathVariable int id) {
@@ -73,5 +75,10 @@ public class ProfileController {
     @DeleteMapping("/block/{id}")
     public ResponseEntity<?> unblockUser(@PathVariable int id) {
         return ResponseEntity.ok(userService.unblockUser(id));
+    }
+
+    @PutMapping("/checkonline")
+    public ResponseEntity<?> checkOnline(@PathVariable int id) {
+        return ResponseEntity.ok("");
     }
 }

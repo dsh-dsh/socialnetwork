@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.SearchRQ;
+import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
@@ -24,20 +24,23 @@ import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import com.skillbox.socialnet.model.mapper.PostModelMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
+import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
-import com.skillbox.socialnet.util.Constants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,9 +96,16 @@ public class UserService {
         return DefaultRSMapper.of(postModelMapper.mapToPostDTO(post));
     }
 
-//    public Object searchUsers(SearchRQ searchRQ, Pageable pageable) {
-//    }
-
+    public DefaultRS<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
+        Date to = getDateTo(userSearchRQ);
+        Date from = getDateFrom(userSearchRQ);
+        Page<Person> personPage = personRepository.findBySearchRequest(
+                userSearchRQ.getFirstName(), userSearchRQ.getLastName(),
+                userSearchRQ.getCountry(), userSearchRQ.getCity(), from, to, pageable);
+        List<UserDTO> users = personPage.stream()
+                .map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
+        return DefaultRSMapper.of(users, personPage);
+    }
 
     public DefaultRS<?> blockUser(int id) {
         Person person = personService.getPersonById(id);
@@ -114,4 +124,29 @@ public class UserService {
 
 
 
+        AWSCredentials awsCredentials =
+                new BasicAWSCredentials("AKIAVAR2I7GKLP66SIHL", "W3dXfLlwvfj+E8ucH62wwgalYZufOXLwFx2yxWu+");
+        AmazonS3 s3Client = AmazonS3ClientBuilder
+                .standard()
+                .withRegion(clientRegion)
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                .build();
+        PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, f);
+        s3Client.putObject(request);
+        return "https://jevaibucket.s3.eu-central-1.amazonaws.com/publicprefix/" + fileObjKeyName;
+    }
+
+    private Date getDateFrom(UserSearchRQ userSearchRQ) {
+        int ageTo = userSearchRQ.getAgeTo() == 0 ? Constants.MAX_AGE : userSearchRQ.getAgeTo();
+        Date from = Date.from(LocalDate.now().minusYears(ageTo).withDayOfYear(1)
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return from;
+    }
+
+    private Date getDateTo(UserSearchRQ userSearchRQ) {
+        int ageFrom = userSearchRQ.getAgeFrom()-1;
+        Date to = Date.from(LocalDate.now().minusYears(ageFrom).withDayOfYear(1)
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return to;
+    }
 }
