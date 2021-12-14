@@ -6,7 +6,7 @@ import com.skillbox.socialnet.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(name = "/api/v1")

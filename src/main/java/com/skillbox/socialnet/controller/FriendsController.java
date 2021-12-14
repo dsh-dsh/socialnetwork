@@ -13,7 +13,7 @@ import java.util.List;
  * @author Semen V
  * @created 19|11|2021
  */
-
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
