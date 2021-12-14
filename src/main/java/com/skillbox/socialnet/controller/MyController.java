@@ -1,18 +1,22 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.AccountNotificationRQ;
+import com.skillbox.socialnet.service.EmailService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 
-@RestController
+@CrossOrigin
+@Controller
 public class MyController {
+    @Autowired
+    private EmailService emailService;
 
-    @PutMapping("accounts/notifications")
-    public ResponseEntity<?> aaa(@RequestBody AccountNotificationRQ accountNotificationRQ) {
-        System.out.println(accountNotificationRQ);
-        return ResponseEntity.ok("");
+    @GetMapping("/email")
+    public ResponseEntity<String> email() {
+        emailService.send("dan.shipilov@gmail.com", "subject", "text");
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
-
 }

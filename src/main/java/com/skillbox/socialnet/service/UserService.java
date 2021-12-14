@@ -1,252 +1,168 @@
 package com.skillbox.socialnet.service;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
+import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 //import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.entity.Post;
+import com.skillbox.socialnet.model.entity.Post2tag;
+import com.skillbox.socialnet.model.entity.Tag;
+import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
+import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.model.mapper.PostModelMapper;
+import com.skillbox.socialnet.repository.PersonRepository;
+import com.skillbox.socialnet.repository.Tag2PostRepository;
+import com.skillbox.socialnet.repository.TagRepository;
+import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.utility.RandomString;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-//    private final PersonModelMapper personModelMapper;
+    private final PersonModelMapper personModelMapper;
+    private final PostModelMapper postModelMapper;
     private final PersonService personService;
+    private final PersonRepository personRepository;
+    private final AuthService authService;
+    private final PostRepository postRepository;
+    private final PostService postService;
+    private final TagRepository tagRepository;
+    private final Tag2PostRepository tag2PostRepository;
 
+    public DefaultRS<?> getUser() {
+        String email = authService.getPersonFromSecurityContext().getEMail();
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonByEmail(email));
+        return DefaultRSMapper.of(userDTO);
+    }
 
-    public DefaultRS getUser(String email, String token) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personService.getUserDTOfromPerson(personService.getPersonByEmail(email));
-        userDTO.setToken(token);
-        defaultRS.setData(userDTO);
-        return defaultRS;
+    public DefaultRS<?> getUserById(int id) {
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonById(id));
+        return DefaultRSMapper.of(userDTO);
+    }
+
+    public DefaultRS<?> editUser(UserChangeRQ userChangeRQ) {
+        String email = authService.getPersonFromSecurityContext().getEMail();
+        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.editPerson(email, userChangeRQ));
+        return DefaultRSMapper.of(userDTO);
+    }
+
+    public DefaultRS<?> deleteUser() {
+        String email = authService.getPersonFromSecurityContext().getEMail();
+        personRepository.delete(personService.getPersonByEmail(email));
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
 
-    public DefaultRS getUserById(int id) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personService.getUserDTOfromPerson(personService.getPersonById(id));
-        //token?
-        defaultRS.setData(userDTO);
-        return defaultRS;
+    public DefaultRS<?> getUserWall(int id, Pageable pageable) {
+        Person person = personService.getPersonById(id);
+        List<Post> posts = postRepository.findPostsByAuthor(person, pageable).getContent();
+        return DefaultRSMapper.of(postService.getPostsDTOList(posts), pageable);
     }
 
 
-    public DefaultRS editUser(String email, UserChangeRQ userChangeRQ, String token) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        UserDTO userDTO = personService.getUserDTOfromPerson(personService.editPerson(email, userChangeRQ));
-        userDTO.setToken(token);
-        defaultRS.setData(userDTO);
-        return defaultRS;
-    }
-
-    public DefaultRS deleteUser(int id) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(getMessage());
-        return defaultRS;
-    }
-
-    private MessageDTO getMessage() {
-        return new MessageDTO();
-    }
-
-    public Object getUserWall(int id, int offset, int itemPerPage) {
-//        DefaultRS defaultRS = new DefaultRS();
-//        defaultRS.setOffset(offset);
-//        defaultRS.setPerPage(itemPerPage);
-//        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-//        List<PostDTO> posts = getPosts(id);
-//        defaultRS.setData(posts);
-//        defaultRS.setTotal(posts.size());
-//        return defaultRS;
-        String jsonStr = "{\n" +
-                "  \"error\": \"string\",\n" +
-                "  \"timestamp\": 1559751301818,\n" +
-                "  \"total\": 0,\n" +
-                "  \"offset\": 0,\n" +
-                "  \"perPage\": 20,\n" +
-                "  \"data\": [\n" +
-                "    {\n" +
-                "      \"id\": 1,\n" +
-                "      \"time\": 1559751301818,\n" +
-                "      \"author\": {\n" +
-                "        \"id\": 1,\n" +
-                "        \"first_name\": \"Петр\",\n" +
-                "        \"last_name\": \"Петрович\",\n" +
-                "        \"reg_date\": 1559751301818,\n" +
-                "        \"birth_date\": 1559751301818,\n" +
-                "        \"email\": \"petr@mail.ru\",\n" +
-                "        \"phone\": \"89100000000\",\n" +
-                "        \"photo\": \"https://avatanplus.com/files/resources/original/583a1361bea18158a2dbb5f5.png\",\n" +
-                "        \"about\": \"Родился в небольшой, но честной семье\",\n" +
-                "        \"city\": {\n" +
-                "          \"id\": 1,\n" +
-                "          \"title\": \"Москва\"\n" +
-                "        },\n" +
-                "        \"country\": {\n" +
-                "          \"id\": 1,\n" +
-                "          \"title\": \"Россия\"\n" +
-                "        },\n" +
-                "        \"messages_permission\": \"ALL\",\n" +
-                "        \"last_online_time\": 1559751301818,\n" +
-                "        \"is_blocked\": false\n" +
-                "      },\n" +
-                "      \"title\": \"string\",\n" +
-                "      \"post_text\": \"string\",\n" +
-                "      \"is_blocked\": false,\n" +
-                "      \"likes\": 23,\n" +
-                "      \"comments\": [\n" +
-                "        {\n" +
-                "          \"parent_id\": 1,\n" +
-                "          \"comment_text\": \"string\",\n" +
-                "          \"id\": 111,\n" +
-                "          \"post_id\": \"string\",\n" +
-                "          \"time\": 1559751301818,\n" +
-                "          \"author_id\": 1,\n" +
-                "          \"is_blocked\": true\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"type\": \"POSTED\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(jsonStr);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return rootNode;
-    }
-
-    private List<PostDTO> getPosts(int id) {
-        //search post by userId
-        List<PostDTO> posts = new ArrayList<>();
-        return posts;
-    }
-
-    public DefaultRS addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
-        //add post to userId
-        PostDTO post = new PostDTO();
-        post.setAuthor(getUserDTO(id));
-        post.setTitle(post.getTitle());
+    public DefaultRS<?> addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
+        Post post = new Post();
+        Person person = personService.getPersonById(id);
+        post.setAuthor(person);
+        post.setTitle(postChangeRQ.getTitle());
         post.setPostText(postChangeRQ.getPostText());
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(post);
-        return defaultRS;
-    }
-
-    public Object searchUsers(String firstName, String lastName, int ageFrom, int ageTo, int cityId, int offset, int itemPerPage) {
-//        DefaultRS defaultRS = new DefaultRS();
-//        defaultRS.setOffset(offset);
-//        defaultRS.setPerPage(itemPerPage);
-//        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-//        List<UserDTO> users = searchUsersDTO(firstName, lastName, ageFrom, ageTo, cityId);
-//        defaultRS.setData(users);
-//        defaultRS.setTotal(users.size());
-//        return defaultRS;
-        String jsonStr = "{\n" +
-                "  \"error\": \"string\",\n" +
-                "  \"timestamp\": 1559751301818,\n" +
-                "  \"total\": 0,\n" +
-                "  \"offset\": 0,\n" +
-                "  \"perPage\": 20,\n" +
-                "  \"data\": [\n" +
-                "    {\n" +
-                "      \"id\": 1,\n" +
-                "      \"first_name\": \"Петр\",\n" +
-                "      \"last_name\": \"Петрович\",\n" +
-                "      \"reg_date\": 1559751301818,\n" +
-                "      \"birth_date\": 1559751301818,\n" +
-                "      \"email\": \"petr@mail.ru\",\n" +
-                "      \"phone\": \"89100000000\",\n" +
-                "      \"photo\": \"https://avatanplus.com/files/resources/original/583a1361bea18158a2dbb5f5.png\",\n" +
-                "      \"about\": \"Родился в небольшой, но честной семье\",\n" +
-                "      \"city\": {\n" +
-                "        \"id\": 1,\n" +
-                "        \"title\": \"Москва\"\n" +
-                "      },\n" +
-                "      \"country\": {\n" +
-                "        \"id\": 1,\n" +
-                "        \"title\": \"Россия\"\n" +
-                "      },\n" +
-                "      \"messages_permission\": \"ALL\",\n" +
-                "      \"last_online_time\": 1559751301818,\n" +
-                "      \"is_blocked\": false\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": 2,\n" +
-                "      \"first_name\": \"Иван\",\n" +
-                "      \"last_name\": \"Васильевич\",\n" +
-                "      \"reg_date\": 1559751301818,\n" +
-                "      \"birth_date\": 1559751301818,\n" +
-                "      \"email\": \"ivan@mail.ru\",\n" +
-                "      \"phone\": \"87600000000\",\n" +
-                "      \"photo\": \"https://avatanplus.com/files/resources/original/583a1361bea18158a2dbb5f5.png\",\n" +
-                "      \"about\": \"Родился в большой и доброй семье\",\n" +
-                "      \"city\": {\n" +
-                "        \"id\": 1,\n" +
-                "        \"title\": \"Киев\"\n" +
-                "      },\n" +
-                "      \"country\": {\n" +
-                "        \"id\": 1,\n" +
-                "        \"title\": \"Украина\"\n" +
-                "      },\n" +
-                "      \"messages_permission\": \"ALL\",\n" +
-                "      \"last_online_time\": 1559751301818,\n" +
-                "      \"is_blocked\": false\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = null;
-        try {
-            rootNode = mapper.readTree(jsonStr);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+        post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
+        post = postRepository.save(post);
+        List<String> tagsList = postChangeRQ.getTags();
+        if (tagsList.size() != 0) {
+            checkTags(tagsList);
+            addTags2Post(post, tagsList);
         }
-        return rootNode;
+
+        return DefaultRSMapper.of(postModelMapper.mapToPostDTO(post));
     }
 
-    private List<UserDTO> searchUsersDTO(String firstName, String lastName, int ageFrom, int ageTo, int cityId) {
-        //search Users
-        List<UserDTO> users = new ArrayList<>();
-        return users;
+    private void addTags2Post(Post post, List<String> tags){
+        for (String tagName : tags) {
+            Post2tag post2tag = new Post2tag();
+            post2tag.setPost(post);
+            post2tag.setTag(tagRepository.getTagByTag(tagName));
+            tag2PostRepository.save(post2tag);
+        }
+    }
+    private void checkTags(List<String> tags) {
+        for (String tagName : tags) {
+            if (tagRepository.getTagByTag(tagName) == null) {
+                Tag tag = new Tag();
+                tag.setTag(tagName);
+                tagRepository.save(tag);
+            }
+        }
     }
 
-    public DefaultRS blockUser(int id) {
-        getUserDTO(id);//block him
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(getMessage());
-        return defaultRS;
+    public DefaultRS<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
+        Date to = getDateTo(userSearchRQ);
+        Date from = getDateFrom(userSearchRQ);
+        Page<Person> personPage = personRepository.findBySearchRequest(
+                userSearchRQ.getFirstName(), userSearchRQ.getLastName(),
+                userSearchRQ.getCountry(), userSearchRQ.getCity(), from, to, pageable);
+        List<UserDTO> users = personPage.stream()
+                .map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
+        return DefaultRSMapper.of(users, personPage);
     }
 
-    public DefaultRS unblockUser(int id) {
-        getUserDTO(id);//unblock him
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setData(getMessage());
-        return defaultRS;
+    public DefaultRS<?> blockUser(int id) {
+        Person person = personService.getPersonById(id);
+        person.setBlocked(true);
+        personRepository.save(person);
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
-    private UserDTO getUserDTO(int id) {
-        return new UserDTO();
+    public DefaultRS<?> unblockUser(int id) {
+        Person person = personService.getPersonById(id);
+        person.setBlocked(false);
+        personRepository.save(person);
+        return DefaultRSMapper.of(new MessageDTO());
+    }
+
+
+    private Date getDateFrom(UserSearchRQ userSearchRQ) {
+        int ageTo = userSearchRQ.getAgeTo() == 0 ? Constants.MAX_AGE : userSearchRQ.getAgeTo();
+        Date from = Date.from(LocalDate.now().minusYears(ageTo).withDayOfYear(1)
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return from;
+    }
+
+    private Date getDateTo(UserSearchRQ userSearchRQ) {
+        int ageFrom = userSearchRQ.getAgeFrom() - 1;
+        Date to = Date.from(LocalDate.now().minusYears(ageFrom).withDayOfYear(1)
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return to;
     }
 }

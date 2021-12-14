@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table(name = "post2tag")
 public class Post2tag {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
     @ManyToOne

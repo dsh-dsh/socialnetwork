@@ -6,14 +6,18 @@ import com.skillbox.socialnet.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 
 /**
  * @author Semen V
  * @created 18|11|2021
  */
-
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/account")
@@ -32,8 +36,10 @@ public class AccountController {
     }
 
     @PutMapping("/password/recovery")
-    public ResponseEntity<?> passwordRecovery(@RequestBody AccountEmailRQ acctEmailRequest) {
-        return ResponseEntity.ok(accountService.recoveryPassword());
+    public ResponseEntity<?> passwordRecovery(
+            @RequestBody @Valid AccountEmailRQ accountEmailRQ,
+            HttpServletRequest servletRequest) {
+        return ResponseEntity.ok(accountService.recoveryPassword(accountEmailRQ, servletRequest));
     }
 
     @PutMapping("/password/set")
@@ -41,30 +47,20 @@ public class AccountController {
         return ResponseEntity.ok(accountService.setPassword(accountPasswordSetRQ));
     }
 
+    @PutMapping("/shift-email")
+    public ResponseEntity<?> shiftEmail(HttpServletRequest servletRequest) {
+        return ResponseEntity.ok(accountService.shiftEmail(servletRequest));
+    }
+
     @PutMapping("/email")
-    public ResponseEntity<?> setEmail(@RequestBody AccountEmailRQ acctEmailRequest) {
-        return ResponseEntity.ok(accountService.setEmail(acctEmailRequest));
+    public ResponseEntity<?> setEmail(@RequestBody AccountEmailRQ accountEmailRQ) {
+        return ResponseEntity.ok(accountService.setEmail(accountEmailRQ));
     }
 
-    // TODO Заглушка удалил из аргументов @RequestBody AccountNotificationRQ accountNotificationRQ иначе 400 Bad Request
     @PutMapping("/notifications")
-    public ResponseEntity<?> setNotifications() {
-    //        return ResponseEntity.ok(accountService.setNotifications(accountNotificationRQ));
-        return ResponseEntity.ok(new DefaultRS<>());
+    public ResponseEntity<?> setNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
+        return ResponseEntity.ok(accountService.setNotifications(accountNotificationRQ));
     }
-
-    //!
-//    @PutMapping("/notifications")
-//    public ResponseEntity<?> setNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
-//        System.out.println(accountNotificationRQ);
-//        return ResponseEntity.ok(accountService.setNotifications(accountNotificationRQ));
-//    }
-//
-//    @PostMapping("/notifications")
-//    public ResponseEntity<?> postNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
-//        System.out.println(accountNotificationRQ);
-//        return ResponseEntity.ok("ok");
-//    }
 
 
 }

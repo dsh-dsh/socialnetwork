@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "friendship_status")
 public class FriendshipStatus {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
     @Column(name = "time")

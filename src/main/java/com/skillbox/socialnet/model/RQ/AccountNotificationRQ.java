@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AccountNotificationRQ {
 
     @JsonProperty("notification_type")
-    private NotificationTypeCode notificationType;
+    private String notificationType;
+//    private NotificationTypeCode notificationType; // TODO Заменил на Стринг, не маппится.
     private boolean enable;
 }

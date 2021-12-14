@@ -3,48 +3,41 @@ package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.LocationDTO;
+import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Calendar;
+import java.util.List;
 
 @Service
 public class PlatformService {
 
 
-    public DefaultRS getLanguage(int offset, int itemPerPage, String language) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        LocationDTO languageDTO = new LocationDTO();
-//        languageDTO.setTitle(language);
-        languageDTO.setTitle("language");
-        languageDTO.setId(0);
-        defaultRS.setData(languageDTO);
-        return defaultRS;
+    public DefaultRS<?> getLanguage(String language, Pageable pageable) {
+
+        List<LocationDTO> languages = List.of(new LocationDTO(1, "Русский"));
+
+        return DefaultRSMapper.of(languages, pageable);
     }
 
-    public DefaultRS getCity(int offset, int itemPerPage, String city) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        LocationDTO cityDTO = new LocationDTO();
-//        cityDTO.setTitle(city);
-        cityDTO.setTitle("city");
-        cityDTO.setId(0);
-        defaultRS.setData(cityDTO);
-        return defaultRS;
+    public DefaultRS<?> getCity(String city, Pageable pageable) {
+
+        List<LocationDTO> cities = List.of(
+                new LocationDTO(1, "Москва"),
+                new LocationDTO(1, "Краснодар"),
+                new LocationDTO(1, "Тель-Авив"),
+                new LocationDTO(1, "Серов"));
+
+        return DefaultRSMapper.of(cities, pageable);
     }
 
-    public DefaultRS getCountry(int offset, int itemPerPage, String country) {
-        DefaultRS defaultRS = new DefaultRS();
-        defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setOffset(offset);
-        defaultRS.setPerPage(itemPerPage);
-        LocationDTO countryDTO = new LocationDTO();
-//        countryDTO.setTitle(country);
-        countryDTO.setTitle("country");
-        countryDTO.setId(0);
-        defaultRS.setData(countryDTO);
-        return defaultRS;
+    public DefaultRS<?> getCountry(String country, Pageable pageable) {
+
+        List<LocationDTO> countries = List.of(
+                new LocationDTO(1, "Россия"),
+                new LocationDTO(1, "Израиль"));
+
+        return DefaultRSMapper.of(countries, pageable);
     }
 
 }

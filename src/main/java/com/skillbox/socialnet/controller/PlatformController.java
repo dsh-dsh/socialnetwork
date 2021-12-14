@@ -3,12 +3,11 @@ package com.skillbox.socialnet.controller;
 
 import com.skillbox.socialnet.service.PlatformService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/platform")
@@ -20,26 +19,23 @@ public class PlatformController {
     @GetMapping("/languages")
     public ResponseEntity<?> getLanguages(
             @RequestParam(defaultValue = "") String language,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage){
-        return ResponseEntity.ok(platformService.getLanguage(offset, itemPerPage, language));
+            Pageable pageable){
+        return ResponseEntity.ok(platformService.getLanguage(language, pageable));
     }
 
 
     @GetMapping("/country")
     public ResponseEntity<?> getCountry(
             @RequestParam(defaultValue = "") String country,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage){
-        return ResponseEntity.ok(platformService.getCountry(offset, itemPerPage, country));
+            Pageable pageable){
+        return ResponseEntity.ok(platformService.getCountry(country, pageable));
     }
 
     @GetMapping("/city")
     public ResponseEntity<?> getCity(
             @RequestParam(defaultValue = "") String city,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int itemPerPage){
-        return ResponseEntity.ok(platformService.getCity(offset, itemPerPage, city));
+            Pageable pageable){
+        return ResponseEntity.ok(platformService.getCity(city, pageable));
     }
 
 }
