@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,7 +50,7 @@ public class ProfileController {
     @PostMapping("/{id}/wall")
     public ResponseEntity<?> addPostToUserWall(
             @PathVariable int id,
-            @RequestParam(name = "publish_date") long publishDate,
+            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
             @RequestBody PostChangeRQ postChangeRQ) {
         return ResponseEntity.ok(userService.addPostToUserWall(id, publishDate, postChangeRQ));
     }

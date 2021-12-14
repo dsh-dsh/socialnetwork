@@ -38,6 +38,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,22 +77,22 @@ public class UserService {
         return DefaultRSMapper.of(new MessageDTO());
     }
 
-    //TODO need to be tested
+
     public DefaultRS<?> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         List<Post> posts = postRepository.findPostsByAuthor(person, pageable).getContent();
-        return DefaultRSMapper.of(postService.getListDTOFromPostList(posts), pageable);
+        return DefaultRSMapper.of(postService.getPostsDTOList(posts), pageable);
     }
 
 
-    //TODO need to be tested (not sure about postMapper cause of Post have Person and not UserDTO)
+
     public DefaultRS<?> addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = new Post();
         Person person = personService.getPersonById(id);
         post.setAuthor(person);
         post.setTitle(postChangeRQ.getTitle());
         post.setPostText(postChangeRQ.getPostText());
-        post.setTime(new Timestamp(publishDate));
+        post.setTime(new Timestamp((publishDate == 0 )? Calendar.getInstance().getTimeInMillis() : publishDate));
         postRepository.save(post);
         return DefaultRSMapper.of(postModelMapper.mapToPostDTO(post));
     }
@@ -124,17 +125,7 @@ public class UserService {
 
 
 
-        AWSCredentials awsCredentials =
-                new BasicAWSCredentials("AKIAVAR2I7GKLP66SIHL", "W3dXfLlwvfj+E8ucH62wwgalYZufOXLwFx2yxWu+");
-        AmazonS3 s3Client = AmazonS3ClientBuilder
-                .standard()
-                .withRegion(clientRegion)
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                .build();
-        PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, f);
-        s3Client.putObject(request);
-        return "https://jevaibucket.s3.eu-central-1.amazonaws.com/publicprefix/" + fileObjKeyName;
-    }
+
 
     private Date getDateFrom(UserSearchRQ userSearchRQ) {
         int ageTo = userSearchRQ.getAgeTo() == 0 ? Constants.MAX_AGE : userSearchRQ.getAgeTo();
