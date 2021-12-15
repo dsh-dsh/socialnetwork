@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.repository;
 
+import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
