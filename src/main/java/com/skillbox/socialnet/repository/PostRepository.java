@@ -19,6 +19,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Optional<Post> findPostById(int id);
 
+    @Query("FROM Post")
+    Optional<Page<Post>> getOptionalPageAll(Pageable pageable);
+
 //    @Query(value = "select p from Post p where p.postText LIKE %:queryText%" )
 //    Page<Post> findPostByPostText(Pageable pageable, String queryText);
 

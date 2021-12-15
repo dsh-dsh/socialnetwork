@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.exception.NoAnyPostsFoundException;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
@@ -30,6 +31,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
     private final PostModelMapper postModelMapper;
+    private final FriendsService friendsService;
 
     public DefaultRS<?> getPostsByText(String text, long dateFrom, long dateTo, Pageable pageable) {
         dateTo = dateTo == 0 ? new Date().getTime() : dateTo;
@@ -41,16 +43,13 @@ public class PostService {
 
     public DefaultRS<?> getFeeds(String name, Pageable pageable) {
         List<PostDTO> postDTOs;
-        List<Post> posts = postRepository.findAll(); // TODO заглушка, получать Optional и по друзьям
-        if(posts.size() > 0) {
-            postDTOs = posts.stream()
-                    .map(postModelMapper::mapToPostDTO)
-                    .collect(Collectors.toList());
-            List<PostDTO> postsDTOList = addFakeComments(postDTOs); // TODO Заглушшка Если comments: null пост не отображается фронтом
-        } else {
-            throw new NoAnyPostsFoundException(Constants.NO_ANY_POST_MESSAGE);
-        }
-        return DefaultRSMapper.of(postDTOs, pageable);
+        Page<Post> postPage = postRepository.getOptionalPageAll(pageable)
+                .orElseThrow(BadRequestException::new); // TODO заглушка, получать по друзьям
+        postDTOs = postPage.getContent().stream()
+                .map(postModelMapper::mapToPostDTO)
+                .collect(Collectors.toList());
+        List<PostDTO> postsDTOList = addFakeComments(postDTOs); // TODO Заглушшка Если comments: null пост не отображается фронтом
+        return DefaultRSMapper.of(postDTOs, postPage);
     }
 
     private List<PostDTO> addFakeComments(List<PostDTO> postDTOList) {
