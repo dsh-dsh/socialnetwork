@@ -17,7 +17,7 @@ import javax.validation.Valid;
  * @author Semen V
  * @created 18|11|2021
  */
-
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/account")

@@ -243,15 +243,15 @@ public class PostService {
         return commentDTO;
     }
 
-//    private List<PostDTO> getPostsDTOList(List<Post> postList) {
-//        List<PostDTO> postDTOList = new ArrayList<>();
-//        postList.forEach(post -> {
-//            PostDTO postDTO = getPostDTO(post);
-//            postDTOList.add(postDTO);
-//
-//        });
-//        return postDTOList;
-//    }
+    public List<PostDTO> getPostsDTOList(List<Post> postList) {
+        List<PostDTO> postDTOList = new ArrayList<>();
+        postList.forEach(post -> {
+            PostDTO postDTO = getPostDTO(post);
+            postDTOList.add(postDTO);
+
+        });
+        return postDTOList;
+    }
 
     private PostDTO getPostDTO(Post post)
     {

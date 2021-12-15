@@ -36,15 +36,11 @@ public class PersonService {
 
     public Person editPerson(String email, UserChangeRQ userChangeRQ) {
         Person person = getPersonByEmail(email);
-        if (person == null) { // TODO можно удалить в getPersonByEmail(email) уже проверяется
-            throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
-        }
         person.setFirstName(userChangeRQ.getFirstName());
         person.setLastName(userChangeRQ.getLastName());
         person.setBirthDate(new Timestamp(userChangeRQ.getBirthDate().getTime()));
         person.setBirthDate(userChangeRQ.getBirthDate());
         person.setPhone(userChangeRQ.getPhone());
-//        person.setPhoto(userChangeRQ.getPhotoId());
         person.setAbout(userChangeRQ.getAbout());
         person.setMessagesPermission(userChangeRQ.getMessagesPermission());
         person.setCity(userChangeRQ.getCity());
