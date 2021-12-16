@@ -20,6 +20,7 @@ public class PostDTO {
     private boolean isBlocked;
     private int likes;
     private List<CommentDTO> comments;
+    private String[] tags;
 
 
 

@@ -20,6 +20,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Optional<Post> findPostById(int id);
 
+    @Query("FROM Post")
+    Optional<Page<Post>> getOptionalPageAll(Pageable pageable);
+
     Page<Post> findPostsByAuthor(Person author, Pageable pageable);
     Post getPostByAuthor(Person person);
 

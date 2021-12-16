@@ -21,7 +21,7 @@ public class DefaultRS<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long timestamp;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Integer total;
+    private Long total;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer offset;
     @JsonInclude(JsonInclude.Include.NON_NULL)

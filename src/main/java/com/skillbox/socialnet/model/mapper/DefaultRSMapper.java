@@ -41,7 +41,7 @@ public class DefaultRSMapper {
         DefaultRS<List<?>> defaultRS = new DefaultRS<>();
         defaultRS.setError("string");
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setTotal(page.getTotalPages()); // TODO или page.getTotalElements()
+        defaultRS.setTotal(page.getTotalElements()); // TODO или page.getTotalElements()
         defaultRS.setOffset(page.getNumber());
         defaultRS.setPerPage(page.getSize());
         defaultRS.setData(data);
@@ -69,7 +69,7 @@ public class DefaultRSMapper {
         DefaultRS<List<?>> defaultRS = new DefaultRS<>();
         defaultRS.setError("string");
         defaultRS.setTimestamp(Calendar.getInstance().getTimeInMillis());
-        defaultRS.setTotal(page.getTotalPages()); // TODO или page.getTotalElements()
+        defaultRS.setTotal(page.getTotalElements()); // TODO или page.getTotalElements()
         defaultRS.setOffset(page.getNumber());
         defaultRS.setPerPage(page.getSize());
         defaultRS.setData(page.getContent());
