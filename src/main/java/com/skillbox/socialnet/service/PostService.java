@@ -50,25 +50,7 @@ public class PostService {
         List<PostDTO> postDTOs = posts.stream()
                 .map(postMapper::mapToPostDTO)
                 .collect(Collectors.toList());
-        //List<PostDTO> postsDTOList = addFakeComments(postDTOs); // FIXME Заглушшка
         return DefaultRSMapper.of(postDTOs, pageable);
-    }
-
-    private List<PostDTO> addFakeComments(List<PostDTO> postDTOList) {
-        CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setId(1);
-        commentDTO.setCommentText("comment");
-        commentDTO.setAuthorId(3);
-
-        List<CommentDTO> commentDTOList = new ArrayList<>();
-        commentDTOList.add(commentDTO);
-
-        List<PostDTO> posts = new ArrayList<>();
-        for(PostDTO postDTO : postDTOList) {
-            postDTO.setComments(commentDTOList);
-            posts.add(postDTO);
-        }
-        return posts;
     }
 
     public DefaultRS<?> getPostById(int id) {

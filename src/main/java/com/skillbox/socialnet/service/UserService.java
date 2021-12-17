@@ -76,25 +76,7 @@ public class UserService {
         Person person = personService.getPersonById(id);
         List<Post> posts = postRepository.findPostsByAuthor(person, pageable).getContent();
         List<PostDTO> postDTOs = posts.stream().map(postMapper::mapToPostDTO).collect(Collectors.toList());
-        List<PostDTO> postDTOList = addFakeComments(postDTOs);
-        return DefaultRSMapper.of(postDTOList, pageable);
-    }
-
-    private List<PostDTO> addFakeComments(List<PostDTO> postDTOList) {
-        CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setId(1);
-        commentDTO.setCommentText("comment");
-        commentDTO.setAuthorId(3);
-
-        List<CommentDTO> commentDTOList = new ArrayList<>();
-        commentDTOList.add(commentDTO);
-
-        List<PostDTO> posts = new ArrayList<>();
-        for(PostDTO postDTO : postDTOList) {
-            postDTO.setComments(commentDTOList);
-            posts.add(postDTO);
-        }
-        return posts;
+        return DefaultRSMapper.of(postDTOs, pageable);
     }
 
 
@@ -161,15 +143,13 @@ public class UserService {
 
     private Date getDateFrom(UserSearchRQ userSearchRQ) {
         int ageTo = userSearchRQ.getAgeTo() == 0 ? Constants.MAX_AGE : userSearchRQ.getAgeTo();
-        Date from = Date.from(LocalDate.now().minusYears(ageTo).withDayOfYear(1)
+        return Date.from(LocalDate.now().minusYears(ageTo).withDayOfYear(1)
                 .atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return from;
     }
 
     private Date getDateTo(UserSearchRQ userSearchRQ) {
         int ageFrom = userSearchRQ.getAgeFrom() - 1;
-        Date to = Date.from(LocalDate.now().minusYears(ageFrom).withDayOfYear(1)
+        return Date.from(LocalDate.now().minusYears(ageFrom).withDayOfYear(1)
                 .atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return to;
     }
 }

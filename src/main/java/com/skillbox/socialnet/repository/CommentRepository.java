@@ -16,7 +16,7 @@ public interface CommentRepository extends JpaRepository<PostComment, Integer> {
     List<PostComment> findByPost(Post post);
 
     @Query(value = "select c from PostComment c where c.post.id = :postId and c.isBlocked = false")
-    List<PostComment> findByPostId(Pageable pageable, int postId);
+    List<PostComment> findByPostId(int postId, Pageable pageable);
 
     @Query(value = "select c from PostComment c where c.id = :id")
     Optional<PostComment> findById(int id);

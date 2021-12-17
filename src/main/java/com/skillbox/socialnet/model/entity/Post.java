@@ -6,8 +6,8 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -38,4 +38,7 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post2tag> tags  = new HashSet<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostComment> comments;
 }
