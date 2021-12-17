@@ -1,6 +1,6 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.model.RQ.AuthUserRQ;
 import com.skillbox.socialnet.model.dto.MessageDTO;
@@ -17,15 +17,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final PersonRepository personRepository;
     private final PersonService personService;
-    private final PersonModelMapper personModelMapper;
+    private final PersonMapper personMapper;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
@@ -34,7 +32,7 @@ public class AuthService {
         if(!passwordEncoder.matches(authUserRQ.getPassword(), person.getPassword())) {
             throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
         }
-        UserDTO userDTO = personModelMapper.mapToUserDTO(person);
+        UserDTO userDTO = personMapper.mapToUserDTO(person);
         String token = jwtProvider.generateToken(person);
         userDTO.setToken(token);
         return DefaultRSMapper.of(userDTO);

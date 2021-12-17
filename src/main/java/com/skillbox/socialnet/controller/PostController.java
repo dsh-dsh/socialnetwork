@@ -23,7 +23,7 @@ public class PostController {
             @RequestParam (name = "date_from", defaultValue = "0") long dateFrom,
             @RequestParam (name = "date_to", defaultValue = "0") long dateTo,
             Pageable pageable) {
-        return ResponseEntity.ok(postService.getPostsByText(text, dateFrom, dateTo, pageable));
+        return ResponseEntity.ok(postService.findPostsByTextOrTitle(text, dateFrom, dateTo, pageable));
     }
 
     @GetMapping("/{id}")
@@ -65,25 +65,25 @@ public class PostController {
     }
 
     @PutMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> rewriteCommentToPost(@PathVariable int id,
-                                     @PathVariable int comment_id,
-                                     @RequestBody CommentRQ commentRQ) {
+    public ResponseEntity<?> rewriteCommentToPost(
+            @PathVariable int id,
+            @PathVariable int comment_id,
+            @RequestBody CommentRQ commentRQ) {
         return ResponseEntity.ok(postService.rewriteCommentToThePost(id, comment_id, commentRQ));
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> deleteCommentById(@PathVariable int id,
-                                  @PathVariable int
-                                          comment_id){
-
+    public ResponseEntity<?> deleteCommentById(
+            @PathVariable int id,
+            @PathVariable int comment_id){
         return ResponseEntity.ok(postService.deleteCommentToThePost(id, comment_id));
 
     }
 
     @PutMapping("/{id}/comments/{comment_id}/recover}")
-    public ResponseEntity<?> recoverCommentToPost(@PathVariable int id,
-                                     @PathVariable int comment_id){
-
+    public ResponseEntity<?> recoverCommentToPost(
+            @PathVariable int id,
+            @PathVariable int comment_id){
         return ResponseEntity.ok(postService.recoverCommentToPost(id, comment_id));
 
     }

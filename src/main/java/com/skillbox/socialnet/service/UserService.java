@@ -1,19 +1,10 @@
 package com.skillbox.socialnet.service;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.dto.CommentDTO;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
@@ -23,21 +14,18 @@ import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.Post2tag;
 import com.skillbox.socialnet.model.entity.Tag;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.model.mapper.PersonModelMapper;
-import com.skillbox.socialnet.model.mapper.PostModelMapper;
+import com.skillbox.socialnet.model.mapper.PersonMapper;
+import com.skillbox.socialnet.model.mapper.PostMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.repository.Tag2PostRepository;
 import com.skillbox.socialnet.repository.TagRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.utility.RandomString;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.sql.Timestamp;
@@ -50,8 +38,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final PersonModelMapper personModelMapper;
-    private final PostModelMapper postModelMapper;
+    private final PersonMapper personMapper;
+    private final PostMapper postMapper;
     private final PersonService personService;
     private final PersonRepository personRepository;
     private final AuthService authService;
@@ -62,18 +50,18 @@ public class UserService {
 
     public DefaultRS<?> getUser() {
         String email = authService.getPersonFromSecurityContext().getEMail();
-        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonByEmail(email));
+        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonByEmail(email));
         return DefaultRSMapper.of(userDTO);
     }
 
     public DefaultRS<?> getUserById(int id) {
-        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.getPersonById(id));
+        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonById(id));
         return DefaultRSMapper.of(userDTO);
     }
 
     public DefaultRS<?> editUser(UserChangeRQ userChangeRQ) {
         String email = authService.getPersonFromSecurityContext().getEMail();
-        UserDTO userDTO = personModelMapper.mapToUserDTO(personService.editPerson(email, userChangeRQ));
+        UserDTO userDTO = personMapper.mapToUserDTO(personService.editPerson(email, userChangeRQ));
         return DefaultRSMapper.of(userDTO);
     }
 
@@ -87,7 +75,26 @@ public class UserService {
     public DefaultRS<?> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         List<Post> posts = postRepository.findPostsByAuthor(person, pageable).getContent();
-        return DefaultRSMapper.of(postService.getPostsDTOList(posts), pageable);
+        List<PostDTO> postDTOs = posts.stream().map(postMapper::mapToPostDTO).collect(Collectors.toList());
+        List<PostDTO> postDTOList = addFakeComments(postDTOs);
+        return DefaultRSMapper.of(postDTOList, pageable);
+    }
+
+    private List<PostDTO> addFakeComments(List<PostDTO> postDTOList) {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setId(1);
+        commentDTO.setCommentText("comment");
+        commentDTO.setAuthorId(3);
+
+        List<CommentDTO> commentDTOList = new ArrayList<>();
+        commentDTOList.add(commentDTO);
+
+        List<PostDTO> posts = new ArrayList<>();
+        for(PostDTO postDTO : postDTOList) {
+            postDTO.setComments(commentDTOList);
+            posts.add(postDTO);
+        }
+        return posts;
     }
 
 
@@ -105,7 +112,7 @@ public class UserService {
             addTags2Post(post, tagsList);
         }
 
-        return DefaultRSMapper.of(postModelMapper.mapToPostDTO(post));
+        return DefaultRSMapper.of(postMapper.mapToPostDTO(post));
     }
 
     private void addTags2Post(Post post, List<String> tags){
@@ -133,7 +140,7 @@ public class UserService {
                 userSearchRQ.getFirstName(), userSearchRQ.getLastName(),
                 userSearchRQ.getCountry(), userSearchRQ.getCity(), from, to, pageable);
         List<UserDTO> users = personPage.stream()
-                .map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
+                .map(personMapper::mapToUserDTO).collect(Collectors.toList());
         return DefaultRSMapper.of(users, personPage);
     }
 
