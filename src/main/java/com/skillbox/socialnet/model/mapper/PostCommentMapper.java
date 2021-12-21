@@ -22,15 +22,15 @@ public class PostCommentMapper {
                 return timestamp == null? 0 : timestamp.getTime();
             };
 
-    private final Converter<Person, Integer> authorConverter =
-            author -> author.getSource().getId();
+//    private final Converter<Person, Integer> authorConverter =
+//            author -> author.getSource().getId();
 
     public PostCommentMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(PostComment.class, CommentDTO.class)
                 .addMappings(mapper -> mapper.using(parentConverter).map(PostComment::getParent, CommentDTO::setParentId))
-                .addMappings(mapper -> mapper.using(timestampConverter).map(PostComment::getTime, CommentDTO::setTime))
-                .addMappings(mapper -> mapper.using(authorConverter).map(PostComment::getAuthor, CommentDTO::setAuthorId));
+                .addMappings(mapper -> mapper.using(timestampConverter).map(PostComment::getTime, CommentDTO::setTime));
+//                .addMappings(mapper -> mapper.using(authorConverter).map(PostComment::getAuthor, CommentDTO::setAuthorId));
     }
 
     public CommentDTO mapToCommentDTO(PostComment comment) {
