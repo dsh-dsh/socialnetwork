@@ -52,6 +52,14 @@ public class PostService {
 
     public DefaultRS<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDate_to());
+
+        // FIXME если тегов нет фронт посылает пустой массив, найти решение проверки :tags is empty в hql
+        if(postSearchRQ.getTags() != null) {
+            if (postSearchRQ.getTags().size() == 0) {
+                postSearchRQ.setTags(null);
+            }
+        }
+
         Page<Post> postPage = postRepository.findPost(
                 postSearchRQ.getAuthor(), postSearchRQ.getText(),
                 new Timestamp(postSearchRQ.getDate_from()), new Timestamp(dateTo),
