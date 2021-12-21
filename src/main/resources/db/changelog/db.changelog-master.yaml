@@ -17,4 +17,4 @@ databaseChangeLog:
 
   - include:
       file: v0.0.05_insertPost2Tags.sql
-      relativeToChangelogFile: true
+      relativeToChangelogFile: false
