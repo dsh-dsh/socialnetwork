@@ -140,6 +140,10 @@ public class UserService {
         return DefaultRSMapper.of(new MessageDTO());
     }
 
+    public DefaultRS<?> checkOnline() {
+        return DefaultRSMapper.of(new MessageDTO());
+    }
+
 
     private Date getDateFrom(UserSearchRQ userSearchRQ) {
         int ageTo = userSearchRQ.getAgeTo() == 0 ? Constants.MAX_AGE : userSearchRQ.getAgeTo();

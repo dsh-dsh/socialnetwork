@@ -79,7 +79,8 @@ public class ProfileController {
     }
 
     @PutMapping("/checkonline")
-    public ResponseEntity<?> checkOnline(@PathVariable int id) {
-        return ResponseEntity.ok("");
+    public ResponseEntity<?> checkOnline() {
+        System.out.println("checkOnline");
+        return ResponseEntity.ok(userService.checkOnline());
     }
 }
