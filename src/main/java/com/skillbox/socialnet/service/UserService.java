@@ -74,9 +74,10 @@ public class UserService {
 
     public DefaultRS<?> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
-        List<Post> posts = postRepository.findPostsByAuthor(person, pageable).getContent();
-        List<PostDTO> postDTOs = posts.stream().map(postMapper::mapToPostDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(postDTOs, pageable);
+        Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
+        List<PostDTO> postDTOs = postPage.getContent().stream()
+                .map(postMapper::mapToPostDTO).collect(Collectors.toList());
+        return DefaultRSMapper.of(postDTOs, postPage);
     }
 
 
