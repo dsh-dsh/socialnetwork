@@ -1,6 +1,5 @@
 package com.skillbox.socialnet.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
@@ -37,6 +36,13 @@ public class UserDTO {
     private long lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
-    private String token;
+    private String token = "string";
+    @JsonProperty("is_friend")
+    private String isFriend = "";
+    @JsonProperty("is_you_blocked")
+    private boolean isYouBlocked;
+    private boolean me = true;
 
 }
+
+

@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 import java.util.Set;
 
 @Component
-public class PostModelMapper {
+public class PostMapper {
 
     private final ModelMapper modelMapper;
 
@@ -26,7 +26,7 @@ public class PostModelMapper {
     private final Converter<Set<Post2tag>, String[]> tagsConverter =
             (tags) -> tags.getSource().stream().map(Post2tag::getTag).map(Tag::getTag).toArray(String[]::new);
 
-    public PostModelMapper() {
+    public PostMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(Post.class, PostDTO.class)
                 .addMappings(m -> m.using(timestampConverter).map(Post::getTime, PostDTO::setTime))

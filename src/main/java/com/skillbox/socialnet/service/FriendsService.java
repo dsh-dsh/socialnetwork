@@ -8,11 +8,10 @@ import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.model.mapper.PersonModelMapper;
+import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -32,26 +31,34 @@ public class FriendsService {
 
     private final FriendshipRepository friendshipRepository;
     private final PersonRepository personRepository;
-    private final PersonModelMapper personModelMapper;
+    private final PersonMapper personMapper;
     private final AuthService authService;
 
-    public DefaultRS getAllFriends(String name, Pageable pageable) {
+    public DefaultRS<?> getAllFriends(String name, Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson);
         Stream<Person> personStream = friendships.stream()
                 .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson());
         List<UserDTO> friends;
         if (name.equals("")) {
-            friends = personStream.map(personModelMapper::mapToUserDTO)
+            friends = personStream.map(personMapper::mapToUserDTO)
                     .collect(Collectors.toList());
         } else {
             friends = personStream.filter(p -> p.getFirstName().equals(name))
-                    .map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
+                    .map(personMapper::mapToUserDTO).collect(Collectors.toList());
         }
         return DefaultRSMapper.of(friends, pageable);
     }
 
-    public DefaultRS deleteFriend(int id) {
+    public List<Person> getMyFriends() {
+        Person currentPerson = authService.getPersonFromSecurityContext();
+        List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson);
+        return friendships.stream()
+                .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson())
+                .collect(Collectors.toList());
+    }
+
+    public DefaultRS<?> deleteFriend(int id) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Person dstPerson = personRepository.getPersonById(id).orElseThrow(BadRequestException::new);
         Friendship friendships = friendshipRepository.getRelationship(currentPerson, dstPerson).orElseThrow(BadRequestException::new);
@@ -59,10 +66,10 @@ public class FriendsService {
         return DefaultRSMapper.of(new MessageDTO());
     }
 
-    public DefaultRS addFriend(int id) {
+    public DefaultRS<?> addFriend(int id) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Person dstPerson = personRepository.getPersonById(id).orElseThrow(BadRequestException::new);
-        DefaultRS defaultRS = DefaultRSMapper.of(new MessageDTO());
+        DefaultRS<?> defaultRS = DefaultRSMapper.of(new MessageDTO());
         if (isFriend(currentPerson, dstPerson)) {
             return defaultRS;
         }
@@ -72,23 +79,22 @@ public class FriendsService {
         return defaultRS;
     }
 
-    public DefaultRS getRequests(String name, Pageable pageable) {
+    public DefaultRS<?> getRequests(String name, Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<Friendship> friendships = friendshipRepository.findAllRequest(currentPerson);
         Stream<Person> personStream = friendships.stream().map(Friendship::getSrcPerson);
         List<UserDTO> friends;
         if (name.equals("")) {
-            friends = personStream.map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
+            friends = personStream.map(personMapper::mapToUserDTO).collect(Collectors.toList());
         } else {
             friends = personStream.filter(p -> p.getFirstName().equals(name))
-                    .map(personModelMapper::mapToUserDTO).collect(Collectors.toList());
+                    .map(personMapper::mapToUserDTO).collect(Collectors.toList());
         }
         return DefaultRSMapper.of(friends, pageable);
     }
 
     public DefaultRS<?> getRecommendations(Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Page<Person> personPage = personRepository.findAll(pageable);
         List<Friendship> myFriendships = friendshipRepository.findAllFriends(currentPerson);
 
         List<UserDTO> recommendedFriendsList = new ArrayList<>();
@@ -106,11 +112,10 @@ public class FriendsService {
                     .collect(Collectors.toSet());
 
             recommendedFriendsList = recommendedFriends.stream()
-                    .map(personModelMapper::mapToUserDTO)
+                    .map(personMapper::mapToUserDTO)
                     .collect(Collectors.toList());
         }
-
-        return DefaultRSMapper.of(recommendedFriendsList, personPage);
+        return DefaultRSMapper.of(recommendedFriendsList, pageable);
     }
 
     private boolean isMyFriendship(Friendship friendship, Person currentPerson) {
@@ -128,7 +133,7 @@ public class FriendsService {
         }
     }
 
-    public DefaultRS isFriends(List<Integer> userIds) {
+    public DefaultRS<?> isFriends(List<Integer> userIds) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<StatusUserDTO> friends = personRepository.findByIdIn(userIds).stream()
                 .filter(p -> isFriend(currentPerson, p))
@@ -140,7 +145,7 @@ public class FriendsService {
 
     private boolean isFriend(Person currentPerson, Person dstPerson) {
         List<Friendship> friendships = friendshipRepository.isFriends(currentPerson, dstPerson);
-        return friendships.isEmpty() ? false : true;
+        return !friendships.isEmpty();
     }
 
     private Friendship abs(Person currentPerson, Person dstPerson,List<Friendship> friendships){
