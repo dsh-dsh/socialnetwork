@@ -25,4 +25,15 @@ public class UserSearchRQ {
 
     private String country;
     private String city;
+
+    public void firstNameToLower(){
+        if (firstName != null) {
+            firstName = firstName.toLowerCase();
+        }
+    }
+    public void lastNameToLower(){
+        if (lastName != null) {
+            lastName = lastName.toLowerCase();
+        }
+    }
 }
