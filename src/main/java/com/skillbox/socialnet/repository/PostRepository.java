@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
@@ -19,6 +20,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> findPostBySearchRequest(String text, Timestamp timeFrom, Timestamp timeTo, Pageable pageable);
 
     Optional<Post> findPostById(int id);
+
+    Optional<List<Post>> findByAuthorIn(List<Person> persons);
 
     @Query("FROM Post")
     Optional<Page<Post>> getOptionalPageAll(Pageable pageable);

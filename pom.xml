@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.skillbox</groupId>
     <artifactId>socialnet</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>socialnet</name>
     <description>Group project for Skillbox</description>
     <properties>

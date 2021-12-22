@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class PostDTO {
 
-
     private int id;
     private long time;
     private UserDTO author;
@@ -19,10 +18,11 @@ public class PostDTO {
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     private int likes;
+    @JsonProperty("my_like")
+    private int myLike;
     private List<CommentDTO> comments;
     private String[] tags;
-
-
+    private String type = "string";
 
 }
 

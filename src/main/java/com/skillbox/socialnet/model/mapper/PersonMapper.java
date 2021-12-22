@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Component
-public class PersonModelMapper {
+public class PersonMapper {
 
     private final ModelMapper modelMapper;
 
@@ -21,7 +21,7 @@ public class PersonModelMapper {
                 return timestamp == null? 0 : timestamp.getTime();
             };
 
-    public PersonModelMapper() {
+    public PersonMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(Person.class, UserDTO.class)
                 .addMappings(m -> m.using(timestampConverter).map(Person::getRegData, UserDTO::setRegistrationDate))
