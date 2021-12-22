@@ -133,7 +133,7 @@ public class PostService {
     }
 
     private void changePostPublishDate(long publishDate, Post post) {
-        if (publishDate != 0) {
+        if (publishDate == 0) {
             post.setTime(new Timestamp(publishDate));
         }
     }
