@@ -3,12 +3,20 @@ package com.skillbox.socialnet.model.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.entity.Post;
+import com.skillbox.socialnet.model.entity.PostComment;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CommentDTO {
 
     private int id;
@@ -36,4 +44,18 @@ public class CommentDTO {
     @JsonProperty("sub_comments")
     private List<String> subComments = new ArrayList<>();
 
+    //todo throws stackoverflow ex
+    public static CommentDTO getCommentDTO(PostComment postComment) {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setId(postComment.getId());
+        commentDTO.setTime(postComment.getTime().getTime());
+        commentDTO.setPostId(String.valueOf(postComment.getPost().getId()));
+        if (postComment.getParent() != null) {
+            commentDTO.setParentId(postComment.getParent().getId());
+        }
+        commentDTO.setCommentText(postComment.getCommentText());
+        commentDTO.setAuthor(CommentAuthorDTO.getCommentAuthorDTO(postComment.getAuthor()));
+        commentDTO.setBlocked(postComment.isBlocked());
+        return commentDTO;
+    }
 }

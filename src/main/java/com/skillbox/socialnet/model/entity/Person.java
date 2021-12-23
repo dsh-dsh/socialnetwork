@@ -23,7 +23,7 @@ public class Person {
     @Column(name = "last_name")
     private String lastName;
     @Column(name = "reg_date")
-    private Timestamp regData;
+    private Timestamp regDate;
     @Column(name = "birth_date")
     private Timestamp birthDate;
     @Column(name = "e_mail", unique = true)

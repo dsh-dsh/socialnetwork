@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
@@ -16,11 +17,8 @@ import com.skillbox.socialnet.model.entity.Tag;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.model.mapper.PostMapper;
-import com.skillbox.socialnet.repository.PersonRepository;
-import com.skillbox.socialnet.repository.Tag2PostRepository;
-import com.skillbox.socialnet.repository.TagRepository;
+import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,10 +46,9 @@ public class UserService {
     private final TagRepository tagRepository;
     private final Tag2PostRepository tag2PostRepository;
 
-    public DefaultRS<?> getUser() {
-        String email = authService.getPersonFromSecurityContext().getEMail();
-        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonByEmail(email));
-        return DefaultRSMapper.of(userDTO);
+    public UserDTO getUser() {
+        Person person = authService.getPersonFromSecurityContext();
+        return UserDTO.getUserDTO(person);
     }
 
     public DefaultRS<?> getUserById(int id) {
@@ -72,13 +69,15 @@ public class UserService {
     }
 
 
-    public DefaultRS<?> getUserWall(int id, Pageable pageable) {
+    public List<PostDTO> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
-        List<PostDTO> postDTOs = postPage.getContent().stream()
-                .map(postMapper::mapToPostDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(postDTOs, postPage);
+        List<PostDTO> postDTOs = postPage.stream()
+                .map(PostDTO::getPostDTO)
+                .collect(Collectors.toList());
+        return postDTOs;
     }
+
 
 
     public DefaultRS<?> addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
