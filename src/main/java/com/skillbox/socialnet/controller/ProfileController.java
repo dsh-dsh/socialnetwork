@@ -3,6 +3,12 @@ package com.skillbox.socialnet.controller;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
+import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.PostDTO;
+import com.skillbox.socialnet.model.dto.UserDTO;
+import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
+import java.util.List;
+
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -19,11 +27,11 @@ import java.util.Calendar;
 public class ProfileController {
 
     private final UserService userService;
-    private final JwtProvider jwtProvider;
+
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUser() {
-        return ResponseEntity.ok(userService.getUser());
+    public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.getUser()));
     }
 
     @PutMapping("/me")
@@ -42,9 +50,9 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}/wall")
-    public ResponseEntity<?> getUserWall(
+    public ResponseEntity<GeneralListResponse<PostDTO>> getUserWall(
             @PathVariable int id, Pageable pageable) {
-        return ResponseEntity.ok(userService.getUserWall(id, pageable));
+        return ResponseEntity.ok(new GeneralListResponse<>(userService.getUserWall(id, pageable), pageable));
     }
 
     @PostMapping("/{id}/wall")

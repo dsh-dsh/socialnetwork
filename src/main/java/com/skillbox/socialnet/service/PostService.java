@@ -9,12 +9,14 @@ import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
+import com.skillbox.socialnet.model.entity.Tag;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PostCommentMapper;
 import com.skillbox.socialnet.model.mapper.PostMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PostRepository;
+import com.skillbox.socialnet.repository.Tag2PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,7 @@ public class PostService {
     private final FriendsService friendsService;
     private final AuthService authService;
     private final PostCommentMapper commentMapper;
+    private final  Tag2PostRepository tag2PostRepository;
 
 //    public DefaultRS<?> searchPosts(String author, String text, long dateFrom, long dateTo, List<String> tags, Pageable pageable) {
 //        dateTo = checkDate(dateTo);

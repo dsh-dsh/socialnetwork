@@ -2,6 +2,7 @@ package com.skillbox.socialnet.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,13 +37,31 @@ public class UserDTO {
     private long lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
-    private String token = "string";
     @JsonProperty("is_friend")
-    private String isFriend = "";
+    private String isFriend;
     @JsonProperty("is_you_blocked")
     private boolean isYouBlocked;
-    private boolean me = true;
+    private boolean me = false;
+    private String token;
 
+    public static UserDTO getUserDTO(Person person){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(person.getId());
+        userDTO.setFirstName(person.getFirstName());
+        userDTO.setLastName(person.getLastName());
+        userDTO.setRegistrationDate(person.getRegDate().getTime());
+        userDTO.setBirthDate(person.getBirthDate().getTime());
+        userDTO.setEmail(person.getEMail());
+        userDTO.setPhone(person.getPhone());
+        userDTO.setPhoto(person.getPhoto());
+        userDTO.setAbout(person.getAbout());
+        userDTO.setCity(person.getCity());
+        userDTO.setCountry(person.getCountry());
+        userDTO.setPermission(person.getMessagesPermission());
+        userDTO.setLastOnlineTime(person.getLastOnlineTime().getTime());
+        userDTO.setBlocked(person.isBlocked());
+        return userDTO;
+    }
 }
 
 

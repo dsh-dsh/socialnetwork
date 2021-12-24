@@ -28,7 +28,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,11 +46,11 @@ public class UserService {
     private final PostService postService;
     private final TagRepository tagRepository;
     private final Tag2PostRepository tag2PostRepository;
+    private final CommentRepository commentRepository;
 
-    public DefaultRS<?> getUser() {
-        String email = authService.getPersonFromSecurityContext().getEMail();
-        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonByEmail(email));
-        return DefaultRSMapper.of(userDTO);
+    public UserDTO getUser() {
+        Person person = authService.getPersonFromSecurityContext();
+        return UserDTO.getUserDTO(person);
     }
 
     public DefaultRS<?> getUserById(int id) {
@@ -73,7 +76,7 @@ public class UserService {
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
         List<PostDTO> postDTOs = postPage.getContent().stream()
                 .map(postMapper::mapToPostDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(postDTOs, pageable);
+        return DefaultRSMapper.of(postDTOs, postPage);
     }
 
 
@@ -94,7 +97,7 @@ public class UserService {
         return DefaultRSMapper.of(postMapper.mapToPostDTO(post));
     }
 
-    private void addTags2Post(Post post, List<String> tags){
+    private void addTags2Post(Post post, List<String> tags) {
         for (String tagName : tags) {
             Post2tag post2tag = new Post2tag();
             post2tag.setPost(post);
