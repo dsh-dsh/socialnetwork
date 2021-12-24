@@ -44,7 +44,7 @@ public class CommentDTO {
     @JsonProperty("sub_comments")
     private List<String> subComments = new ArrayList<>();
 
-    //todo throws stackoverflow ex
+
     public static CommentDTO getCommentDTO(PostComment postComment) {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setId(postComment.getId());

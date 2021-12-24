@@ -9,8 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface Tag2PostRepository extends JpaRepository<Post2tag, Integer> {
-    List<Tag> getAllByPost(Post post);
-
+    List<Post2tag> getAllByPost(Post post);
 
     List<Tag> getAllById(int id);
 }

@@ -42,9 +42,9 @@ public class UserService {
     private final PersonRepository personRepository;
     private final AuthService authService;
     private final PostRepository postRepository;
-    private final PostService postService;
     private final TagRepository tagRepository;
     private final Tag2PostRepository tag2PostRepository;
+    private final CommentRepository commentRepository;
 
     public UserDTO getUser() {
         Person person = authService.getPersonFromSecurityContext();
@@ -73,11 +73,12 @@ public class UserService {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
         List<PostDTO> postDTOs = postPage.stream()
-                .map(PostDTO::getPostDTO)
+                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
+                        tag2PostRepository.getAllByPost(postFromDB),
+                        commentRepository.findByPost(postFromDB)))
                 .collect(Collectors.toList());
         return postDTOs;
     }
-
 
 
     public DefaultRS<?> addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
@@ -97,7 +98,7 @@ public class UserService {
         return DefaultRSMapper.of(postMapper.mapToPostDTO(post));
     }
 
-    private void addTags2Post(Post post, List<String> tags){
+    private void addTags2Post(Post post, List<String> tags) {
         for (String tagName : tags) {
             Post2tag post2tag = new Post2tag();
             post2tag.setPost(post);
@@ -105,6 +106,7 @@ public class UserService {
             tag2PostRepository.save(post2tag);
         }
     }
+
     private void checkTags(List<String> tags) {
         for (String tagName : tags) {
             if (tagRepository.getTagByTag(tagName) == null) {

@@ -46,14 +46,16 @@ public class PostService {
         return DefaultRSMapper.of(postsDTOList, postPage);
     }
 
-    public DefaultRS<?> getFeeds(String name, Pageable pageable) {
+    public List<PostDTO> getFeeds() {
         List<Person> friends = friendsService.getMyFriends();
         List<Post> posts = postRepository.findByAuthorIn(friends)
                 .orElseThrow(BadRequestException::new);
         List<PostDTO> postDTOs = posts.stream()
-                .map(postMapper::mapToPostDTO)
+                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
+                        tag2PostRepository.getAllByPost(postFromDB),
+                        commentRepository.findByPost(postFromDB)))
                 .collect(Collectors.toList());
-        return DefaultRSMapper.of(postDTOs, pageable);
+        return postDTOs;
     }
 
     public DefaultRS<?> getPostById(int id) {

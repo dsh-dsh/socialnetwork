@@ -3,6 +3,7 @@ package com.skillbox.socialnet.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.entity.Post;
+import com.skillbox.socialnet.model.entity.Post2tag;
 import com.skillbox.socialnet.model.entity.PostComment;
 import com.skillbox.socialnet.model.entity.Tag;
 import com.skillbox.socialnet.repository.Tag2PostRepository;
@@ -36,8 +37,7 @@ public class PostDTO {
     private String type = "string";
 
 
-
-    public static PostDTO getPostDTO(Post post){
+    public static PostDTO getPostDTO(Post post, List<Post2tag> tags, List<PostComment> comments) {
         PostDTO postDTO = new PostDTO();
         postDTO.setId(postDTO.getId());
         postDTO.setTime(post.getTime().getTime());
@@ -47,12 +47,8 @@ public class PostDTO {
         postDTO.setBlocked(postDTO.isBlocked());
         postDTO.setLikes(postDTO.getLikes());
         postDTO.setMyLike(postDTO.getMyLike());
-//        postDTO.setTags(tag2PostRepository.getAllByPost(post).stream().map(Tag::getTag).collect(Collectors.toList()).toArray(String[]::new));
-//        TODO add tags
-
-        if (!post.getComments().isEmpty()) {
-            postDTO.setComments(post.getComments().stream().map(CommentDTO::getCommentDTO).collect(Collectors.toList()));
-        }
+        postDTO.setTags(tags.stream().map(tag2post -> tag2post.getTag().getTag()).collect(Collectors.toList()).toArray(String[]::new));
+        postDTO.setComments(comments.stream().map(CommentDTO::getCommentDTO).collect(Collectors.toList()));
         return postDTO;
     }
 }

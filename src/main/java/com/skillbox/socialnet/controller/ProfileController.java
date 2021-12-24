@@ -3,6 +3,7 @@ package com.skillbox.socialnet.controller;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
+import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.PostDTO;
@@ -26,11 +27,11 @@ import java.util.List;
 public class ProfileController {
 
     private final UserService userService;
-    private final JwtProvider jwtProvider;
+
 
     @GetMapping("/me")
-    public ResponseEntity getUser() {
-        return ResponseEntity.ok(new GeneralResponse<UserDTO>(userService.getUser()));
+    public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.getUser()));
     }
 
     @PutMapping("/me")
@@ -49,9 +50,9 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}/wall")
-    public ResponseEntity getUserWall(
+    public ResponseEntity<GeneralListResponse<PostDTO>> getUserWall(
             @PathVariable int id, Pageable pageable) {
-        return ResponseEntity.ok(new GeneralListResponse<PostDTO>(userService.getUserWall(id, pageable), pageable.getPageNumber(), pageable.getPageSize()));
+        return ResponseEntity.ok(new GeneralListResponse<>(userService.getUserWall(id, pageable), pageable));
     }
 
     @PostMapping("/{id}/wall")
