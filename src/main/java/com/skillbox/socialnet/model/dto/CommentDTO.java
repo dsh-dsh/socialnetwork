@@ -2,7 +2,6 @@ package com.skillbox.socialnet.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnet.model.entity.Person;
 import lombok.Data;
 
 import java.util.ArrayList;

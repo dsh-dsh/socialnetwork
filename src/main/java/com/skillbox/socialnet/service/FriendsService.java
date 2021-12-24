@@ -63,13 +63,13 @@ public class FriendsService {
         Person dstPerson = personRepository.getPersonById(id).orElseThrow(BadRequestException::new);
         Friendship friendships = friendshipRepository.getRelationship(currentPerson, dstPerson).orElseThrow(BadRequestException::new);
         friendshipRepository.delete(friendships);
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> addFriend(int id) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Person dstPerson = personRepository.getPersonById(id).orElseThrow(BadRequestException::new);
-        DefaultRS<?> defaultRS = DefaultRSMapper.of(new MessageDTO());
+        DefaultRS<?> defaultRS = DefaultRSMapper.of(new MessageOkDTO());
         if (isFriend(currentPerson, dstPerson)) {
             return defaultRS;
         }

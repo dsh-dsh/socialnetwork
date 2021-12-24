@@ -7,10 +7,9 @@ import com.skillbox.socialnet.model.RQ.AccountNotificationRQ;
 import com.skillbox.socialnet.model.RQ.AccountPasswordSetRQ;
 import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.dto.MessageDTO;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.entity.NotificationSetting;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.enums.MessagesPermission;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
@@ -23,9 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
 
@@ -54,7 +50,7 @@ public class AccountService {
             person.setLastName(accountRegisterRQ.getLastName());
             person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
             personRepository.save(person);
-            return DefaultRSMapper.of(new MessageDTO());
+            return DefaultRSMapper.of(new MessageOkDTO());
         }
         return DefaultRSMapper.error(Constants.BAD_REQUEST_MESSAGE);
     }
@@ -74,7 +70,7 @@ public class AccountService {
                 "/change-password?code=" + getConfirmationCode(email);
         emailService.send(email, Constants.PASSWWORD_RECOVERY_SUBJECT,
                     String.format(Constants.PASSWWORD_RECOVERY_TEXT, recoveryLink));
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     private String getConfirmationCode(String email) {
@@ -94,7 +90,7 @@ public class AccountService {
                 .orElseThrow(BadRequestException::new);
         person.setPassword(passwordEncoder.encode(accountPasswordSetRQ.getPassword()));
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> shiftEmail(HttpServletRequest servletRequest) throws MailException{
@@ -104,7 +100,7 @@ public class AccountService {
                 "/shift-email";
         emailService.send(email, Constants.EMAIL_RECOVERY_SUBJECT,
                 String.format(Constants.EMAIL_RECOVERY_TEXT, recoveryLink));
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> setEmail(AccountEmailRQ accountEmailRQ) {
@@ -115,7 +111,7 @@ public class AccountService {
         Person person = authService.getPersonFromSecurityContext();
         person.setEMail(email);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> setNotifications(AccountNotificationRQ accountNotificationRQ) {
@@ -126,7 +122,7 @@ public class AccountService {
         notificationSetting.setPermission(!notificationSetting.isPermission());
         settingsRepository.save(notificationSetting);
 
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     private NotificationSetting getNotificationSetting(Person person, NotificationTypeCode notificationTypeCode) {

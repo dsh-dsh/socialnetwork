@@ -80,7 +80,6 @@ public class ProfileController {
 
     @PutMapping("/checkonline")
     public ResponseEntity<?> checkOnline() {
-        System.out.println("checkOnline");
         return ResponseEntity.ok(userService.checkOnline());
     }
 }

@@ -5,12 +5,16 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = {"id"})
 @Entity
 @Table(name = "person")
 public class Person {
@@ -51,4 +55,7 @@ public class Person {
     private Timestamp lastOnlineTime;
     @Column(name = "is_blocked")
     private boolean isBlocked;
+
+    @ManyToMany(mappedBy = "persons")
+    private Set<Dialog> dialogs = new HashSet<>();
 }

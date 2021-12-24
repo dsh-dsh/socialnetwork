@@ -87,7 +87,8 @@ public class PostService {
     }
 
     public DefaultRS<?> changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
-        Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
         changePostPublishDate(publishDate, post);
         changePostTexts(postChangeRQ, post);
         postRepository.save(post);
@@ -145,11 +146,11 @@ public class PostService {
     }
 
     public DefaultRS<?> reportPostById(int id) {
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     private long checkDate(long dateTo) {

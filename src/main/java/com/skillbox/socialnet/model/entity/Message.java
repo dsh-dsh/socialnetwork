@@ -1,6 +1,7 @@
 package com.skillbox.socialnet.model.entity;
 
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 @Entity
 @Table(name = "message")
 public class Message {
@@ -31,4 +33,7 @@ public class Message {
     @Column(name = "read_status")
     @Enumerated(EnumType.STRING)
     private MessageReadStatus readStatus;
+
+    @ManyToOne
+    private Dialog dialog;
 }

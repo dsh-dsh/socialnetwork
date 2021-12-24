@@ -4,8 +4,7 @@ import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.dto.CommentDTO;
-import com.skillbox.socialnet.model.dto.MessageDTO;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 //import com.skillbox.socialnet.model.mapper.PersonModelMapper;
@@ -65,7 +64,7 @@ public class UserService {
     public DefaultRS<?> deleteUser() {
         String email = authService.getPersonFromSecurityContext().getEMail();
         personRepository.delete(personService.getPersonByEmail(email));
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
 
@@ -74,7 +73,7 @@ public class UserService {
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
         List<PostDTO> postDTOs = postPage.getContent().stream()
                 .map(postMapper::mapToPostDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(postDTOs, postPage);
+        return DefaultRSMapper.of(postDTOs, pageable);
     }
 
 
@@ -130,18 +129,18 @@ public class UserService {
         Person person = personService.getPersonById(id);
         person.setBlocked(true);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> unblockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> checkOnline() {
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
 
