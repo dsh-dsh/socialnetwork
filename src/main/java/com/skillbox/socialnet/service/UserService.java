@@ -15,11 +15,8 @@ import com.skillbox.socialnet.model.entity.Tag;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.model.mapper.PostMapper;
-import com.skillbox.socialnet.repository.PersonRepository;
-import com.skillbox.socialnet.repository.Tag2PostRepository;
-import com.skillbox.socialnet.repository.TagRepository;
+import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -70,13 +67,15 @@ public class UserService {
         return DefaultRSMapper.of(new MessageOkDTO());
     }
 
-
-    public DefaultRS<?> getUserWall(int id, Pageable pageable) {
+    public List<PostDTO> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
-        List<PostDTO> postDTOs = postPage.getContent().stream()
-                .map(postMapper::mapToPostDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(postDTOs, postPage);
+        List<PostDTO> postDTOs = postPage.stream()
+                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
+                        tag2PostRepository.getAllByPost(postFromDB),
+                        commentRepository.findByPost(postFromDB)))
+                .collect(Collectors.toList());
+        return postDTOs;
     }
 
 

@@ -18,15 +18,13 @@ import java.util.List;
 @RequestMapping("/api/v1/feeds")
 public class FeedsController {
 
-
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(@RequestParam(defaultValue = "") String name,
+    public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(
+            @RequestParam(defaultValue = "") String name,
             Pageable pageable){
         return ResponseEntity.ok(new GeneralListResponse<>(postService.getFeeds(), pageable));
     }
-
-
 
 }

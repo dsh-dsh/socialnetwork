@@ -42,6 +42,9 @@ public class DialogService {
     }
 
     public DefaultRS<?> createDialog(DialogCreateDTORequest dialogCreateDTORequest) {
+
+        log.info(String.valueOf(dialogCreateDTORequest.getUserIds()));
+        // FIXME возможно нужно добавлять в лист текущего пользователя еще
         Set<Person> persons = personService.getPersonsByIdList(dialogCreateDTORequest.getUserIds());
         Dialog dialog = new Dialog();
         dialog.setPersons(persons);

@@ -38,21 +38,6 @@ public class PostService {
     private final PostCommentMapper commentMapper;
     private final  Tag2PostRepository tag2PostRepository;
 
-//    public DefaultRS<?> searchPosts(String author, String text, long dateFrom, long dateTo, List<String> tags, Pageable pageable) {
-//        dateTo = checkDate(dateTo);
-//        Page<Post> postPage = postRepository.findPost(
-//                author,
-//                text,
-//                new Timestamp(dateFrom),
-//                new Timestamp(dateTo),
-//                tags,
-//                pageable);
-//        List<PostDTO> postsDTOList = postPage.stream()
-//                .map(postMapper::mapToPostDTO)
-//                .collect(Collectors.toList());
-//        return DefaultRSMapper.of(postsDTOList, postPage);
-//    }
-
     public DefaultRS<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDate_to());
 
@@ -73,14 +58,18 @@ public class PostService {
         return DefaultRSMapper.of(postsDTOList, postPage);
     }
 
-    public DefaultRS<?> getFeeds(String name, Pageable pageable) {
+
+
+    public List<PostDTO> getFeeds() {
         List<Person> friends = friendsService.getMyFriends();
-        Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable)
+        List<Post> posts = postRepository.findByAuthorIn(friends)
                 .orElseThrow(BadRequestException::new);
-        List<PostDTO> postDTOs = postPage.getContent().stream()
-                .map(postMapper::mapToPostDTO)
+        List<PostDTO> postDTOs = posts.stream()
+                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
+                        tag2PostRepository.getAllByPost(postFromDB),
+                        commentRepository.findByPost(postFromDB)))
                 .collect(Collectors.toList());
-        return DefaultRSMapper.of(postDTOs, postPage);
+        return postDTOs;
     }
 
     public DefaultRS<?> getPostById(int id) {

@@ -20,7 +20,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
 
     public Page<Message> getMessagesByDialog(Dialog dialog, Pageable pageable) {
-        return  messageRepository.findByDialog(dialog);
+        return  messageRepository.findByDialog(dialog, pageable);
     }
 
     public void deleteMessages(List<Message> messages) {
