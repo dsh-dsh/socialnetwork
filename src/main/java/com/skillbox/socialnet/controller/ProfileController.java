@@ -65,6 +65,7 @@ public class ProfileController {
 
     @GetMapping("/search")
     public ResponseEntity<?> searchUsers(
+            @RequestParam(name = "first_or_last_name", required = false) String firstOrLastName,
             @RequestParam(name = "first_name", required = false) String firstName,
             @RequestParam(name = "last_name", required = false) String lastName,
             @RequestParam(name = "age_from", defaultValue = "0") int ageFrom,
@@ -72,8 +73,14 @@ public class ProfileController {
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String city,
             Pageable pageable) {
-        UserSearchRQ userSearchRQ = new UserSearchRQ(firstName, lastName, ageFrom, ageTo, country, city);
-        return ResponseEntity.ok(userService.searchUsers(userSearchRQ, pageable));
+        DefaultRS<?> defaultRS;
+        if(firstOrLastName != null) {
+            defaultRS = userService.searchUsers(firstOrLastName, pageable);
+        } else {
+            UserSearchRQ userSearchRQ = new UserSearchRQ(firstName, lastName, ageFrom, ageTo, country, city);
+            defaultRS = userService.searchUsers(userSearchRQ, pageable);
+        }
+        return ResponseEntity.ok(defaultRS);
     }
 
     @PutMapping("/block/{id}")

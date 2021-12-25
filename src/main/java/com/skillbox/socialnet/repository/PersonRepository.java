@@ -33,6 +33,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     Set<Person> findByIdIn(List<Integer> idList);
 
-    Optional<Person> getPersonById(int id);;
+    Optional<Person> getPersonById(int id);
+
+    Page<Person> findByFirstNameContainingOrLastNameContainingIgnoreCase(String fistName, String lastName, Pageable pageable);
 }
 

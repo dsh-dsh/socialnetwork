@@ -114,6 +114,14 @@ public class UserService {
         }
     }
 
+    public DefaultRS<?> searchUsers(String firstOrLastName, Pageable pageable) {
+        Page<Person> personPage = personRepository
+                .findByFirstNameContainingOrLastNameContainingIgnoreCase(firstOrLastName, firstOrLastName, pageable);
+        List<UserDTO> users = personPage.stream()
+                .map(personMapper::mapToUserDTO).collect(Collectors.toList());
+        return DefaultRSMapper.of(users, personPage);
+    }
+
     public DefaultRS<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
         Date to = getDateTo(userSearchRQ);
         Date from = getDateFrom(userSearchRQ);
