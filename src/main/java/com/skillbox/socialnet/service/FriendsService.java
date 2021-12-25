@@ -11,7 +11,9 @@ import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
+import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -95,26 +97,34 @@ public class FriendsService {
 
     public DefaultRS<?> getRecommendations(Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        List<Friendship> myFriendships = friendshipRepository.findAllFriends(currentPerson);
+        Set<Person> myFriends = friendshipRepository.findAllFriends(currentPerson)
+                .stream().map(f -> getFriendFromFriendship(f, currentPerson))
+                .collect(Collectors.toSet());
 
         List<UserDTO> recommendedFriendsList = new ArrayList<>();
-        if(myFriendships.size() > 0) {
-            List<Person> myFriends = myFriendships.stream()
-                    .map(f -> getFriendFromFriendship(f, currentPerson))
-                    .collect(Collectors.toList());
-
-            List<Friendship> friendsFriendships = friendshipRepository.findAllFriendsOfMyFriends(myFriends);
-
-            Set<Person> recommendedFriends = friendsFriendships.stream()
-                    .filter(friendship -> !isMyFriendship(friendship, currentPerson))
+        Set<Person> recommendedFriends = new HashSet<>();
+        if(myFriends.size() > 0) {
+            recommendedFriends = friendshipRepository.findAllFriendsOfMyFriends(myFriends)
+                    .stream().filter(friendship -> !isMyFriendship(friendship, currentPerson))
                     .flatMap(friendship -> Stream.of(friendship.getDstPerson(), friendship.getSrcPerson()))
                     .filter(person -> !isFriend(person, currentPerson))
                     .collect(Collectors.toSet());
-
             recommendedFriendsList = recommendedFriends.stream()
                     .map(personMapper::mapToUserDTO)
                     .collect(Collectors.toList());
         }
+        if(recommendedFriendsList.size() < Constants.RECOMMENDED_FRIENDS_LIMIT) {
+            int limit = Constants.RECOMMENDED_FRIENDS_LIMIT - recommendedFriendsList.size();
+            Set<Person> personsToExclude = new HashSet<>();
+            personsToExclude.addAll(myFriends);
+            personsToExclude.addAll(recommendedFriends);
+            personsToExclude.add(currentPerson);
+            List<UserDTO> newFriends = personRepository.findNewFriendsLimit(personsToExclude, PageRequest.of(0, limit))
+                    .stream().map(personMapper::mapToUserDTO)
+                    .collect(Collectors.toList());
+            recommendedFriendsList.addAll(newFriends);
+        }
+
         return DefaultRSMapper.of(recommendedFriendsList, pageable);
     }
 

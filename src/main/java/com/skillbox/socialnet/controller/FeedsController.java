@@ -5,6 +5,7 @@ import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.service.PostService;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class FeedsController {
     @GetMapping
     public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(
             @RequestParam(defaultValue = "") String name,
-            Pageable pageable){
+            ElementPageable pageable){
         return ResponseEntity.ok(new GeneralListResponse<>(postService.getFeeds(), pageable));
     }
 

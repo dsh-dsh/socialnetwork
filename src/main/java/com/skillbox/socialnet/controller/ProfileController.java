@@ -11,6 +11,7 @@ import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.UserService;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,7 @@ public class ProfileController {
 
     @GetMapping("/{id}/wall")
     public ResponseEntity<GeneralListResponse<PostDTO>> getUserWall(
-            @PathVariable int id, Pageable pageable) {
+            @PathVariable int id, ElementPageable pageable) {
         return ResponseEntity.ok(new GeneralListResponse<>(userService.getUserWall(id, pageable), pageable));
     }
 

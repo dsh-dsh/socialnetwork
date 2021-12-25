@@ -8,10 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Integer> {
@@ -36,5 +33,10 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     Optional<Person> getPersonById(int id);
 
     Page<Person> findByFirstNameContainingOrLastNameContainingIgnoreCase(String fistName, String lastName, Pageable pageable);
+
+    @Query("SELECT person FROM Person AS person " +
+            "WHERE person NOT IN (:myFriends) " +
+            "ORDER BY regDate DESC")
+    List<Person> findNewFriendsLimit(Collection<Person> myFriends, Pageable pageable);
 }
 
