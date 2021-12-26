@@ -123,18 +123,18 @@ public class UserService {
         return DefaultRSMapper.of(users, personPage);
     }
 
-    public DefaultRS<?> blockUser(int id) {
+    public String blockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(true);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return "User is blocked";
     }
 
-    public DefaultRS<?> unblockUser(int id) {
+    public String unblockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return "User is unblocked";
     }
 
 
