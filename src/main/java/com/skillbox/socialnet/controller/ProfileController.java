@@ -35,18 +35,18 @@ public class ProfileController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<?> editUser(@RequestBody UserChangeRQ userChangeRQ, HttpServletRequest request) {
-        return ResponseEntity.ok(userService.editUser(userChangeRQ));
+    public ResponseEntity<GeneralResponse<UserDTO>> editUser(@RequestBody UserChangeRQ userChangeRQ, HttpServletRequest request) {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.editUser(userChangeRQ)));
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<?> deleteUser() {
-        return ResponseEntity.ok(userService.deleteUser());
+    public ResponseEntity<GeneralResponse<String>> deleteUser() {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.deleteUser()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@PathVariable int id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public ResponseEntity<GeneralResponse<UserDTO>> getUser(@PathVariable int id) {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.getUserById(id)));
     }
 
     @GetMapping("/{id}/wall")
@@ -56,11 +56,11 @@ public class ProfileController {
     }
 
     @PostMapping("/{id}/wall")
-    public ResponseEntity<?> addPostToUserWall(
+    public ResponseEntity<GeneralResponse<PostDTO>> addPostToUserWall(
             @PathVariable int id,
             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
             @RequestBody PostChangeRQ postChangeRQ) {
-        return ResponseEntity.ok(userService.addPostToUserWall(id, publishDate, postChangeRQ));
+        return ResponseEntity.ok(new GeneralResponse<>(userService.addPostToUserWall(id, publishDate, postChangeRQ)));
     }
 
     @GetMapping("/search")

@@ -29,8 +29,7 @@ public class PostMapper {
     public PostMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(Post.class, PostDTO.class)
-                .addMappings(m -> m.using(timestampConverter).map(Post::getTime, PostDTO::setTime))
-                .addMappings(m -> m.using(tagsConverter).map(Post::getTags, PostDTO::setTags));
+                .addMappings(m -> m.using(timestampConverter).map(Post::getTime, PostDTO::setTime));
 
     }
 

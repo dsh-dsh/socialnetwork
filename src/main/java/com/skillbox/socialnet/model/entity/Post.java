@@ -40,7 +40,5 @@ public class Post {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Post2tag> tags  = new HashSet<>();
 
 }

@@ -16,7 +16,6 @@ import com.skillbox.socialnet.model.entity.Post2tag;
 import com.skillbox.socialnet.model.entity.Tag;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
-import com.skillbox.socialnet.model.mapper.PostMapper;
 import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final PersonMapper personMapper;
-    private final PostMapper postMapper;
     private final PersonService personService;
     private final PersonRepository personRepository;
     private final AuthService authService;
@@ -51,21 +49,19 @@ public class UserService {
         return UserDTO.getUserDTO(person);
     }
 
-    public DefaultRS<?> getUserById(int id) {
-        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonById(id));
-        return DefaultRSMapper.of(userDTO);
+    public UserDTO getUserById(int id) {
+        UserDTO userDTO = UserDTO.getUserDTO(personService.getPersonById(id));
+        return userDTO;
     }
 
-    public DefaultRS<?> editUser(UserChangeRQ userChangeRQ) {
+    public UserDTO editUser(UserChangeRQ userChangeRQ) {
         String email = authService.getPersonFromSecurityContext().getEMail();
-        UserDTO userDTO = personMapper.mapToUserDTO(personService.editPerson(email, userChangeRQ));
-        return DefaultRSMapper.of(userDTO);
+        return UserDTO.getUserDTO(personService.editPerson(email, userChangeRQ));
     }
 
-    public DefaultRS<?> deleteUser() {
-        String email = authService.getPersonFromSecurityContext().getEMail();
-        personRepository.delete(personService.getPersonByEmail(email));
-        return DefaultRSMapper.of(new MessageDTO());
+    public String deleteUser() {
+        personRepository.delete(authService.getPersonFromSecurityContext());
+        return "User deleted successfully";
     }
 
 
@@ -81,7 +77,7 @@ public class UserService {
     }
 
 
-    public DefaultRS<?> addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
+    public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = new Post();
         Person person = personService.getPersonById(id);
         post.setAuthor(person);
@@ -94,8 +90,7 @@ public class UserService {
             checkTags(tagsList);
             addTags2Post(post, tagsList);
         }
-
-        return DefaultRSMapper.of(postMapper.mapToPostDTO(post));
+        return PostDTO.getPostDTO(post, tag2PostRepository.getAllByPost(post), new ArrayList<>());
     }
 
     private void addTags2Post(Post post, List<String> tags) {
