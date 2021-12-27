@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
@@ -15,12 +16,8 @@ import com.skillbox.socialnet.model.entity.Post2tag;
 import com.skillbox.socialnet.model.entity.Tag;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
-import com.skillbox.socialnet.model.mapper.PostMapper;
-import com.skillbox.socialnet.repository.PersonRepository;
-import com.skillbox.socialnet.repository.Tag2PostRepository;
-import com.skillbox.socialnet.repository.TagRepository;
+import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,49 +36,48 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final PersonMapper personMapper;
-    private final PostMapper postMapper;
     private final PersonService personService;
     private final PersonRepository personRepository;
     private final AuthService authService;
     private final PostRepository postRepository;
-    private final PostService postService;
     private final TagRepository tagRepository;
     private final Tag2PostRepository tag2PostRepository;
+    private final CommentRepository commentRepository;
 
-    public DefaultRS<?> getUser() {
+    public UserDTO getUser() {
+        Person person = authService.getPersonFromSecurityContext();
+        return UserDTO.getUserDTO(person);
+    }
+
+    public UserDTO getUserById(int id) {
+        UserDTO userDTO = UserDTO.getUserDTO(personService.getPersonById(id));
+        return userDTO;
+    }
+
+    public UserDTO editUser(UserChangeRQ userChangeRQ) {
         String email = authService.getPersonFromSecurityContext().getEMail();
-        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonByEmail(email));
-        return DefaultRSMapper.of(userDTO);
+        return UserDTO.getUserDTO(personService.editPerson(email, userChangeRQ));
     }
 
-    public DefaultRS<?> getUserById(int id) {
-        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonById(id));
-        return DefaultRSMapper.of(userDTO);
-    }
-
-    public DefaultRS<?> editUser(UserChangeRQ userChangeRQ) {
-        String email = authService.getPersonFromSecurityContext().getEMail();
-        UserDTO userDTO = personMapper.mapToUserDTO(personService.editPerson(email, userChangeRQ));
-        return DefaultRSMapper.of(userDTO);
-    }
-
-    public DefaultRS<?> deleteUser() {
-        String email = authService.getPersonFromSecurityContext().getEMail();
-        personRepository.delete(personService.getPersonByEmail(email));
-        return DefaultRSMapper.of(new MessageDTO());
+    public String deleteUser() {
+        personRepository.delete(authService.getPersonFromSecurityContext());
+        return "User deleted successfully";
     }
 
 
-    public DefaultRS<?> getUserWall(int id, Pageable pageable) {
+    public List<PostDTO> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
-        List<PostDTO> postDTOs = postPage.getContent().stream()
-                .map(postMapper::mapToPostDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(postDTOs, postPage);
+        List<PostDTO> postDTOs = postPage.stream()
+                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
+                        tag2PostRepository.getAllByPost(postFromDB),
+                        commentRepository.findByPost(postFromDB)))
+                .collect(Collectors.toList());
+        return postDTOs;
     }
 
 
-    public DefaultRS<?> addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
+    public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = new Post();
         Person person = personService.getPersonById(id);
         post.setAuthor(person);
@@ -94,11 +90,10 @@ public class UserService {
             checkTags(tagsList);
             addTags2Post(post, tagsList);
         }
-
-        return DefaultRSMapper.of(postMapper.mapToPostDTO(post));
+        return PostDTO.getPostDTO(post, tag2PostRepository.getAllByPost(post), new ArrayList<>());
     }
 
-    private void addTags2Post(Post post, List<String> tags){
+    private void addTags2Post(Post post, List<String> tags) {
         for (String tagName : tags) {
             Post2tag post2tag = new Post2tag();
             post2tag.setPost(post);
@@ -106,6 +101,7 @@ public class UserService {
             tag2PostRepository.save(post2tag);
         }
     }
+
     private void checkTags(List<String> tags) {
         for (String tagName : tags) {
             if (tagRepository.getTagByTag(tagName) == null) {
@@ -127,18 +123,18 @@ public class UserService {
         return DefaultRSMapper.of(users, personPage);
     }
 
-    public DefaultRS<?> blockUser(int id) {
+    public String blockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(true);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return "User is blocked";
     }
 
-    public DefaultRS<?> unblockUser(int id) {
+    public String unblockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return "User is unblocked";
     }
 
 

@@ -2,6 +2,8 @@ package com.skillbox.socialnet.controller;
 
 import com.skillbox.socialnet.model.RQ.AccountNotificationRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.FileDTO;
 import com.skillbox.socialnet.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,9 @@ public class StorageController {
 
     private final StorageService storageService;
     @PostMapping("/storage")
-    public ResponseEntity<?> storage(@RequestParam("type") String type,
-                                     @RequestPart("file") MultipartFile file) throws IOException {
-        return ResponseEntity.ok(storageService.saveImageToProfile(type, file));
+    public ResponseEntity<GeneralResponse<FileDTO>> storage(@RequestParam("type") String type,
+                                                            @RequestPart("file") MultipartFile file) throws IOException {
+        return ResponseEntity.ok(new GeneralResponse<>(storageService.saveImageToProfile(type, file)));
     }
 
 }

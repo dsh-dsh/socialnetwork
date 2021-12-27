@@ -24,7 +24,7 @@ public class PersonMapper {
     public PersonMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(Person.class, UserDTO.class)
-                .addMappings(m -> m.using(timestampConverter).map(Person::getRegData, UserDTO::setRegistrationDate))
+                .addMappings(m -> m.using(timestampConverter).map(Person::getRegDate, UserDTO::setRegistrationDate))
                 .addMappings(m -> m.using(timestampConverter).map(Person::getBirthDate, UserDTO::setBirthDate))
                 .addMappings(m -> m.using(timestampConverter).map(Person::getLastOnlineTime, UserDTO::setLastOnlineTime));
     }

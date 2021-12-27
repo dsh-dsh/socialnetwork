@@ -1,8 +1,11 @@
 package com.skillbox.socialnet.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.skillbox.socialnet.model.dto.PostDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -10,7 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(of = {"id"})
 @Entity
 @Table(name = "post")
@@ -36,9 +40,5 @@ public class Post {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Post2tag> tags  = new HashSet<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostComment> comments;
 }
