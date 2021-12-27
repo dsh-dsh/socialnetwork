@@ -3,6 +3,7 @@ package com.skillbox.socialnet.service;
 import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
+import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
@@ -37,9 +38,35 @@ public class PostService {
     private final PostCommentMapper commentMapper;
     private final  Tag2PostRepository tag2PostRepository;
 
-    public DefaultRS<?> findPostsByTextOrTitle(String text, long dateFrom, long dateTo, Pageable pageable) {
-        dateTo = checkDate(dateTo);
-        Page<Post> postPage = postRepository.findPostBySearchRequest(text, new Timestamp(dateFrom), new Timestamp(dateTo), pageable);
+//    public DefaultRS<?> searchPosts(String author, String text, long dateFrom, long dateTo, List<String> tags, Pageable pageable) {
+//        dateTo = checkDate(dateTo);
+//        Page<Post> postPage = postRepository.findPost(
+//                author,
+//                text,
+//                new Timestamp(dateFrom),
+//                new Timestamp(dateTo),
+//                tags,
+//                pageable);
+//        List<PostDTO> postsDTOList = postPage.stream()
+//                .map(postMapper::mapToPostDTO)
+//                .collect(Collectors.toList());
+//        return DefaultRSMapper.of(postsDTOList, postPage);
+//    }
+
+    public DefaultRS<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+        long dateTo = checkDate(postSearchRQ.getDate_to());
+
+        // FIXME если тегов нет фронт посылает пустой массив, найти решение проверки :tags is empty в hql
+        if(postSearchRQ.getTags() != null) {
+            if (postSearchRQ.getTags().size() == 0) {
+                postSearchRQ.setTags(null);
+            }
+        }
+
+        Page<Post> postPage = postRepository.findPost(
+                postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                new Timestamp(postSearchRQ.getDate_from()), new Timestamp(dateTo),
+                postSearchRQ.getTags(), pageable);
         List<PostDTO> postsDTOList = postPage.stream()
                 .map(postMapper::mapToPostDTO)
                 .collect(Collectors.toList());

@@ -20,9 +20,9 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     @Query("SELECT person " +
             "FROM Person AS person " +
-            "WHERE ((:firstName is null OR person.firstName = :firstName) " +
-            "OR (:lastName is null OR person.lastName = :lastName)) " +
-            "AND person.birthDate BETWEEN :from AND :to " + //OR person.birthDate >= :from OR person.birthDate <= :to) " +
+            "WHERE (:firstName is null OR lower(person.firstName) like %:firstName%) " +
+            "AND (:lastName is null OR lower(person.lastName) like %:lastName%) " +
+            "AND person.birthDate BETWEEN :from AND :to " +
             "AND (:country is null OR person.country = :country) " +
             "AND (:city is null OR person.city = :city) " +
             "AND person.isBlocked = false " +

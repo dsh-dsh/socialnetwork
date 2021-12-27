@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -115,6 +112,8 @@ public class UserService {
     public DefaultRS<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
         Date to = getDateTo(userSearchRQ);
         Date from = getDateFrom(userSearchRQ);
+        userSearchRQ.firstNameToLower();
+        userSearchRQ.lastNameToLower();
         Page<Person> personPage = personRepository.findBySearchRequest(
                 userSearchRQ.getFirstName(), userSearchRQ.getLastName(),
                 userSearchRQ.getCountry(), userSearchRQ.getCity(), from, to, pageable);
@@ -135,6 +134,10 @@ public class UserService {
         person.setBlocked(false);
         personRepository.save(person);
         return "User is unblocked";
+    }
+
+    public DefaultRS<?> checkOnline() {
+        return DefaultRSMapper.of(new MessageDTO());
     }
 
 
