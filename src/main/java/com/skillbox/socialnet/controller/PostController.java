@@ -21,17 +21,6 @@ public class PostController {
 
     private final PostService postService;
 
-//    @GetMapping
-//    public ResponseEntity<?> getPosts(
-//            @RequestParam(defaultValue = "") String author,
-//            @RequestParam(defaultValue = "") String text,
-//            @RequestParam(name = "date_from", defaultValue = "0") long dateFrom,
-//            @RequestParam(name = "date_to", defaultValue = "0") long dateTo,
-//            @RequestParam(required = false) List<String> tags,
-//            Pageable pageable) {
-//        return ResponseEntity.ok(postService.searchPosts(author, text, dateFrom, dateTo, tags, pageable));
-//    }
-
     @GetMapping
     public ResponseEntity<?> getPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         System.out.println(postSearchRQ);

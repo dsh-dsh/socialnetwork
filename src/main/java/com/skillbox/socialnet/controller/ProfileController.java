@@ -74,6 +74,7 @@ public class ProfileController {
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String city,
             Pageable pageable) {
+
         DefaultRS<?> defaultRS;
         if(firstOrLastName != null) {
             defaultRS = userService.searchUsers(firstOrLastName, pageable);

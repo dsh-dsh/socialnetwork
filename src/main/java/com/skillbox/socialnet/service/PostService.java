@@ -39,7 +39,7 @@ public class PostService {
     private final  Tag2PostRepository tag2PostRepository;
 
     public DefaultRS<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
-        long dateTo = checkDate(postSearchRQ.getDate_to());
+        long dateTo = checkDate(postSearchRQ.getDateTo());
 
         // FIXME если тегов нет фронт посылает пустой массив, найти решение проверки :tags is empty в hql
         if(postSearchRQ.getTags() != null) {
@@ -50,7 +50,7 @@ public class PostService {
 
         Page<Post> postPage = postRepository.findPost(
                 postSearchRQ.getAuthor(), postSearchRQ.getText(),
-                new Timestamp(postSearchRQ.getDate_from()), new Timestamp(dateTo),
+                new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
                 postSearchRQ.getTags(), pageable);
         List<PostDTO> postsDTOList = postPage.stream()
                 .map(postMapper::mapToPostDTO)

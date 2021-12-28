@@ -3,12 +3,12 @@ package com.skillbox.socialnet.service;
 import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.RQ.DialogCreateDTORequest;
 import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.model.mapper.DialogMapper;
 import com.skillbox.socialnet.repository.DialogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,25 +32,26 @@ public class DialogService {
     private final PersonService personService;
     private final AuthService authService;
 
-    public DefaultRS<?> getDialogs(String query, Pageable pageable) {  // TODO выяснить формат String query
+    public GeneralListResponse<?> getDialogs(Pageable pageable) {
         Person me = authService.getPersonFromSecurityContext();
-        // FIXME добавить логику Pageable
-        Set<Dialog> dialogs = me.getDialogs();
-        List<DialogDTO> dialogDTOS = dialogs.stream()
-                .map(DialogMapper::mapToDto)
+        Page<Dialog> dialogPage = dialogRepository.findByPerson(me, pageable);
+        List<DialogDTO> dialogDTOS = dialogPage.getContent()
+                .stream()
+                .map(dialog -> new DialogDTO(
+                        dialog, me,
+                        messageService.getLastMessage(dialog),
+                        messageService.getUnreadCount(dialog)))
                 .collect(Collectors.toList());
-        return DefaultRSMapper.of(dialogDTOS);
+        return new GeneralListResponse<>(dialogDTOS, dialogPage);
     }
 
     public DefaultRS<?> createDialog(DialogCreateDTORequest dialogCreateDTORequest) {
-
-        log.info(String.valueOf(dialogCreateDTORequest.getUserIds()));
-        // FIXME возможно нужно добавлять в лист текущего пользователя еще
+        Person me = authService.getPersonFromSecurityContext();
         Set<Person> persons = personService.getPersonsByIdList(dialogCreateDTORequest.getUserIds());
-        Dialog dialog = new Dialog();
-        dialog.setPersons(persons);
-        Dialog savedDialog = dialogRepository.save(dialog);
-        return DefaultRSMapper.of(new DialogIdDTO(savedDialog.getId()));
+        persons.add(me);
+        Dialog dialog = getDialogByPersonSet(me, persons)
+                .orElseGet(() -> addNewDialogToDataBase(persons));
+        return DefaultRSMapper.of(new DialogIdDTO(dialog.getId()));
     }
 
     public DefaultRS<?> deleteDialog(long id) {
@@ -116,14 +118,47 @@ public class DialogService {
         return DefaultRSMapper.of(new DialogCreateDTORequest(idList));
     }
 
-    public DefaultRS<?> sendMessage(long dialogId, MessageResponseDTO messageResponseDTO) {
+    public MessageDTO sendMessage(long dialogId, MessageResponseDTO messageResponseDTO) {
+
         Person author = authService.getPersonFromSecurityContext();
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
         String text = messageResponseDTO.getMessageText();
-        Message message = messageService.sendMessage(dialog, author, text);
+        Message message = messageService.addMessage(dialog, author, text);
         dialog.getMessages().add(message);
         dialogRepository.save(dialog);
-        return DefaultRSMapper.of(new MessageDTO(message));
+
+        return new MessageDTO(message); // new GeneralListResponse<>(new MessageDTO(message));
     }
+
+    private Optional<Dialog> getDialogByPersonSet(Person me, Set<Person> persons) {
+//        System.out.println("getDialogByPersonSet()");
+        List<Dialog> dialogs = dialogRepository.findByPerson(me);
+        return dialogs.stream()
+//                .peek(d -> soutDialog(d, persons))
+                .filter(dialog -> dialog.getPersons().containsAll(persons))
+                .findFirst();
+    }
+
+    void soutDialog(Dialog dialog, Set<Person> persons) {
+        System.out.println("dialogId = " + dialog.getId());
+        dialog.getPersons().forEach(p -> System.out.print(p.getFirstName() + " " + p.getLastName() + " "));
+        System.out.println();
+        persons.forEach(p -> System.out.print(p.getFirstName() + " " + p.getLastName() + " "));
+        System.out.println();
+        System.out.println("---------------------");
+    }
+
+    private Dialog addNewDialogToDataBase(Set<Person> persons) {
+//        System.out.println("addNewDialogToDataBase()");
+        Dialog dialog = new Dialog(persons);
+        return dialogRepository.save(dialog);
+    }
+
+//    public Person getRecipient(Dialog dialog, Person author) {
+//        return dialog.getPersons().stream()
+//                .filter(person -> !person.equals(author))
+//                .findFirst()
+//                .orElseThrow(BadRequestException::new);
+//    }
 }

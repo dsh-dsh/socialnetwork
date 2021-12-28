@@ -1,8 +1,11 @@
 package com.skillbox.socialnet.controller;
 
 import com.skillbox.socialnet.model.RQ.DialogCreateDTORequest;
+import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.dto.MessageResponseDTO;
 import com.skillbox.socialnet.service.DialogService;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +23,12 @@ public class DialogController {
     @GetMapping
     public ResponseEntity<?> getDialogs(
             @RequestParam(required = false) String query,
-            @RequestParam(required = false) Pageable pageable) { // TODO а так вообще можно?
-        return ResponseEntity.ok(dialogService.getDialogs(query, pageable));
+            @RequestParam(required = false) ElementPageable pageable) {
+        return ResponseEntity.ok(dialogService.getDialogs(pageable));
     }
 
     @PostMapping
     public ResponseEntity<?> createDialog(@RequestBody DialogCreateDTORequest dialogCreateDTORequest) {
-        dialogCreateDTORequest.getUserIds().forEach(System.out::println);
         return ResponseEntity.ok(dialogService.createDialog(dialogCreateDTORequest));
     }
 
@@ -34,7 +36,9 @@ public class DialogController {
     public ResponseEntity<?> sendMessage(
             @PathVariable long id,
             @RequestBody MessageResponseDTO messageResponseDTO) {
-        return ResponseEntity.ok(dialogService.sendMessage(id, messageResponseDTO));
+        GeneralResponse<MessageDTO> response =
+                new GeneralResponse<>(dialogService.sendMessage(id, messageResponseDTO));
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("{id}")
