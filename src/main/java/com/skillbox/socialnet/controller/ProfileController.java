@@ -96,9 +96,7 @@ public class ProfileController {
     }
 
     @PutMapping("/checkonline")
-    public ResponseEntity<?> checkOnline() {
-        GeneralResponse<MessageOkDTO> response =
-                new GeneralResponse<>(userService.checkOnline());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<GeneralResponse<String>> checkOnline() {
+        return ResponseEntity.ok(new GeneralResponse<>("User is online"));
     }
 }
