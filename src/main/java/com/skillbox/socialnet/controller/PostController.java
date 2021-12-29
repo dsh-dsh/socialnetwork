@@ -23,7 +23,6 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<?> getPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
-        System.out.println(postSearchRQ);
         return ResponseEntity.ok(postService.searchPosts(postSearchRQ, pageable));
     }
 

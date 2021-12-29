@@ -2,6 +2,7 @@ package com.skillbox.socialnet.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.entity.Message;
+import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ import java.time.ZoneId;
 public class MessageDTO {
     private int id;
     private PersonDialogDTO author;
-    @JsonProperty("is_sent_by_me")
+    @JsonProperty("isSentByMe")
     private boolean isSentByMe;
     @JsonProperty("message_text")
     private String messageText;
@@ -20,11 +21,11 @@ public class MessageDTO {
     private PersonDialogDTO recipient;
     private long time;
 
-    public MessageDTO(Message message) {
+    public MessageDTO(Person me, Message message) {
         if(message != null) {
             this.id = message.getId();
             this.author = new PersonDialogDTO(message.getAuthor());
-            this.isSentByMe = true; // TODO добавить логику
+            this.isSentByMe = message.getAuthor().equals(me);
             this.messageText = message.getMessageText();
             this.readStatus = message.getReadStatus();
             this.recipient = new PersonDialogDTO(message.getRecipient());

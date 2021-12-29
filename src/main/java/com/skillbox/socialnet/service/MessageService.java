@@ -6,6 +6,7 @@ import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
 import com.skillbox.socialnet.repository.MessageRepository;
+import com.skillbox.socialnet.util.anotation.ПокаНеИспользуется;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,31 +21,20 @@ import java.util.Set;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-//    private final DialogService dialogService;
 
     public Page<Message> getMessagesByDialog(Dialog dialog, Pageable pageable) {
         return  messageRepository.findByDialog(dialog, pageable);
     }
 
-    public void deleteMessages(List<Message> messages) {
-        messageRepository.deleteMessagesByList(messages);
-    }
-
-    public long countUnreadMessages(Set<Dialog> dialogs) {
+    public long countUnreadMessages(Person me, Set<Dialog> dialogs) {
         return dialogs.stream()
                 .flatMap(dialog -> dialog.getMessages().stream())
+                .filter(message -> message.getRecipient().equals(me))
                 .filter(message -> message.getReadStatus().equals(MessageReadStatus.SENT))
                 .count();
     }
 
-    public Message addMessage(Dialog dialog, Person author, String text) {
-//        Person recipient = dialogService.getRecipient(dialog, author);
-
-        Person recipient = dialog.getPersons().stream()
-                .filter(person -> !person.equals(author))
-                .findFirst()
-                .orElseThrow(BadRequestException::new);
-
+    public Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
         Message message = new Message();
         message.setDialog(dialog);
         message.setAuthor(author);
@@ -53,7 +43,6 @@ public class MessageService {
         message.setRecipient(recipient);
         message.setTime(LocalDateTime.now());
         messageRepository.save(message);
-        System.out.println(message);
         return message;
     }
 
@@ -62,7 +51,29 @@ public class MessageService {
                 .orElse(null);
     }
 
-    public int getUnreadCount(Dialog dialog) {
-        return messageRepository.countByDialogAndReadStatus(dialog, MessageReadStatus.SENT);
+    public int getUnreadCount(Dialog dialog, Person recipient) {
+        return messageRepository.countByDialogAndRecipientAndReadStatus(dialog, recipient, MessageReadStatus.SENT);
+    }
+
+    public void setMessagesStatusRead(List<Message> messages, Person recipient) {
+        messageRepository.setMessagesReadStatus(messages, recipient, MessageReadStatus.READ);
+    }
+
+    @ПокаНеИспользуется
+    public Message getMessageToRead(int messageId) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(BadRequestException::new);
+        return setMessagesStatusRead(message, MessageReadStatus.READ);
+    }
+
+    @ПокаНеИспользуется
+    public Message setMessagesStatusRead(Message message, MessageReadStatus status) {
+        message.setReadStatus(status);
+        return messageRepository.save(message);
+    }
+
+    @ПокаНеИспользуется
+    public void deleteMessages(List<Message> messages) {
+        messageRepository.deleteMessagesByList(messages);
     }
 }
