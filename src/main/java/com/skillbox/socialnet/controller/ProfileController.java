@@ -6,6 +6,7 @@ import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
@@ -75,14 +76,14 @@ public class ProfileController {
             @RequestParam(required = false) String city,
             Pageable pageable) {
 
-        DefaultRS<?> defaultRS;
+        GeneralListResponse<?> response;
         if(firstOrLastName != null) {
-            defaultRS = userService.searchUsers(firstOrLastName, pageable);
+            response = userService.searchUsers(firstOrLastName, pageable);
         } else {
             UserSearchRQ userSearchRQ = new UserSearchRQ(firstName, lastName, ageFrom, ageTo, country, city);
-            defaultRS = userService.searchUsers(userSearchRQ, pageable);
+            response = userService.searchUsers(userSearchRQ, pageable);
         }
-        return ResponseEntity.ok(defaultRS);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/block/{id}")
@@ -97,6 +98,8 @@ public class ProfileController {
 
     @PutMapping("/checkonline")
     public ResponseEntity<?> checkOnline() {
-        return ResponseEntity.ok(userService.checkOnline());
+        GeneralResponse<MessageOkDTO> response =
+                new GeneralResponse<>(userService.checkOnline());
+        return ResponseEntity.ok(response);
     }
 }

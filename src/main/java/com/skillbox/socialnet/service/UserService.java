@@ -4,6 +4,8 @@ import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
@@ -18,6 +20,7 @@ import com.skillbox.socialnet.model.mapper.PostMapper;
 import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -114,15 +117,15 @@ public class UserService {
         }
     }
 
-    public DefaultRS<?> searchUsers(String firstOrLastName, Pageable pageable) {
+    public GeneralListResponse<?> searchUsers(String firstOrLastName, Pageable pageable) {
         Page<Person> personPage = personRepository
                 .findByFirstNameContainingOrLastNameContainingIgnoreCase(firstOrLastName, firstOrLastName, pageable);
-        List<UserDTO> users = personPage.stream()
+        List<UserDTO> userDTOList = personPage.stream()
                 .map(personMapper::mapToUserDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(users, personPage);
+        return new GeneralListResponse<>(userDTOList, personPage);
     }
 
-    public DefaultRS<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
+    public GeneralListResponse<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
         Date to = getDateTo(userSearchRQ);
         Date from = getDateFrom(userSearchRQ);
         userSearchRQ.firstNameToLower();
@@ -130,9 +133,9 @@ public class UserService {
         Page<Person> personPage = personRepository.findBySearchRequest(
                 userSearchRQ.getFirstName(), userSearchRQ.getLastName(),
                 userSearchRQ.getCountry(), userSearchRQ.getCity(), from, to, pageable);
-        List<UserDTO> users = personPage.stream()
+        List<UserDTO> userDTOList = personPage.stream()
                 .map(personMapper::mapToUserDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(users, personPage);
+        return new GeneralListResponse<>(userDTOList, personPage);
     }
 
     public DefaultRS<?> blockUser(int id) {
@@ -149,8 +152,11 @@ public class UserService {
         return DefaultRSMapper.of(new MessageOkDTO());
     }
 
-    public DefaultRS<?> checkOnline() {
-        return DefaultRSMapper.of(new MessageOkDTO());
+    public MessageOkDTO checkOnline() {
+        Person me = authService.getPersonFromSecurityContext();
+        me.setLastOnlineTime(new Timestamp(new Date().getTime()));
+        personRepository.save(me);
+        return new MessageOkDTO();
     }
 
 
