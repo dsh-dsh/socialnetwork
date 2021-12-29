@@ -3,11 +3,15 @@ package com.skillbox.socialnet.controller;
 
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
+import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -18,12 +22,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<?> getPosts(
-            @RequestParam(defaultValue = "") String text,
-            @RequestParam (name = "date_from", defaultValue = "0") long dateFrom,
-            @RequestParam (name = "date_to", defaultValue = "0") long dateTo,
-            Pageable pageable) {
-        return ResponseEntity.ok(postService.findPostsByTextOrTitle(text, dateFrom, dateTo, pageable));
+    public ResponseEntity<?> getPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+        return ResponseEntity.ok(postService.searchPosts(postSearchRQ, pageable));
     }
 
     @GetMapping("/{id}")

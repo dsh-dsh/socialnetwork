@@ -14,22 +14,25 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
-    @Query("SELECT post FROM Post AS post " +
-            "WHERE (:text is null OR post.postText LIKE %:text% OR post.title LIKE %:text%) " +
+    @Query("SELECT DISTINCT post " +
+            "FROM Post AS post " +
+            "JOIN post.tags AS tags " +
+            "WHERE (:authorName is null OR post.author.firstName LIKE %:authorName% OR post.author.lastName LIKE %:authorName%) " +
+            "AND (:text is null OR post.postText LIKE %:text% OR post.title LIKE %:text%) " +
+            "AND ((:tags) is null OR tags.tag.tag IN (:tags)) " +
             "AND post.time BETWEEN :timeFrom AND :timeTo")
-    Page<Post> findPostBySearchRequest(String text, Timestamp timeFrom, Timestamp timeTo, Pageable pageable);
+    Page<Post> findPost(String authorName, String text, Timestamp timeFrom, Timestamp timeTo, List<String> tags, Pageable pageable);
 
     Optional<Post> findPostById(int id);
 
-    Optional<List<Post>> findByAuthorIn(List<Person> persons);
+    Optional<Page<Post>> findByAuthorIn(List<Person> persons, Pageable pageable);
+
+    Optional<List<Post>> findByAuthorIn(List<Person> friends);
 
     @Query("FROM Post")
     Optional<Page<Post>> getOptionalPageAll(Pageable pageable);
 
     Page<Post> findPostsByAuthor(Person author, Pageable pageable);
     Post getPostByAuthor(Person person);
-
-//    @Query(value = "select p from Post p where p.postText LIKE %:queryText%" )
-//    Page<Post> findPostByPostText(Pageable pageable, String queryText);
 
 }

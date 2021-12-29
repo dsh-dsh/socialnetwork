@@ -29,7 +29,6 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NoSuchUserException.class)
     protected ResponseEntity<?> handleNoSuchUserException(NoSuchUserException ex) {
-        System.out.println("handleNoSuchUserException");
         return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -50,9 +49,6 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-
-        System.out.println(ex.getMessage());
-
         return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

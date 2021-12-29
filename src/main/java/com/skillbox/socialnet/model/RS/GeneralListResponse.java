@@ -3,6 +3,7 @@ package com.skillbox.socialnet.model.RS;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Calendar;
@@ -26,5 +27,13 @@ public class GeneralListResponse<T> {
         total = Long.valueOf(data.size());
         this.perPage = pageable.getPageSize();
         this.offset = pageable.getPageNumber();
+    }
+
+    public GeneralListResponse(List<T> data, Page page) {
+        timestamp = Calendar.getInstance().getTimeInMillis();
+        this.data = data;
+        total = page.getTotalElements();
+        this.perPage = page.getSize();
+        this.offset = page.getNumber() * page.getSize();
     }
 }
