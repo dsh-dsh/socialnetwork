@@ -138,14 +138,14 @@ public class UserService {
         Person person = personService.getPersonById(id);
         person.setBlocked(true);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return "User is blocked";
     }
 
     public String unblockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+        return "Usr is unblocked";
     }
 
 
