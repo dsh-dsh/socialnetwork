@@ -1,24 +1,26 @@
 package com.skillbox.socialnet.config;
 
 import com.skillbox.socialnet.security.JwtFilter;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,19 +57,58 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/shift-email"
     };
 
+
+    @Bean
+    public FilterRegistrationBean corsFilter() {
+        CorsConfigurationSource source = corsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("");
+        config.addAllowedHeader("");
+        config.addAllowedMethod("*");
+//        source.registerCorsConfiguration("/", config);
+        org.springframework.web.filter.CorsFilter corsFilter = new org.springframework.web.filter.CorsFilter(source);
+        FilterRegistrationBean bean = new FilterRegistrationBean(corsFilter);
+        bean.setOrder(0);
+        return bean;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .httpBasic().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().authenticated()
+                .antMatchers(HttpMethod.OPTIONS, "/").permitAll()
+                .antMatchers("/api/v1/auth/login").permitAll()
+                .antMatchers("/api/v1/auth/refresh").permitAll()
+                .antMatchers("/api/v1/auth/logout").permitAll()
+                .antMatchers("/api/v1/account/").permitAll()
+                .antMatchers("/api/v1/platform/**").permitAll()
+                .antMatchers("/api/v1/geo/**").permitAll()
+                .antMatchers("/api/v1/feeds/**").permitAll()
+                .antMatchers("/api/v1/users/**").permitAll()
+                .antMatchers("/api/v1/post/**").permitAll()
+                .antMatchers("/api/v1/tags/**").permitAll()
+                .antMatchers("/api/v1/notifications/**").permitAll()
+                .antMatchers("/actuator/").permitAll()
+                .antMatchers("/api/v1/dialogs/**").permitAll()
+                .antMatchers("/api/v1/friends/**").permitAll()
+                .antMatchers("/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/webjars/").permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .cors(AbstractHttpConfigurer::disable);
     }
+
+
 
     @Value("${cors.urls}")
     private List<String> hosts = new ArrayList<>();
@@ -75,24 +116,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "content-type", "Origin", "origin", "Accept", "accept",
-                "X-Request-With", "Access-Control-Allow-Origin", "Access-Control-Request-Method", "x-auth-token", "x-requested-with", "x-app-id", "Access-Control-Request-Headers"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedOrigins(hosts);
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:8081");
-            }
-        };
     }
 
     @Bean
