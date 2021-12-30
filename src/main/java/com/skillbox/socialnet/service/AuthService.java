@@ -3,7 +3,7 @@ package com.skillbox.socialnet.service;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.model.RQ.AuthUserRQ;
-import com.skillbox.socialnet.model.dto.MessageDTO;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
@@ -39,8 +39,8 @@ public class AuthService {
     }
 
 
-    public DefaultRS<MessageDTO> logout() {
-        return DefaultRSMapper.of(new MessageDTO());
+    public DefaultRS<MessageOkDTO> logout() {
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
 //    private UserDTO getUserDTO() {

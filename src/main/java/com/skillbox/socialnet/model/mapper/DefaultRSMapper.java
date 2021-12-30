@@ -1,10 +1,6 @@
 package com.skillbox.socialnet.model.mapper;
 
 import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.dto.LocationDTO;
-import com.skillbox.socialnet.model.dto.MessageDTO;
-import com.skillbox.socialnet.model.dto.PostDTO;
-import com.skillbox.socialnet.model.dto.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

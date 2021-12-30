@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +27,6 @@ public class PersonService {
 
     public Person getPersonByEmail(String email) {
         return personRepository.findByeMail(email).orElseThrow(NoSuchUserException::new);
-        // FIXME не правильно отрабатал при смене имейла(при ошибке фронта с токеном) ошибка 500,
-        //  проверить когда исправим фронт
-        //  при переходе из письма для смены почты открывается новая вкладка
-        //  и там смена почты отрабатывает нормально
-        //  но предыдущая вкладка продолжает отправлять запросы со старым токеном
-        //  и соответственно со старым емейлом
     }
 
     public Person editPerson(String email, UserChangeRQ userChangeRQ) {
@@ -51,6 +46,10 @@ public class PersonService {
 
     public List<Person> getAllPersons() {
         return personRepository.findAll();
+    }
+
+    public Set<Person> getPersonsByIdList(List<Integer> ids) {
+        return personRepository.findByIdIn(ids);
     }
 
 }

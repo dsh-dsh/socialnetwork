@@ -3,6 +3,7 @@ package com.skillbox.socialnet.service;
 import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
+import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
@@ -37,14 +38,27 @@ public class PostService {
     private final PostCommentMapper commentMapper;
     private final  Tag2PostRepository tag2PostRepository;
 
-    public DefaultRS<?> findPostsByTextOrTitle(String text, long dateFrom, long dateTo, Pageable pageable) {
-        dateTo = checkDate(dateTo);
-        Page<Post> postPage = postRepository.findPostBySearchRequest(text, new Timestamp(dateFrom), new Timestamp(dateTo), pageable);
+    public DefaultRS<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+        long dateTo = checkDate(postSearchRQ.getDateTo());
+
+        // FIXME если тегов нет фронт посылает пустой массив, найти решение проверки :tags is empty в hql
+        if(postSearchRQ.getTags() != null) {
+            if (postSearchRQ.getTags().size() == 0) {
+                postSearchRQ.setTags(null);
+            }
+        }
+
+        Page<Post> postPage = postRepository.findPost(
+                postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
+                postSearchRQ.getTags(), pageable);
         List<PostDTO> postsDTOList = postPage.stream()
                 .map(postMapper::mapToPostDTO)
                 .collect(Collectors.toList());
         return DefaultRSMapper.of(postsDTOList, postPage);
     }
+
+
 
     public List<PostDTO> getFeeds() {
         List<Person> friends = friendsService.getMyFriends();
@@ -65,7 +79,8 @@ public class PostService {
     }
 
     public DefaultRS<?> changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
-        Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
         changePostPublishDate(publishDate, post);
         changePostTexts(postChangeRQ, post);
         postRepository.save(post);
@@ -123,11 +138,11 @@ public class PostService {
     }
 
     public DefaultRS<?> reportPostById(int id) {
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
-        return DefaultRSMapper.of(new MessageDTO());
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     private long checkDate(long dateTo) {
@@ -138,7 +153,7 @@ public class PostService {
     }
 
     private void changePostPublishDate(long publishDate, Post post) {
-        if (publishDate == 0) {
+        if (publishDate != 0) {
             post.setTime(new Timestamp(publishDate));
         }
     }
@@ -165,6 +180,5 @@ public class PostService {
         commentRepository.save(postComment);
         return postComment;
     }
-
 
 }

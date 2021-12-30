@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final PersonService personService;
 
     public CustomUserDetails setUserDetails(Person person) {
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("USER"); // TODO Authorities
+        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("USER");
         return CustomUserDetails.builder()
                 .userName(person.getEMail())
                 .password(person.getPassword())

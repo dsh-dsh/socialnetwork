@@ -6,11 +6,13 @@ import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.UserService;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +52,7 @@ public class ProfileController {
 
     @GetMapping("/{id}/wall")
     public ResponseEntity<GeneralListResponse<PostDTO>> getUserWall(
-            @PathVariable int id, Pageable pageable) {
+            @PathVariable int id, ElementPageable pageable) {
         return ResponseEntity.ok(new GeneralListResponse<>(userService.getUserWall(id, pageable), pageable));
     }
 
@@ -64,6 +66,7 @@ public class ProfileController {
 
     @GetMapping("/search")
     public ResponseEntity<?> searchUsers(
+            @RequestParam(name = "first_or_last_name", required = false) String firstOrLastName,
             @RequestParam(name = "first_name", required = false) String firstName,
             @RequestParam(name = "last_name", required = false) String lastName,
             @RequestParam(name = "age_from", defaultValue = "0") int ageFrom,
@@ -71,8 +74,15 @@ public class ProfileController {
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String city,
             Pageable pageable) {
-        UserSearchRQ userSearchRQ = new UserSearchRQ(firstName, lastName, ageFrom, ageTo, country, city);
-        return ResponseEntity.ok(userService.searchUsers(userSearchRQ, pageable));
+
+        GeneralListResponse<?> response;
+        if(firstOrLastName != null) {
+            response = userService.searchUsers(firstOrLastName, pageable);
+        } else {
+            UserSearchRQ userSearchRQ = new UserSearchRQ(firstName, lastName, ageFrom, ageTo, country, city);
+            response = userService.searchUsers(userSearchRQ, pageable);
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/block/{id}")

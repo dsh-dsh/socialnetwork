@@ -28,10 +28,9 @@ public class FriendsController {
 
     //!
     @GetMapping("/friends")
-    public ResponseEntity<?> getAllFriends(@RequestParam(defaultValue = "") String name,
-//                                           @RequestParam(defaultValue = "0") int offset,
-//                                           @RequestParam(defaultValue = "20") int itemPerPage
-                                           Pageable pageable) {
+    public ResponseEntity<?> getAllFriends(
+            @RequestParam(defaultValue = "") String name,
+            Pageable pageable) {
         return ResponseEntity.ok(friendsService.getAllFriends(name, pageable));
     }
 
@@ -47,19 +46,15 @@ public class FriendsController {
     }
 
     @GetMapping("/friends/request")
-    public ResponseEntity<?> getRequests(@RequestParam(defaultValue = "") String name,
-//                                         @RequestParam(defaultValue = "0") int offset,
-//                                         @RequestParam(defaultValue = "20") int itemPerPage
-                                             Pageable pageable) {
-        return ResponseEntity.ok(friendsService.getRequests(name,pageable));
+    public ResponseEntity<?> getRequests(
+            @RequestParam(defaultValue = "") String name,
+            Pageable pageable) {
+        return ResponseEntity.ok(friendsService.getRequests(name, pageable));
     }
 
     //!
     @GetMapping("/friends/recommendations")
-    public ResponseEntity<?> getRecommendations( Pageable pageable
-//                                          @RequestParam(defaultValue = "0") int offset,
-//                                                @RequestParam(defaultValue = "20") int itemPerPage
-                                              ) {
+    public ResponseEntity<?> getRecommendations(Pageable pageable) {
         return ResponseEntity.ok(friendsService.getRecommendations(pageable));
     }
 

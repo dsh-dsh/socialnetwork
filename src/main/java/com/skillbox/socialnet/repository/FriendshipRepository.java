@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     List<Friendship> isFriends(Person currentPerson, Person dstPerson);
 
     @Query("FROM Friendship WHERE srcPerson IN :persons OR dstPerson IN :persons")
-    List<Friendship> findAllFriendsOfMyFriends(List<Person> persons);
+    List<Friendship> findAllFriendsOfMyFriends(Collection<Person> persons);
 
 //    @Override
 //    void delete(Friendship friendship);

@@ -1,12 +1,12 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.dto.CommentDTO;
-import com.skillbox.socialnet.model.dto.MessageDTO;
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 //import com.skillbox.socialnet.model.mapper.PersonModelMapper;
@@ -19,6 +19,7 @@ import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ public class UserService {
     private final PersonRepository personRepository;
     private final AuthService authService;
     private final PostRepository postRepository;
+    private final PostService postService;
     private final TagRepository tagRepository;
     private final Tag2PostRepository tag2PostRepository;
     private final CommentRepository commentRepository;
@@ -101,7 +103,6 @@ public class UserService {
             tag2PostRepository.save(post2tag);
         }
     }
-
     private void checkTags(List<String> tags) {
         for (String tagName : tags) {
             if (tagRepository.getTagByTag(tagName) == null) {
@@ -112,15 +113,25 @@ public class UserService {
         }
     }
 
-    public DefaultRS<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
+    public GeneralListResponse<?> searchUsers(String firstOrLastName, Pageable pageable) {
+        Page<Person> personPage = personRepository
+                .findByFirstNameContainingOrLastNameContainingIgnoreCase(firstOrLastName, firstOrLastName, pageable);
+        List<UserDTO> userDTOList = personPage.stream()
+                .map(personMapper::mapToUserDTO).collect(Collectors.toList());
+        return new GeneralListResponse<>(userDTOList, personPage);
+    }
+
+    public GeneralListResponse<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
         Date to = getDateTo(userSearchRQ);
         Date from = getDateFrom(userSearchRQ);
+        userSearchRQ.firstNameToLower();
+        userSearchRQ.lastNameToLower();
         Page<Person> personPage = personRepository.findBySearchRequest(
                 userSearchRQ.getFirstName(), userSearchRQ.getLastName(),
                 userSearchRQ.getCountry(), userSearchRQ.getCity(), from, to, pageable);
-        List<UserDTO> users = personPage.stream()
+        List<UserDTO> userDTOList = personPage.stream()
                 .map(personMapper::mapToUserDTO).collect(Collectors.toList());
-        return DefaultRSMapper.of(users, personPage);
+        return new GeneralListResponse<>(userDTOList, personPage);
     }
 
     public String blockUser(int id) {
@@ -134,7 +145,7 @@ public class UserService {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        return "User is unblocked";
+        return "Usr is unblocked";
     }
 
 
