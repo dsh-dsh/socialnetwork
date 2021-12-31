@@ -23,6 +23,9 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import static com.skillbox.socialnet.config.Config.bcrypt;
 
 
@@ -42,35 +45,35 @@ public class AccountService {
     private final AuthService authService;
     private final SettingsRepository settingsRepository;
 
-    public DefaultRS<?> register(AccountRegisterRQ accountRegisterRQ) {
-        if (!isEmailExist(accountRegisterRQ.getEmail())) {
-            Person person = new Person();
-            person.setEMail(accountRegisterRQ.getEmail());
-            person.setFirstName(accountRegisterRQ.getFirstName());
-            person.setLastName(accountRegisterRQ.getLastName());
-            person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
-            personRepository.save(person);
-            return DefaultRSMapper.of(new MessageOkDTO());
+    public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
+        if (isEmailExist(accountRegisterRQ.getEmail())) {
+            throw new BadRequestException(Constants.EMAIL_EXISTS_MESSAGE);
         }
-        return DefaultRSMapper.error(Constants.BAD_REQUEST_MESSAGE);
+        Person person = new Person();
+        person.setEMail(accountRegisterRQ.getEmail());
+        person.setFirstName(accountRegisterRQ.getFirstName());
+        person.setLastName(accountRegisterRQ.getLastName());
+        person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
+        person.setLastOnlineTime(new Timestamp(new Date().getTime()));
+        personRepository.save(person);
+        return new MessageOkDTO();
     }
 
     private boolean isEmailExist(String email) {
         Person person = personRepository.findByeMail(email).orElse(null);
-        return (person != null)? true : false;
+        return person != null;
     }
 
-    public DefaultRS<?> recoveryPassword(
+    public MessageOkDTO recoveryPassword(
             AccountEmailRQ accountEmailRQ,
             HttpServletRequest servletRequest) throws MailException {
-
         String email = accountEmailRQ.getEmail();
         String recoveryLink = servletRequest.getRequestURL().toString()
                 .replace(servletRequest.getServletPath(), "") +
                 "/change-password?code=" + getConfirmationCode(email);
         emailService.send(email, Constants.PASSWWORD_RECOVERY_SUBJECT,
                     String.format(Constants.PASSWWORD_RECOVERY_TEXT, recoveryLink));
-        return DefaultRSMapper.of(new MessageOkDTO());
+        return new MessageOkDTO();
     }
 
     private String getConfirmationCode(String email) {
@@ -82,47 +85,43 @@ public class AccountService {
         return confirmationCode;
     }
 
-    public DefaultRS<?> setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {
-        if(!jwtProvider.validateConfirmationCode(accountPasswordSetRQ.getToken())){
-            throw new BadRequestException();
-        }
+    public MessageOkDTO setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {
+        jwtProvider.validateConfirmationCode(accountPasswordSetRQ.getToken());
         Person person = personRepository.findByConfirmationCode(accountPasswordSetRQ.getToken())
                 .orElseThrow(BadRequestException::new);
         person.setPassword(passwordEncoder.encode(accountPasswordSetRQ.getPassword()));
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageOkDTO());
+        return new MessageOkDTO();
     }
 
-    public DefaultRS<?> shiftEmail(HttpServletRequest servletRequest) throws MailException{
+    public MessageOkDTO shiftEmail(HttpServletRequest servletRequest) throws MailException{
         String email = authService.getPersonFromSecurityContext().getEMail();
         String recoveryLink = servletRequest.getRequestURL().toString()
                 .replace(servletRequest.getServletPath(), "") +
                 "/shift-email";
         emailService.send(email, Constants.EMAIL_RECOVERY_SUBJECT,
                 String.format(Constants.EMAIL_RECOVERY_TEXT, recoveryLink));
-        return DefaultRSMapper.of(new MessageOkDTO());
+        return new MessageOkDTO();
     }
 
-    public DefaultRS<?> setEmail(AccountEmailRQ accountEmailRQ) {
+    public MessageOkDTO setEmail(AccountEmailRQ accountEmailRQ) {
         String email = accountEmailRQ.getEmail();
         if(isEmailExist(email)) {
-            throw new BadRequestException();
+            throw new BadRequestException(Constants.EMAIL_EXISTS_MESSAGE);
         }
         Person person = authService.getPersonFromSecurityContext();
         person.setEMail(email);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageOkDTO());
+        return new MessageOkDTO();
     }
 
-    public DefaultRS<?> setNotifications(AccountNotificationRQ accountNotificationRQ) {
+    public MessageOkDTO setNotifications(AccountNotificationRQ accountNotificationRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         NotificationTypeCode notificationTypeCode = NotificationTypeCode.valueOf(accountNotificationRQ.getNotificationType());
-
         NotificationSetting notificationSetting = getNotificationSetting(currentPerson, notificationTypeCode);
         notificationSetting.setPermission(!notificationSetting.isPermission());
         settingsRepository.save(notificationSetting);
-
-        return DefaultRSMapper.of(new MessageOkDTO());
+        return new MessageOkDTO();
     }
 
     private NotificationSetting getNotificationSetting(Person person, NotificationTypeCode notificationTypeCode) {

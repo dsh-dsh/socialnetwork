@@ -4,6 +4,7 @@ public class Constants {
 
     public static final int MAX_AGE = 6733;
 
+    public static final String EMAIL_EXISTS_MESSAGE = "email exists";
     public static final String NO_SUCH_USER_MESSAGE = "no such user";
     public static final String NO_SUCH_POST_MESSAGE = "no such post";
     public static final String NO_ANY_POST_MESSAGE = "no any post";
