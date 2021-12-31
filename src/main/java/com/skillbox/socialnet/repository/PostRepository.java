@@ -25,14 +25,22 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Optional<Post> findPostById(int id);
 
-    Optional<Page<Post>> findByAuthorIn(List<Person> persons, Pageable pageable);
+    Page<Post> findByAuthorIn(List<Person> persons, Pageable pageable);
 
-    Optional<List<Post>> findByAuthorIn(List<Person> friends);
+    Optional<List<Post>> findOptionalByAuthorIn(List<Person> friends);
 
     @Query("FROM Post")
     Optional<Page<Post>> getOptionalPageAll(Pageable pageable);
 
     Page<Post> findPostsByAuthor(Person author, Pageable pageable);
+
     Post getPostByAuthor(Person person);
+
+    @Query("SELECT post " +
+            "FROM Post AS post " +
+            //"JOIN post.author AS author " +
+            "WHERE post NOT IN (:posts) " +
+            "ORDER BY post.author.regDate DESC")
+    List<Post> findOrderByNewAuthorsExclude(List<Post> posts, Pageable pageable);
 
 }

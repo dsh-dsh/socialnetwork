@@ -3,6 +3,8 @@ package com.skillbox.socialnet.controller;
 
 import com.skillbox.socialnet.model.RQ.AuthUserRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +22,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthUserRQ authUserRQ) {
-        DefaultRS<UserDTO> defaultRS = authService.login(authUserRQ);
-        return ResponseEntity.ok(defaultRS);
+        GeneralResponse<UserDTO> response =
+                new GeneralResponse<>(authService.login(authUserRQ));
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout () {
-        return ResponseEntity.ok(authService.logout());
+        GeneralResponse<MessageOkDTO> response =
+                new GeneralResponse<>(authService.logout());
+        return ResponseEntity.ok(response);
     }
 
 }

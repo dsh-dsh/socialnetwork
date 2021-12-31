@@ -66,12 +66,11 @@ public class JwtProvider {
                 .compact();
     }
 
-    public boolean validateConfirmationCode(String code) {
+    public void validateConfirmationCode(String code) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(code);
-            return true;
         } catch (RuntimeException exception) {
-            return false;
+            throw new BadRequestException();
         }
     }
 

@@ -1,9 +1,8 @@
 package com.skillbox.socialnet.service;
 
 
-import com.skillbox.socialnet.model.RS.DefaultRS;
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +12,14 @@ import java.util.List;
 public class PlatformService {
 
 
-    public DefaultRS<?> getLanguage(String language, Pageable pageable) {
+    public GeneralListResponse<?> getLanguage(String language, Pageable pageable) {
 
         List<LocationDTO> languages = List.of(new LocationDTO(1, "Русский"));
 
-        return DefaultRSMapper.of(languages, pageable);
+        return new GeneralListResponse<>(languages, pageable);
     }
 
-    public DefaultRS<?> getCity(String city, Pageable pageable) {
+    public GeneralListResponse<?> getCity(String city, Pageable pageable) {
 
         List<LocationDTO> cities = List.of(
                 new LocationDTO(1, "Москва"),
@@ -28,16 +27,16 @@ public class PlatformService {
                 new LocationDTO(1, "Тель-Авив"),
                 new LocationDTO(1, "Серов"));
 
-        return DefaultRSMapper.of(cities, pageable);
+        return new GeneralListResponse<>(cities, pageable);
     }
 
-    public DefaultRS<?> getCountry(String country, Pageable pageable) {
+    public GeneralListResponse<?> getCountry(String country, Pageable pageable) {
 
         List<LocationDTO> countries = List.of(
                 new LocationDTO(1, "Россия"),
                 new LocationDTO(1, "Израиль"));
 
-        return DefaultRSMapper.of(countries, pageable);
+        return new GeneralListResponse<>(countries, pageable);
     }
 
 }

@@ -23,29 +23,23 @@ public class AuthService {
 
     private final PersonRepository personRepository;
     private final PersonService personService;
-    private final PersonMapper personMapper;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public DefaultRS<UserDTO> login(AuthUserRQ authUserRQ) {
+    public UserDTO login(AuthUserRQ authUserRQ) {
         Person person = personService.getPersonByEmail(authUserRQ.getEmail());
         if(!passwordEncoder.matches(authUserRQ.getPassword(), person.getPassword())) {
             throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
         }
-        UserDTO userDTO = personMapper.mapToUserDTO(person);
-        String token = jwtProvider.generateToken(person);
-        userDTO.setToken(token);
-        return DefaultRSMapper.of(userDTO);
+        UserDTO userDTO = UserDTO.getUserDTO(person);
+        userDTO.setToken(jwtProvider.generateToken(person));
+        return userDTO;
     }
 
 
-    public DefaultRS<MessageOkDTO> logout() {
-        return DefaultRSMapper.of(new MessageOkDTO());
+    public MessageOkDTO logout() {
+        return new MessageOkDTO();
     }
-
-//    private UserDTO getUserDTO() {
-//        return new UserDTO();
-//    }
 
     public Person getPersonFromSecurityContext() {
         try{
