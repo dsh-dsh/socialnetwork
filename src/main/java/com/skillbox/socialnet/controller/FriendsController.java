@@ -1,5 +1,7 @@
 package com.skillbox.socialnet.controller;
 
+import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.service.FriendsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,40 +21,30 @@ import java.util.List;
 @RequestMapping("/api/v1/")
 public class FriendsController {
 
-    @Autowired
-    private FriendsService friendsService;
+    private final FriendsService friendsService;
 
-    public FriendsController(FriendsService friendsService) {
-        this.friendsService = friendsService;
-    }
-
-    //!
     @GetMapping("/friends")
     public ResponseEntity<?> getAllFriends(
-            @RequestParam(defaultValue = "") String name,
-            Pageable pageable) {
+            @RequestParam(defaultValue = "") String name, Pageable pageable) {
         return ResponseEntity.ok(friendsService.getAllFriends(name, pageable));
     }
 
-    //!
     @DeleteMapping("/friends/{id}")
     public ResponseEntity<?> deleteFriend(@PathVariable int id) {
-        return ResponseEntity.ok(friendsService.deleteFriend(id));
+        return ResponseEntity.ok(new GeneralResponse<>(friendsService.deleteFriend(id)));
     }
 
     @PostMapping("/friends/{id}")
     public ResponseEntity<?> addFriend(@PathVariable int id) {
-        return ResponseEntity.ok(friendsService.addFriend(id));
+        return ResponseEntity.ok(new GeneralResponse<>(friendsService.addFriend(id)));
     }
 
     @GetMapping("/friends/request")
     public ResponseEntity<?> getRequests(
-            @RequestParam(defaultValue = "") String name,
-            Pageable pageable) {
+            @RequestParam(defaultValue = "") String name, Pageable pageable) {
         return ResponseEntity.ok(friendsService.getRequests(name, pageable));
     }
 
-    //!
     @GetMapping("/friends/recommendations")
     public ResponseEntity<?> getRecommendations(Pageable pageable) {
         return ResponseEntity.ok(friendsService.getRecommendations(pageable));
@@ -60,7 +52,7 @@ public class FriendsController {
 
     @PostMapping("/is/friends")
     public ResponseEntity<?> isFriends(@RequestBody List<Integer> userIds) {
-        return ResponseEntity.ok(friendsService.isFriends(userIds));
+        return ResponseEntity.ok(new GeneralResponse<>(friendsService.isMyFriends(userIds)));
     }
 
 
