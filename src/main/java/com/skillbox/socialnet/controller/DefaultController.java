@@ -4,11 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
 @CrossOrigin
 @Controller
 public class DefaultController {
-
 
     @RequestMapping
     public String index() {
@@ -25,9 +24,9 @@ public class DefaultController {
         return "index";
     }
 
-    @RequestMapping(method = {RequestMethod.OPTIONS, RequestMethod.GET}, value = "/**/{path:[^\\\\.]*}")
-    public String redirectToIndex() {
-    return "forward:/";
-}
+//    @RequestMapping(method = {RequestMethod.OPTIONS, RequestMethod.GET}, value = "/**/{path:[^\\\\.]*}")
+//    public String redirectToIndex() {
+//    return "forward:/";
+//}
 
 }
