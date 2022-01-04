@@ -76,7 +76,7 @@ public class AccountService {
         return new MessageOkDTO();
     }
 
-    private String getConfirmationCode(String email) {
+    public String getConfirmationCode(String email) {
         Person person = personRepository.findByeMail(email)
                 .orElseThrow(NoSuchUserException::new);
         String confirmationCode = jwtProvider.generateConfirmationCode(person);
