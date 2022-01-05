@@ -1,43 +1,28 @@
 package com.skillbox.socialnet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skillbox.socialnet.config.SecurityConfig;
 import com.skillbox.socialnet.model.RQ.*;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
-import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.AccountService;
 import com.skillbox.socialnet.service.PersonService;
 import com.skillbox.socialnet.util.Constants;
 import lombok.extern.java.Log;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
-import java.io.UnsupportedEncodingException;
-import java.util.function.Consumer;
-
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Log
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
                 "spring.datasource.username=postgres",
@@ -86,11 +71,6 @@ public class AccountControllerTest {
         request.setPasswd1(PASSWORD);
         request.setPasswd2(PASSWORD);
         return request;
-    }
-
-    @BeforeAll
-    public void set() {
-        String confirmationCode = accountService.getConfirmationCode(EXISTING_EMAIL);
     }
 
     @Test
@@ -162,7 +142,7 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$.data.message").value("ok"));
 
         Person person = personService.getPersonByEmail(EXISTING_EMAIL);
-        Assert.assertTrue(passwordEncoder.matches(NEW_PASSWORD, person.getPassword()));
+        assertTrue(passwordEncoder.matches(NEW_PASSWORD, person.getPassword()));
     }
 
     @Test
@@ -206,7 +186,7 @@ public class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
 
-        Assert.assertEquals(NEW_EMAIL, personService.getPersonById(EXISTING_PERSON_ID).getEMail());
+        assertEquals(NEW_EMAIL, personService.getPersonById(EXISTING_PERSON_ID).getEMail());
     }
 
     @Test
