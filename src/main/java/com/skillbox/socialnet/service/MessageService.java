@@ -22,8 +22,11 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
-    public Page<Message> getMessagesByDialog(Dialog dialog, Pageable pageable) {
+    public Page<Message> getMessagePageByDialog(Dialog dialog, Pageable pageable) {
         return  messageRepository.findByDialog(dialog, pageable);
+    }
+    public List<Message> getMessagesByDialog(Dialog dialog) {
+        return  messageRepository.findByDialog(dialog);
     }
 
     public long countUnreadMessages(Person me, Set<Dialog> dialogs) {
@@ -74,6 +77,8 @@ public class MessageService {
 
     @ПокаНеИспользуется
     public void deleteMessages(List<Message> messages) {
-        messageRepository.deleteMessagesByList(messages);
+        if(messages != null) {
+            messageRepository.deleteMessagesByList(messages);
+        }
     }
 }

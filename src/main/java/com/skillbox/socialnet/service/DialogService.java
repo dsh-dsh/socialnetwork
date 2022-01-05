@@ -7,7 +7,6 @@ import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.enums.MessageReadStatus;
 import com.skillbox.socialnet.repository.DialogRepository;
 import com.skillbox.socialnet.util.anotation.ПокаНеИспользуется;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,6 +36,10 @@ public class DialogService {
         return new GeneralListResponse<>(dialogDTOS, dialogPage);
     }
 
+    public List<Dialog> getDialogs(Person author) {
+        return dialogRepository.findByPerson(author);
+    }
+
     public DialogIdDTO createDialog(DialogCreateDTORequest dialogCreateDTORequest) {
         Set<Person> persons = personService.getPersonsByIdList(dialogCreateDTORequest.getUserIds());
         Person author = authService.getPersonFromSecurityContext();
@@ -50,7 +54,7 @@ public class DialogService {
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
         Person recipient = getRecipient(dialog, author);
-        Page<Message> messagePage = messageService.getMessagesByDialog(dialog, pageable);
+        Page<Message> messagePage = messageService.getMessagePageByDialog(dialog, pageable);
         messageService.setMessagesStatusRead(messagePage.getContent(), recipient);
         List<MessageDTO> messages = getMessageDTOList(author, messagePage.getContent());
         return new GeneralListResponse<>(messages, messagePage);
@@ -97,7 +101,8 @@ public class DialogService {
                 .orElseThrow(BadRequestException::new);
     }
 
-    private Optional<Dialog> getDialogByPersonSet(Person me, Set<Person> persons) {
+    @Transactional
+    public Optional<Dialog> getDialogByPersonSet(Person me, Set<Person> persons) {
         List<Dialog> dialogs = dialogRepository.findByPerson(me);
         return dialogs.stream()
                 .filter(dialog -> dialog.getPersons().containsAll(persons))
@@ -118,7 +123,7 @@ public class DialogService {
     @ПокаНеИспользуется
     public DialogIdDTO deleteDialog(long id) {
         Dialog dialog = dialogRepository.getOne(id);
-        List<Message> messages = dialog.getMessages();
+        List<Message> messages = messageService.getMessagesByDialog(dialog);
         messageService.deleteMessages(messages);
         dialogRepository.delete(dialog);
         return new DialogIdDTO(dialog.getId());
