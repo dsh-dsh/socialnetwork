@@ -4,12 +4,12 @@ import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.PostSearchRQ;
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
-import com.skillbox.socialnet.model.entity.Tag;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PostCommentMapper;
 import com.skillbox.socialnet.model.mapper.PostMapper;
@@ -17,8 +17,10 @@ import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.repository.Tag2PostRepository;
+import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
@@ -58,16 +60,32 @@ public class PostService {
         return DefaultRSMapper.of(postsDTOList, postPage);
     }
 
-
-
-    public List<PostDTO> getFeeds() {
+    public GeneralListResponse<?> getFeeds(Pageable pageable) {
         List<Person> friends = friendsService.getMyFriends();
-        List<Post> posts = postRepository.findByAuthorIn(friends)
-                .orElseThrow(BadRequestException::new);
+        Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
+        List<Post> posts = addPostsToLimit(postPage.getContent());
+        List<PostDTO> postDTOs = getPostDTOList(posts);
+        return new GeneralListResponse<>(postDTOs, postPage);
+    }
+
+    private List<Post> addPostsToLimit(List<Post> posts) {
+        List<Post> postList = posts.stream().collect(Collectors.toList());
+        if(posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
+            int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
+            List<Post> additionalPosts = postRepository
+                    .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
+            System.out.println(additionalPosts);
+            postList.addAll(additionalPosts);
+        }
+        return postList;
+    }
+
+    private List<PostDTO> getPostDTOList(List<Post> posts) {
         List<PostDTO> postDTOs = posts.stream()
-                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
-                        tag2PostRepository.getAllByPost(postFromDB),
-                        commentRepository.findByPost(postFromDB)))
+                .map(post -> PostDTO.getPostDTO(
+                        post,
+                        tag2PostRepository.getAllByPost(post),
+                        commentRepository.findByPost(post)))
                 .collect(Collectors.toList());
         return postDTOs;
     }

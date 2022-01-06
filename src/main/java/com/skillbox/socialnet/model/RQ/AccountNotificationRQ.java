@@ -21,6 +21,5 @@ public class AccountNotificationRQ {
 
     @JsonProperty("notification_type")
     private String notificationType;
-//    private NotificationTypeCode notificationType; // TODO Заменил на Стринг, не маппится.
     private boolean enable;
 }

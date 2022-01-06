@@ -4,6 +4,7 @@ public class Constants {
 
     public static final int MAX_AGE = 6733;
 
+    public static final String EMAIL_EXISTS_MESSAGE = "email exists";
     public static final String NO_SUCH_USER_MESSAGE = "no such user";
     public static final String NO_SUCH_POST_MESSAGE = "no such post";
     public static final String NO_ANY_POST_MESSAGE = "no any post";
@@ -29,6 +30,7 @@ public class Constants {
     public static final String API_ACCOUNT = "/api/v1/account";
     public static final String API_PLATFORM = "/api/v1/platform";
     public static final int RECOMMENDED_FRIENDS_LIMIT = 10;
+    public static final int RECOMMENDED_POST_LIMIT = 10;
 
     public static final String USER_BLOCKED_RS = "User is blocked";
     public static final String USER_UNBLOCKED_RS = "User is unblocked";
