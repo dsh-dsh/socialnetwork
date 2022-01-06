@@ -8,7 +8,6 @@ import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.repository.DialogRepository;
-import com.skillbox.socialnet.util.anotation.ПокаНеИспользуется;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
@@ -29,11 +28,11 @@ public class DialogService {
     private final PersonService personService;
     private final AuthService authService;
 
-    public GeneralListResponse<?> getDialogs(Pageable pageable) {
+    public GeneralListResponse<DialogDTO> getDialogs(Pageable pageable) {
         Person author = authService.getPersonFromSecurityContext();
         Page<Dialog> dialogPage = dialogRepository.findByPerson(author, pageable);
         List<DialogDTO> dialogDTOS = getDialogDTOList(author, dialogPage.getContent());
-        return new GeneralListResponse<>(dialogDTOS, dialogPage);
+        return new GeneralListResponse<DialogDTO>(dialogDTOS, dialogPage);
     }
 
     public List<Dialog> getDialogs(Person author) {
@@ -49,7 +48,7 @@ public class DialogService {
         return new DialogIdDTO(dialog.getId());
     }
 
-    public GeneralListResponse<?> getMessagesInDialog(long dialogId, Pageable pageable) {
+    public GeneralListResponse<MessageDTO> getMessagesInDialog(long dialogId, Pageable pageable) {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
@@ -114,13 +113,13 @@ public class DialogService {
         return dialogRepository.save(dialog);
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public MessageResponseDTO readMessage(long dialogId, int messageId) {
         Message message = messageService.getMessageToRead(messageId);
         return new MessageResponseDTO(message.getMessageText());
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public DialogIdDTO deleteDialog(long id) {
         Dialog dialog = dialogRepository.getOne(id);
         List<Message> messages = messageService.getMessagesByDialog(dialog);
@@ -129,7 +128,7 @@ public class DialogService {
         return new DialogIdDTO(dialog.getId());
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public DialogCreateDTORequest addUsersToDialog(long dialogId, DialogCreateDTORequest dialogCreateDTORequest) {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
@@ -140,7 +139,7 @@ public class DialogService {
         return new DialogCreateDTORequest(idList);
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public DialogCreateDTORequest deleteUsersFromDialog(long dialogId, String ids) {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
@@ -152,7 +151,7 @@ public class DialogService {
         return new DialogCreateDTORequest(idList);
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public InviteLinkDTO getLinkToJoin(long dialogId) {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
@@ -160,7 +159,7 @@ public class DialogService {
         return new InviteLinkDTO(link);
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public DialogCreateDTORequest joinByLink(long dialogId) {
         Person person = authService.getPersonFromSecurityContext();
         Dialog dialog = dialogRepository.findById(dialogId)
