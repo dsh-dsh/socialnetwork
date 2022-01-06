@@ -8,6 +8,7 @@ import com.skillbox.socialnet.model.RQ.AccountPasswordSetRQ;
 import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
 import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.model.dto.MessageResponseDTO;
 import com.skillbox.socialnet.model.entity.NotificationSetting;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
@@ -24,9 +25,12 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
+import static com.skillbox.socialnet.util.Constants.OK;
+import static com.skillbox.socialnet.util.Constants.USER_ALREADY_EXIST;
 
 
 /**
@@ -45,7 +49,7 @@ public class AccountService {
     private final AuthService authService;
     private final SettingsRepository settingsRepository;
 
-    public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
+   public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
         if (isEmailExist(accountRegisterRQ.getEmail())) {
             throw new BadRequestException(Constants.EMAIL_EXISTS_MESSAGE);
         }
@@ -54,7 +58,8 @@ public class AccountService {
         person.setFirstName(accountRegisterRQ.getFirstName());
         person.setLastName(accountRegisterRQ.getLastName());
         person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
-        person.setLastOnlineTime(new Timestamp(new Date().getTime()));
+        person.setLastOnlineTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        person.setRegDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         personRepository.save(person);
         return new MessageOkDTO();
     }

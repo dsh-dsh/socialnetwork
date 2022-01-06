@@ -34,5 +34,7 @@ public class Constants {
 
     public static final String USER_BLOCKED_RS = "User is blocked";
     public static final String USER_UNBLOCKED_RS = "User is unblocked";
+    public static final String OK = "ok";
+    public static final String USER_ALREADY_EXIST = "Email is already registered";
 
 }

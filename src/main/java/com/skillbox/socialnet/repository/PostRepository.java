@@ -27,7 +27,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Post findById(int id);
 
-    Optional<Page<Post>> findByAuthorIn(List<Person> persons, Pageable pageable);
+//    Optional<Page<Post>> findByAuthorIn(List<Person> persons, Pageable pageable);
     Page<Post> findByAuthorIn(List<Person> persons, Pageable pageable);
 
     Optional<List<Post>> findOptionalByAuthorIn(List<Person> friends);

@@ -29,7 +29,7 @@ public class AccountController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AccountRegisterRQ accountRegisterRQ) {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> register(@RequestBody AccountRegisterRQ accountRegisterRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.register(accountRegisterRQ));
         return ResponseEntity.ok(response);

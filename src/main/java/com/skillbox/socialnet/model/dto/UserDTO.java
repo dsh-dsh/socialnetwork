@@ -22,9 +22,9 @@ public class UserDTO {
     @JsonProperty("last_name")
     private String lastName;
     @JsonProperty("reg_date")
-    private long registrationDate;
+    private Long registrationDate;
     @JsonProperty("birth_date")
-    private long birthDate;
+    private Long birthDate;
     private String email;
     private String phone;
     private String photo;
@@ -34,7 +34,7 @@ public class UserDTO {
     @JsonProperty("messages_permission")
     private MessagesPermission permission;
     @JsonProperty("last_online_time")
-    private long lastOnlineTime;
+    private Long lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     @JsonProperty("is_friend")
@@ -50,7 +50,7 @@ public class UserDTO {
         userDTO.setFirstName(person.getFirstName());
         userDTO.setLastName(person.getLastName());
         userDTO.setRegistrationDate(person.getRegDate().getTime());
-        userDTO.setBirthDate(person.getBirthDate().getTime());
+        userDTO.setBirthDate((person.getBirthDate() == null)? null : person.getBirthDate().getTime());
         userDTO.setEmail(person.getEMail());
         userDTO.setPhone(person.getPhone());
         userDTO.setPhoto(person.getPhoto());
