@@ -46,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/v1/platform/**",
             "/api/v1/account/register",
             "/api/v1/account/password/**",
+            "/api/v1/account/shift-email",
             "/profile/storage/",
             "/storage/",
             "api/v1/admin/login",
@@ -55,7 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/login",
             "/shift-email",
             "/swagger-ui/**",
-            "/v1/api-docs"
+            "/v1/api-docs",
+            "/**/{path:[^\\\\.]*}"
     };
 
     @Bean

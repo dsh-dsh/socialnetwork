@@ -25,6 +25,7 @@ public class AuthController {
     login(@RequestBody AuthUserRQ authUserRQ) {
         GeneralResponse<UserDTO> response =
                 new GeneralResponse<>(authService.login(authUserRQ));
+
         return ResponseEntity.ok(response);
     }
 
@@ -33,6 +34,7 @@ public class AuthController {
     logout () {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(authService.logout());
+
         return ResponseEntity.ok(response);
     }
 

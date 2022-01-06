@@ -33,6 +33,7 @@ public class AccountController {
     register(@RequestBody AccountRegisterRQ accountRegisterRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.register(accountRegisterRQ));
+
         return ResponseEntity.ok(response);
     }
 
@@ -43,6 +44,7 @@ public class AccountController {
             HttpServletRequest servletRequest) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.recoveryPassword(accountEmailRQ, servletRequest));
+
         return ResponseEntity.ok(response);
     }
 
@@ -59,6 +61,7 @@ public class AccountController {
     shiftEmail(HttpServletRequest servletRequest) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.shiftEmail(servletRequest));
+
         return ResponseEntity.ok(response);
     }
 
@@ -67,6 +70,7 @@ public class AccountController {
     setEmail(@RequestBody AccountEmailRQ accountEmailRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.setEmail(accountEmailRQ));
+
         return ResponseEntity.ok(response);
     }
 
@@ -75,6 +79,7 @@ public class AccountController {
     setNotifications(@RequestBody AccountNotificationRQ accountNotificationRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.setNotifications(accountNotificationRQ));
+
         return ResponseEntity.ok(response);
     }
 

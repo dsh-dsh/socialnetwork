@@ -33,6 +33,7 @@ public class DialogController {
     createDialog(@RequestBody DialogCreateDTORequest dialogCreateDTORequest) {
         GeneralResponse<DialogIdDTO> response =
             new GeneralResponse<>(dialogService.createDialog(dialogCreateDTORequest));
+
         return ResponseEntity.ok(response);
     }
 
@@ -42,6 +43,7 @@ public class DialogController {
             @RequestBody MessageSendDtoRequest messageSendDtoRequest) {
         GeneralResponse<MessageDTO> response =
                 new GeneralResponse<>(dialogService.sendMessage(dialogId, messageSendDtoRequest));
+
         return ResponseEntity.ok(response);
     }
 
@@ -50,6 +52,7 @@ public class DialogController {
     getMessages(
             @PathVariable(name = "dialog_id") long dialogId,
             @RequestParam(required = false) ElementPageable pageable) {
+
         return ResponseEntity.ok(dialogService.getMessagesInDialog(dialogId, pageable));
     }
 
@@ -58,6 +61,7 @@ public class DialogController {
     unread() {
         GeneralResponse<UnreadCountDTO> response =
                 new GeneralResponse<>(dialogService.getUnreadCount());
+
         return ResponseEntity.ok(response);
     }
 
@@ -69,6 +73,7 @@ public class DialogController {
             @PathVariable(name = "message_id") int messageId) {
         GeneralResponse<MessageResponseDTO> response =
                 new GeneralResponse<>(dialogService.readMessage(dialogId, messageId));
+
         return ResponseEntity.ok(response);
     }
 
@@ -78,6 +83,7 @@ public class DialogController {
     deleteDialog(@PathVariable(name = "dialog_id") long dialogId) {
         GeneralResponse<DialogIdDTO> response =
             new GeneralResponse<>(dialogService.deleteDialog(dialogId));
+
         return ResponseEntity.ok(response);
     }
 
@@ -89,6 +95,7 @@ public class DialogController {
             @RequestBody DialogCreateDTORequest dialogCreateDTORequest) {
         GeneralResponse<DialogCreateDTORequest> response =
                 new GeneralResponse<>(dialogService.addUsersToDialog(id, dialogCreateDTORequest));
+
         return ResponseEntity.ok(response);
     }
 
@@ -100,6 +107,7 @@ public class DialogController {
             @PathVariable String ids) {
         GeneralResponse<DialogCreateDTORequest> response =
                 new GeneralResponse<>(dialogService.deleteUsersFromDialog(id, ids));
+
         return ResponseEntity.ok(response);
     }
 
@@ -109,6 +117,7 @@ public class DialogController {
     getLinkToJoinDialog(@PathVariable long id) {
         GeneralResponse<InviteLinkDTO> response =
                 new GeneralResponse<>(dialogService.getLinkToJoin(id));
+
         return ResponseEntity.ok(response);
     }
 
@@ -118,6 +127,7 @@ public class DialogController {
     joinDialogByLink(@PathVariable long id) {
         GeneralResponse<DialogCreateDTORequest> response =
                 new GeneralResponse<>(dialogService.joinByLink(id));
+
         return ResponseEntity.ok(response);
     }
 

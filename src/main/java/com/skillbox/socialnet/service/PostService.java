@@ -11,10 +11,7 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.model.mapper.PostCommentMapper;
-import com.skillbox.socialnet.model.mapper.PostMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
-import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.repository.Tag2PostRepository;
 import com.skillbox.socialnet.util.Constants;
@@ -25,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +44,7 @@ public class PostService {
         List<PostDTO> postsDTOList = postPage.stream()
                 .map(this::getPostDTO)
                 .collect(Collectors.toList());
+
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
@@ -65,6 +62,7 @@ public class PostService {
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
+
         return new GeneralListResponse<>(postDTOs, postPage);
     }
 
@@ -90,6 +88,7 @@ public class PostService {
         changePostPublishDate(publishDate, post);
         changePostTexts(postChangeRQ, post);
         postRepository.save(post);
+
         return getPostDTO(post);
     }
 
@@ -105,10 +104,13 @@ public class PostService {
     }
 
     public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
-        Page<PostComment> commentPage = commentRepository.findByPostIdPageable(id, pageable);
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
+        Page<PostComment> commentPage = commentRepository.findByPostAndIsBlocked(post, false, pageable);
         List<CommentDTO> commentsDTO = commentPage.stream()
                 .map(CommentDTO::getCommentDTO)
                 .collect(Collectors.toList());
+
         return new GeneralListResponse<>(commentsDTO, commentPage);
     }
 
@@ -118,6 +120,7 @@ public class PostService {
         Post post = postRepository.findPostById(postId)
                 .orElseThrow(BadRequestException::new);
         PostComment postComment = createPostComment(commentRQ, currentPerson, post);
+
         return CommentDTO.getCommentDTO(postComment);
     }
 
@@ -126,14 +129,15 @@ public class PostService {
                 .orElseThrow(BadRequestException::new);
         postComment.setCommentText(commentRQ.getCommentText());
         commentRepository.save(postComment);
+
         return CommentDTO.getCommentDTO(postComment);
     }
-
 
     public DeleteDTO deleteCommentToThePost(int id, int commentId) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);
         commentRepository.delete(postComment);
+
         return new DeleteDTO(id);
     }
 
@@ -159,7 +163,7 @@ public class PostService {
         return PostDTO.getPostDTO(
                 post,
                 tag2PostRepository.getAllByPost(post),
-                commentRepository.findByPost(post));
+                commentRepository.findByPostAndIsBlocked(post, false));
     }
 
     private long checkDate(long dateTo) {
@@ -196,6 +200,7 @@ public class PostService {
         postComment.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         postComment.setAuthor(currentPerson);
         commentRepository.save(postComment);
+
         return postComment;
     }
 

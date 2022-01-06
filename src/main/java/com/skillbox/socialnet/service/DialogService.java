@@ -32,6 +32,7 @@ public class DialogService {
         Person author = authService.getPersonFromSecurityContext();
         Page<Dialog> dialogPage = dialogRepository.findByPerson(author, pageable);
         List<DialogDTO> dialogDTOS = getDialogDTOList(author, dialogPage.getContent());
+
         return new GeneralListResponse<DialogDTO>(dialogDTOS, dialogPage);
     }
 
@@ -45,6 +46,7 @@ public class DialogService {
         persons.add(author);
         Dialog dialog = getDialogByPersonSet(author, persons)
                 .orElseGet(() -> addNewDialogToDataBase(persons));
+
         return new DialogIdDTO(dialog.getId());
     }
 
@@ -56,6 +58,7 @@ public class DialogService {
         Page<Message> messagePage = messageService.getMessagePageByDialog(dialog, pageable);
         messageService.setMessagesStatusRead(messagePage.getContent(), recipient);
         List<MessageDTO> messages = getMessageDTOList(author, messagePage.getContent());
+
         return new GeneralListResponse<>(messages, messagePage);
     }
 
@@ -63,6 +66,7 @@ public class DialogService {
         Person author = authService.getPersonFromSecurityContext();
         Set<Dialog> dialogs = author.getDialogs();
         int unreadCount = (int) messageService.countUnreadMessages(author, dialogs);
+
         return new UnreadCountDTO(unreadCount);
     }
 
@@ -75,6 +79,7 @@ public class DialogService {
                 recipient, messageSendDtoRequest.getMessageText());
         dialog.getMessages().add(message);
         dialogRepository.save(dialog);
+
         return new MessageDTO(author, message);
     }
 
@@ -125,6 +130,7 @@ public class DialogService {
         List<Message> messages = messageService.getMessagesByDialog(dialog);
         messageService.deleteMessages(messages);
         dialogRepository.delete(dialog);
+
         return new DialogIdDTO(dialog.getId());
     }
 
@@ -136,6 +142,7 @@ public class DialogService {
         dialog.getPersons().addAll(persons);
         dialogRepository.save(dialog);
         List<Integer> idList = persons.stream().map(Person::getId).collect(Collectors.toList());
+
         return new DialogCreateDTORequest(idList);
     }
 
@@ -148,6 +155,7 @@ public class DialogService {
         dialog.getPersons().removeAll(persons);
         dialogRepository.save(dialog);
         List<Integer> idList = persons.stream().map(Person::getId).collect(Collectors.toList());
+
         return new DialogCreateDTORequest(idList);
     }
 
@@ -156,6 +164,7 @@ public class DialogService {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
         String link = ""; // TODO выяснить формат String link
+
         return new InviteLinkDTO(link);
     }
 
@@ -170,6 +179,7 @@ public class DialogService {
         List<Integer> idList = personSet.stream()
                 .map(Person::getId)
                 .collect(Collectors.toList());
+
         return new DialogCreateDTORequest(idList);
     }
 }
