@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface LikesRepository extends JpaRepository<PostLike, Integer> {
 
-    List<PostLike> findByPost(Post post);
+    List<PostLike> findAllByPost(Post post);
 
 }
