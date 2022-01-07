@@ -1,20 +1,15 @@
 package com.skillbox.socialnet.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.skillbox.socialnet.model.dto.PostDTO;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = {"id"})
 @Entity
 @Table(name = "post")

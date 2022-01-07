@@ -14,7 +14,6 @@ import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PostCommentMapper;
 import com.skillbox.socialnet.model.mapper.PostMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
-import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.repository.Tag2PostRepository;
 import com.skillbox.socialnet.util.Constants;
@@ -33,12 +32,11 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    private final LikesRepository likesRepository;
     private final PostMapper postMapper;
     private final FriendsService friendsService;
     private final AuthService authService;
     private final PostCommentMapper commentMapper;
-    private final  Tag2PostRepository tag2PostRepository;
+    private final Tag2PostRepository tag2PostRepository;
 
     public DefaultRS<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
@@ -69,7 +67,7 @@ public class PostService {
     }
 
     private List<Post> addPostsToLimit(List<Post> posts) {
-        List<Post> postList = posts.stream().collect(Collectors.toList());
+        List<Post> postList = new ArrayList<>(posts);
         if(posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
             int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
             List<Post> additionalPosts = postRepository
@@ -81,13 +79,12 @@ public class PostService {
     }
 
     private List<PostDTO> getPostDTOList(List<Post> posts) {
-        List<PostDTO> postDTOs = posts.stream()
+        return posts.stream()
                 .map(post -> PostDTO.getPostDTO(
                         post,
                         tag2PostRepository.getAllByPost(post),
                         commentRepository.findByPost(post)))
                 .collect(Collectors.toList());
-        return postDTOs;
     }
 
     public DefaultRS<?> getPostById(int id) {
@@ -109,7 +106,7 @@ public class PostService {
 
     public DefaultRS<?> deletePostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
-//            postRepository.delete(post); // TODO сначала удалять все что ссылается на этот post
+        postRepository.delete(post);
         DeleteDTO deleteDTO = new DeleteDTO(id);
         return DefaultRSMapper.of(deleteDTO);
     }

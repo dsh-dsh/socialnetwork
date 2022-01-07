@@ -4,13 +4,13 @@ package com.skillbox.socialnet.controller;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.PostSearchRQ;
+import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -18,90 +18,99 @@ import java.util.List;
 @RequestMapping("/api/v1/post")
 public class PostController {
 
-
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<?> getPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+    public ResponseEntity<DefaultRS> getPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+
         return ResponseEntity.ok(postService.searchPosts(postSearchRQ, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPostById(@PathVariable int id) {
+    public ResponseEntity<DefaultRS> getPostById(
+            @PathVariable int id) {
+
         return ResponseEntity.ok(postService.getPostById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> changePostById(@PathVariable int id,
-                               @RequestParam (defaultValue = "0")  long publish_date,
-                               @RequestBody PostChangeRQ postChangeRQ
-                               ) {
-        return ResponseEntity.ok(postService.changePostById(id, publish_date, postChangeRQ));
+    public ResponseEntity<DefaultRS> changePostById(
+            @PathVariable int id,
+            @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
+            @RequestBody PostChangeRQ postChangeRQ) {
+
+        return ResponseEntity.ok(postService.changePostById(id, publishDate, postChangeRQ));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePostById(@PathVariable int id) {
+    public ResponseEntity<DefaultRS> deletePostById(
+            @PathVariable int id) {
 
         return ResponseEntity.ok(postService.deletePostById(id));
-
     }
 
     @PutMapping("/{id}/recover")
-    public ResponseEntity<?> recoverPostById(@PathVariable int id) {
+    public ResponseEntity<DefaultRS> recoverPostById(
+            @PathVariable int id) {
+
         return ResponseEntity.ok(postService.recoverPostById(id));
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<?> getCommentsByPostId(@PathVariable int id, Pageable pageable){
+    public ResponseEntity<DefaultRS> getCommentsByPostId(
+            @PathVariable int id,
+            Pageable pageable) {
 
         return ResponseEntity.ok(postService.getCommentsToPost(id, pageable));
-
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<?> makeCommentToThePost(@PathVariable int id,
-                                     @RequestBody CommentRQ commentRQ) {
+    public ResponseEntity<DefaultRS> makeCommentToThePost(
+            @PathVariable int id,
+            @RequestBody CommentRQ commentRQ) {
+
         return ResponseEntity.ok(postService.makeCommentToPost(id, commentRQ));
     }
 
     @PutMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> rewriteCommentToPost(
+    public ResponseEntity<DefaultRS> rewriteCommentToPost(
             @PathVariable int id,
-            @PathVariable int comment_id,
+            @PathVariable(name = "comment_id") int commentId,
             @RequestBody CommentRQ commentRQ) {
-        return ResponseEntity.ok(postService.rewriteCommentToThePost(id, comment_id, commentRQ));
+
+        return ResponseEntity.ok(postService.rewriteCommentToThePost(id, commentId, commentRQ));
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> deleteCommentById(
+    public ResponseEntity<DefaultRS> deleteCommentById(
             @PathVariable int id,
-            @PathVariable int comment_id){
-        return ResponseEntity.ok(postService.deleteCommentToThePost(id, comment_id));
+            @PathVariable(name = "comment_id") int commentId) {
 
+        return ResponseEntity.ok(postService.deleteCommentToThePost(id, commentId));
     }
 
     @PutMapping("/{id}/comments/{comment_id}/recover}")
-    public ResponseEntity<?> recoverCommentToPost(
+    public ResponseEntity<DefaultRS> recoverCommentToPost(
             @PathVariable int id,
-            @PathVariable int comment_id){
-        return ResponseEntity.ok(postService.recoverCommentToPost(id, comment_id));
+            @PathVariable(name = "comment_id") int commentId) {
 
+        return ResponseEntity.ok(postService.recoverCommentToPost(id, commentId));
     }
 
 
     @PostMapping("/{id}/report")
-    public ResponseEntity<?> reportPostById(@PathVariable int id){
+    public ResponseEntity<DefaultRS> reportPostById(
+            @PathVariable int id) {
 
         return ResponseEntity.ok(postService.reportPostById(id));
-
     }
 
     @PostMapping("/{id}/comments/{comment_id}/report")
-    public ResponseEntity<?> reportCommentToPost(@PathVariable int id,
-                                     @PathVariable int
-                                             comment_id){
-        return ResponseEntity.ok(postService.reportCommentToThePost(id, comment_id));
+    public ResponseEntity<DefaultRS> reportCommentToPost(
+            @PathVariable int id,
+            @PathVariable(name = "comment_id") int commentId) {
 
+        return ResponseEntity.ok(postService.reportCommentToThePost(id, commentId));
     }
 
 }

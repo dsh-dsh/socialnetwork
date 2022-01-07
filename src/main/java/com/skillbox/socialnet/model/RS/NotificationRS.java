@@ -4,14 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class NotificationRS {
+    private NotificationDataRS data;
     private String error;
-    private long timestamp;
-    private int total;
     private int offset;
     private int perPage;
-    private NotificationDataRS data;
+    private Timestamp timestamp;
+    private int total;
 }

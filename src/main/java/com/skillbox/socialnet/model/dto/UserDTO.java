@@ -9,6 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,7 +52,9 @@ public class UserDTO {
         userDTO.setId(person.getId());
         userDTO.setFirstName(person.getFirstName());
         userDTO.setLastName(person.getLastName());
+
         userDTO.setRegistrationDate(person.getRegDate().getTime());
+
         userDTO.setBirthDate(person.getBirthDate().getTime());
         userDTO.setEmail(person.getEMail());
         userDTO.setPhone(person.getPhone());
