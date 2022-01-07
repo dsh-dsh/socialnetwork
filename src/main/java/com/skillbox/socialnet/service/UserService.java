@@ -4,6 +4,7 @@ import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 //import com.skillbox.socialnet.model.mapper.PersonModelMapper;
@@ -129,18 +130,25 @@ public class UserService {
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 
-    public String blockUser(int id) {
+    public MessageOkDTO blockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(true);
         personRepository.save(person);
-        return "User is blocked";
+        return new MessageOkDTO();
     }
 
-    public String unblockUser(int id) {
+    public MessageOkDTO unblockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        return "Usr is unblocked";
+        return new MessageOkDTO();
+    }
+
+    public MessageOkDTO checkOnline() {
+        Person me = authService.getPersonFromSecurityContext();
+        me.setLastOnlineTime(new Timestamp(new Date().getTime()));
+        personRepository.save(me);
+        return new MessageOkDTO();
     }
 
 

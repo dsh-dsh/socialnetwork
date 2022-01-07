@@ -86,17 +86,17 @@ public class ProfileController {
     }
 
     @PutMapping("/block/{id}")
-    public ResponseEntity<GeneralResponse<String>> blockUser(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> blockUser(@PathVariable int id) {
         return ResponseEntity.ok(new GeneralResponse<>(userService.blockUser(id)));
     }
 
     @DeleteMapping("/block/{id}")
-    public ResponseEntity<GeneralResponse<String>> unblockUser(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> unblockUser(@PathVariable int id) {
         return ResponseEntity.ok(new GeneralResponse<>(userService.unblockUser(id)));
     }
 
     @PutMapping("/checkonline")
-    public ResponseEntity<GeneralResponse<String>> checkOnline() {
-        return ResponseEntity.ok(new GeneralResponse<>("User is online"));
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> checkOnline() {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.checkOnline()));
     }
 }
