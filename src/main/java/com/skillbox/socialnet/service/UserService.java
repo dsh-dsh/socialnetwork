@@ -38,7 +38,6 @@ public class UserService {
     private final PersonRepository personRepository;
     private final AuthService authService;
     private final PostRepository postRepository;
-    private final PostService postService;
     private final TagRepository tagRepository;
     private final Tag2PostRepository tag2PostRepository;
     private final CommentRepository commentRepository;
