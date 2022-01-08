@@ -61,6 +61,7 @@ public class AccountService {
         person.setLastOnlineTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         person.setRegDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         personRepository.save(person);
+
         return new MessageOkDTO();
     }
 
@@ -78,15 +79,17 @@ public class AccountService {
                 "/change-password?code=" + getConfirmationCode(email);
         emailService.send(email, Constants.PASSWWORD_RECOVERY_SUBJECT,
                     String.format(Constants.PASSWWORD_RECOVERY_TEXT, recoveryLink));
+
         return new MessageOkDTO();
     }
 
-    private String getConfirmationCode(String email) {
+    public String getConfirmationCode(String email) {
         Person person = personRepository.findByeMail(email)
                 .orElseThrow(NoSuchUserException::new);
         String confirmationCode = jwtProvider.generateConfirmationCode(person);
         person.setConfirmationCode(confirmationCode);
         personRepository.save(person);
+
         return confirmationCode;
     }
 
@@ -96,6 +99,7 @@ public class AccountService {
                 .orElseThrow(BadRequestException::new);
         person.setPassword(passwordEncoder.encode(accountPasswordSetRQ.getPassword()));
         personRepository.save(person);
+
         return new MessageOkDTO();
     }
 
@@ -106,6 +110,7 @@ public class AccountService {
                 "/shift-email";
         emailService.send(email, Constants.EMAIL_RECOVERY_SUBJECT,
                 String.format(Constants.EMAIL_RECOVERY_TEXT, recoveryLink));
+
         return new MessageOkDTO();
     }
 
@@ -117,6 +122,7 @@ public class AccountService {
         Person person = authService.getPersonFromSecurityContext();
         person.setEMail(email);
         personRepository.save(person);
+
         return new MessageOkDTO();
     }
 
@@ -126,6 +132,7 @@ public class AccountService {
         NotificationSetting notificationSetting = getNotificationSetting(currentPerson, notificationTypeCode);
         notificationSetting.setPermission(!notificationSetting.isPermission());
         settingsRepository.save(notificationSetting);
+
         return new MessageOkDTO();
     }
 

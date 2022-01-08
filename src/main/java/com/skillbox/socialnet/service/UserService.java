@@ -1,26 +1,32 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
+import com.skillbox.socialnet.model.RQ.UserChangeRQ;
+import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
+//import com.skillbox.socialnet.model.mapper.PersonModelMapper;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.Post2tag;
 import com.skillbox.socialnet.model.entity.Tag;
+import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -70,7 +76,7 @@ public class UserService {
         List<PostDTO> postDTOs = postPage.stream()
                 .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
                         tag2PostRepository.getAllByPost(postFromDB),
-                        commentRepository.findByPost(postFromDB)))
+                        commentRepository.findByPostAndIsBlocked(postFromDB, false)))
                 .collect(Collectors.toList());
         return postDTOs;
     }
@@ -131,18 +137,25 @@ public class UserService {
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 
-    public String blockUser(int id) {
+    public MessageOkDTO blockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(true);
         personRepository.save(person);
-        return USER_BLOCKED_RS;
+        return new MessageOkDTO();
     }
 
-    public String unblockUser(int id) {
+    public MessageOkDTO unblockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        return USER_UNBLOCKED_RS;
+        return new MessageOkDTO();
+    }
+
+    public MessageOkDTO checkOnline() {
+        Person me = authService.getPersonFromSecurityContext();
+        me.setLastOnlineTime(new Timestamp(new Date().getTime()));
+        personRepository.save(me);
+        return new MessageOkDTO();
     }
 
 

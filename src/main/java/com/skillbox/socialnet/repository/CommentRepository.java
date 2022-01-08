@@ -2,6 +2,7 @@ package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.domain.Pageable;
@@ -12,16 +13,10 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<PostComment, Integer> {
 
-    @Query(value = "select c from PostComment c where c.post = :post and c.isBlocked = false")
-    List<PostComment> findByPost(Post post);
+    List<PostComment> findByPostAndIsBlocked(Post post, boolean isBlocked);
 
-    @Query(value = "select c from PostComment c where c.post.id = :postId and c.isBlocked = false")
-    List<PostComment> findByPostId(int postId, Pageable pageable);
+    Page<PostComment> findByPostAndIsBlocked(Post post, boolean isBlocked, Pageable pageable);
 
-    @Query(value = "select c from PostComment c where c.id = :id")
     Optional<PostComment> findById(int id);
-
-
-
 
 }

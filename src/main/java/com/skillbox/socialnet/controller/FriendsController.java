@@ -1,7 +1,10 @@
 package com.skillbox.socialnet.controller;
 
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.model.dto.StatusUserDTO;
+import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.FriendsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +27,18 @@ public class FriendsController {
     private final FriendsService friendsService;
 
     @GetMapping("/friends")
-    public ResponseEntity<?> getAllFriends(
+    public ResponseEntity<GeneralListResponse<UserDTO>> getAllFriends(
             @RequestParam(defaultValue = "") String name, Pageable pageable) {
         return ResponseEntity.ok(friendsService.getAllFriends(name, pageable));
     }
 
     @DeleteMapping("/friends/{id}")
-    public ResponseEntity<?> deleteFriend(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> deleteFriend(@PathVariable int id) {
         return ResponseEntity.ok(new GeneralResponse<>(friendsService.deleteFriend(id)));
     }
 
     @PostMapping("/friends/{id}")
-    public ResponseEntity<?> addFriend(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> addFriend(@PathVariable int id) {
         return ResponseEntity.ok(new GeneralResponse<>(friendsService.addFriend(id)));
     }
 
@@ -48,11 +51,6 @@ public class FriendsController {
     @GetMapping("/friends/recommendations")
     public ResponseEntity<?> getRecommendations(Pageable pageable) {
         return ResponseEntity.ok(friendsService.getRecommendations(pageable));
-    }
-
-    @PostMapping("/is/friends")
-    public ResponseEntity<?> isFriends(@RequestBody List<Integer> userIds) {
-        return ResponseEntity.ok(new GeneralResponse<>(friendsService.isMyFriends(userIds)));
     }
 
 

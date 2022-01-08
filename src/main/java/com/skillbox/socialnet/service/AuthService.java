@@ -33,6 +33,7 @@ public class AuthService {
         }
         UserDTO userDTO = UserDTO.getUserDTO(person);
         userDTO.setToken(jwtProvider.generateToken(person));
+
         return userDTO;
     }
 

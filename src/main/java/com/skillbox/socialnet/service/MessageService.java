@@ -6,7 +6,6 @@ import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
 import com.skillbox.socialnet.repository.MessageRepository;
-import com.skillbox.socialnet.util.anotation.ПокаНеИспользуется;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +21,11 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
-    public Page<Message> getMessagesByDialog(Dialog dialog, Pageable pageable) {
+    public Page<Message> getMessagePageByDialog(Dialog dialog, Pageable pageable) {
         return  messageRepository.findByDialog(dialog, pageable);
+    }
+    public List<Message> getMessagesByDialog(Dialog dialog) {
+        return  messageRepository.findByDialog(dialog);
     }
 
     public long countUnreadMessages(Person me, Set<Dialog> dialogs) {
@@ -59,21 +61,23 @@ public class MessageService {
         messageRepository.setMessagesReadStatus(messages, recipient, MessageReadStatus.READ);
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public Message getMessageToRead(int messageId) {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(BadRequestException::new);
         return setMessagesStatusRead(message, MessageReadStatus.READ);
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public Message setMessagesStatusRead(Message message, MessageReadStatus status) {
         message.setReadStatus(status);
         return messageRepository.save(message);
     }
 
-    @ПокаНеИспользуется
+    //покаНеИспользуется
     public void deleteMessages(List<Message> messages) {
-        messageRepository.deleteMessagesByList(messages);
+        if(messages != null) {
+            messageRepository.deleteMessagesByList(messages);
+        }
     }
 }

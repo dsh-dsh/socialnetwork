@@ -21,16 +21,20 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthUserRQ authUserRQ) {
+    public ResponseEntity<GeneralResponse<UserDTO>>
+    login(@RequestBody AuthUserRQ authUserRQ) {
         GeneralResponse<UserDTO> response =
                 new GeneralResponse<>(authService.login(authUserRQ));
+
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout () {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>>
+    logout () {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(authService.logout());
+
         return ResponseEntity.ok(response);
     }
 
