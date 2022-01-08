@@ -14,11 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-
-/**
- * @author Semen V
- * @created 18|11|2021
- */
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor

@@ -60,6 +60,7 @@ public class FriendsService {
         if (!name.equals("")) {
             personStream = personStream.filter(person -> person.getFirstName().equals(name));
         }
+
         return personStream.collect(Collectors.toList());
     }
 
@@ -83,6 +84,7 @@ public class FriendsService {
                     .orElseGet(() -> createFriendshipRequest(currentPerson, dstPerson));
             friendshipRepository.save(friendship);
         }
+
         return new MessageOkDTO();
     }
 
@@ -93,6 +95,7 @@ public class FriendsService {
             Friendship friendship = acceptFriendship(dstPerson, requests);
             return Optional.of(friendship);
         }
+
         return Optional.empty();
     }
 
@@ -104,6 +107,7 @@ public class FriendsService {
             status.setName("Friend");
             status.setTime(LocalDateTime.now());
         }
+
         return request;
     }
 
@@ -112,6 +116,7 @@ public class FriendsService {
         friendship.setSrcPerson(currentPerson);
         friendship.setDstPerson(dstPerson);
         friendship.setStatus(createRequestFriendshipStatus());
+
         return friendship;
     }
 
@@ -122,6 +127,7 @@ public class FriendsService {
                 .collect(Collectors.toSet());
         Set<Person> recommendedFriends = getRecommendedFriends(currentPerson, myFriends);
         List<UserDTO> recommendedFriendsList = getUserDTOList(recommendedFriends);
+
         return new GeneralListResponse<>(recommendedFriendsList, pageable);
     }
 
@@ -139,6 +145,7 @@ public class FriendsService {
         Set<Person> personsToExclude = getPersonsToExclude(currentPerson, myFriends, recommendedFriends);
         List<Person> newFriends = personRepository.findNewFriendsLimit(personsToExclude, PageRequest.of(0, limit));
         recommendedFriends.addAll(newFriends);
+
         return recommendedFriends;
     }
 
@@ -181,6 +188,7 @@ public class FriendsService {
         if (!name.equals("")) {
             personStream = personStream.filter(person -> person.getFirstName().equals(name));
         }
+
         return personStream.collect(Collectors.toList());
     }
 
@@ -202,6 +210,7 @@ public class FriendsService {
     private boolean isFriends(Person currentPerson, Person dstPerson) {
         List<Friendship> friendships = friendshipRepository
                 .isFriends(currentPerson, dstPerson, FriendshipStatusCode.FRIEND);
+
         return !friendships.isEmpty();
     }
 
