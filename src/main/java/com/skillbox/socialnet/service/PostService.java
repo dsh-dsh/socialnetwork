@@ -14,7 +14,6 @@ import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.model.mapper.PostCommentMapper;
 import com.skillbox.socialnet.model.mapper.PostMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
-import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.repository.Tag2PostRepository;
 import com.skillbox.socialnet.util.Constants;
@@ -25,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,30 +32,30 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final PostMapper postMapper;
     private final FriendsService friendsService;
     private final AuthService authService;
-    private final  Tag2PostRepository tag2PostRepository;
+    private final PostCommentMapper commentMapper;
+    private final Tag2PostRepository tag2PostRepository;
 
-    public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+    public DefaultRS<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
-        setEmptyTagsToNull(postSearchRQ);
-        Page<Post> postPage = postRepository.findPost(
-                postSearchRQ.getAuthor(), postSearchRQ.getText(),
-                new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
-                postSearchRQ.getTags(), pageable);
-        List<PostDTO> postsDTOList = postPage.stream()
-                .map(this::getPostDTO)
-                .collect(Collectors.toList());
-        return new GeneralListResponse<>(postsDTOList, postPage);
-    }
 
-    // FIXME если тегов нет фронт посылает пустой массив, найти решение проверки :tags is empty в hql
-    private void setEmptyTagsToNull(PostSearchRQ postSearchRQ) {
+        // FIXME если тегов нет фронт посылает пустой массив, найти решение проверки :tags is empty в hql
         if(postSearchRQ.getTags() != null) {
             if (postSearchRQ.getTags().size() == 0) {
                 postSearchRQ.setTags(null);
             }
         }
+
+        Page<Post> postPage = postRepository.findPost(
+                postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
+                postSearchRQ.getTags(), pageable);
+        List<PostDTO> postsDTOList = postPage.stream()
+                .map(postMapper::mapToPostDTO)
+                .collect(Collectors.toList());
+        return DefaultRSMapper.of(postsDTOList, postPage);
     }
 
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
@@ -74,92 +72,93 @@ public class PostService {
             int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
             List<Post> additionalPosts = postRepository
                     .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
+            System.out.println(additionalPosts);
             postList.addAll(additionalPosts);
         }
         return postList;
     }
 
-    public PostDTO getPostById(int id) {
-        Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
-        return getPostDTO(post);
+    private List<PostDTO> getPostDTOList(List<Post> posts) {
+        return posts.stream()
+                .map(post -> PostDTO.getPostDTO(
+                        post,
+                        tag2PostRepository.getAllByPost(post),
+                        commentRepository.findByPost(post)))
+                .collect(Collectors.toList());
     }
 
-    public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
+    public DefaultRS<?> getPostById(int id) {
+        Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
+        PostDTO postDTO = postMapper.mapToPostDTO(post);
+        return DefaultRSMapper.of(postDTO);
+    }
+
+    public DefaultRS<?> changePostById(int id, PostChangeRQ postChangeRQ) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
-        changePostPublishDate(publishDate, post);
+        Timestamp publishDate = new Timestamp(System.currentTimeMillis());
+        changePostPublishDate(publishDate.getTime(), post);
         changePostTexts(postChangeRQ, post);
         postRepository.save(post);
-        return getPostDTO(post);
+        PostDTO postDTO = postMapper.mapToPostDTO(post);
+        return DefaultRSMapper.of(postDTO);
     }
 
 
-    public DeleteDTO deletePostById(int id) {
+    public DefaultRS<?> deletePostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
-//            postRepository.delete(post); // TODO сначала удалять все что ссылается на этот post
-        return new DeleteDTO(id);
+        postRepository.delete(post);
+        DeleteDTO deleteDTO = new DeleteDTO(id);
+        return DefaultRSMapper.of(deleteDTO);
     }
 
-    public PostDTO recoverPostById(int id) {
-        return new PostDTO();
+    public DefaultRS<?> recoverPostById(int id) {
+        return DefaultRSMapper.of(new PostDTO());
     }
 
-    public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
-        Page<PostComment> commentPage = commentRepository.findByPostIdPageable(id, pageable);
-        List<CommentDTO> commentsDTO = commentPage.stream()
-                .map(CommentDTO::getCommentDTO)
+    public DefaultRS<?> getCommentsToPost(int id, Pageable pageable) {
+        List<PostComment> comments = commentRepository.findByPostId(id, pageable);
+        List<CommentDTO> commentsDTO = comments.stream()
+                .map(commentMapper::mapToCommentDTO)
                 .collect(Collectors.toList());
-        return new GeneralListResponse<>(commentsDTO, commentPage);
+        return DefaultRSMapper.of(commentsDTO);
     }
 
 
-    public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
+    public DefaultRS<?> makeCommentToPost(int postId, CommentRQ commentRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Post post = postRepository.findPostById(postId)
-                .orElseThrow(BadRequestException::new);
+        Post post = postRepository.findPostById(postId).orElseThrow(BadRequestException::new);
         PostComment postComment = createPostComment(commentRQ, currentPerson, post);
-        return CommentDTO.getCommentDTO(postComment);
+        CommentDTO commentDTO = commentMapper.mapToCommentDTO(postComment);
+        return DefaultRSMapper.of(commentDTO);
     }
 
-    public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
-        PostComment postComment = commentRepository.findById(commentId)
-                .orElseThrow(BadRequestException::new);
+    public DefaultRS<?> rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
+        PostComment postComment = commentRepository.findById(commentId).orElseThrow(BadRequestException::new);
         postComment.setCommentText(commentRQ.getCommentText());
         commentRepository.save(postComment);
-        return CommentDTO.getCommentDTO(postComment);
+        CommentDTO commentDTO = commentMapper.mapToCommentDTO(postComment);
+        return DefaultRSMapper.of(commentDTO);
     }
 
 
-    public DeleteDTO deleteCommentToThePost(int id, int commentId) {
-        PostComment postComment = commentRepository.findById(commentId)
-                .orElseThrow(BadRequestException::new);
+    public DefaultRS<?> deleteCommentToThePost(int id, int commentId) {
+        PostComment postComment = commentRepository.findById(commentId).orElseThrow(BadRequestException::new);
         commentRepository.delete(postComment);
-        return new DeleteDTO(id);
+        DeleteDTO deleteDTO = new DeleteDTO(id);
+        return DefaultRSMapper.of(deleteDTO);
     }
 
-    public CommentDTO recoverCommentToPost(int id, int commentId) {
-        return new CommentDTO();
+    public DefaultRS<?> recoverCommentToPost(int id, int commentId) {
+        return DefaultRSMapper.of(new CommentDTO());
     }
 
-    public MessageOkDTO reportPostById(int id) {
-        return new MessageOkDTO();
+    public DefaultRS<?> reportPostById(int id) {
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
         return DefaultRSMapper.of(new MessageOkDTO());
-    }
-
-    private List<PostDTO> getPostDTOList(List<Post> posts) {
-        return posts.stream()
-                .map(this::getPostDTO)
-                .collect(Collectors.toList());
-    }
-
-    private PostDTO getPostDTO(Post post) {
-        return PostDTO.getPostDTO(
-                post,
-                tag2PostRepository.getAllByPost(post),
-                commentRepository.findByPost(post));
     }
 
     private long checkDate(long dateTo) {
@@ -188,8 +187,7 @@ public class PostService {
         PostComment postComment = new PostComment();
         postComment.setCommentText(commentRQ.getCommentText());
         if (commentRQ.getParentId() != null) {
-            PostComment parentComment = commentRepository.findById(commentRQ.getParentId())
-                    .orElseThrow(BadRequestException::new);
+            PostComment parentComment = commentRepository.findById(commentRQ.getParentId()).orElseThrow(BadRequestException::new);
             postComment.setParent(parentComment);
         }
         postComment.setPost(post);
@@ -198,5 +196,4 @@ public class PostService {
         commentRepository.save(postComment);
         return postComment;
     }
-
 }

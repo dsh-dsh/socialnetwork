@@ -120,6 +120,7 @@ create table if not exists notification(
 	sent_time timestamp,
 	person_id int references person(id),
 	entity_id varchar(255),
-	contact varchar(255)
+	contact varchar(255),
+	seen BOOLEAN
 );
 

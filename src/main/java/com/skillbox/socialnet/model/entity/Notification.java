@@ -1,14 +1,12 @@
 package com.skillbox.socialnet.model.entity;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "notification")
@@ -21,7 +19,7 @@ public class Notification {
     @JoinColumn(name = "type_id")
     private NotificationType type;
     @Column(name = "sent_time")
-    private LocalDateTime sentTime;
+    private Timestamp sentTime;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id")
     private Person person;
@@ -29,4 +27,6 @@ public class Notification {
     private String entity;
     @Column(name = "contact")
     private String contact;
+    @Column
+    private boolean seen;
 }
