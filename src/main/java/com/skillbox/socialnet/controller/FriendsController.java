@@ -7,6 +7,7 @@ import com.skillbox.socialnet.model.dto.StatusUserDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.FriendsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * @author Semen V
- * @created 19|11|2021
- */
+@Log
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor

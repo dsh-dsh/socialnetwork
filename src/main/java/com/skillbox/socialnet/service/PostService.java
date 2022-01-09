@@ -36,25 +36,26 @@ public class PostService {
 
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
-        setEmptyTagsToNull(postSearchRQ);
-        Page<Post> postPage = postRepository.findPost(
-                postSearchRQ.getAuthor(), postSearchRQ.getText(),
-                new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
-                postSearchRQ.getTags(), pageable);
+        Page<Post> postPage = getPostsPage(postSearchRQ, pageable, dateTo);
         List<PostDTO> postsDTOList = postPage.stream()
                 .map(this::getPostDTO)
                 .collect(Collectors.toList());
-
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
-    // FIXME если тегов нет фронт посылает пустой массив, найти решение проверки :tags is empty в hql
-    private void setEmptyTagsToNull(PostSearchRQ postSearchRQ) {
-        if(postSearchRQ.getTags() != null) {
-            if (postSearchRQ.getTags().size() == 0) {
-                postSearchRQ.setTags(null);
-            }
+    private Page<Post> getPostsPage(PostSearchRQ postSearchRQ, Pageable pageable, long dateTo) {
+        Page<Post> postPage;
+        if(postSearchRQ.getTags().size() > 0) {
+            postPage = postRepository.findPostWithTags(
+                    postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                    new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
+                    postSearchRQ.getTags(), pageable);
+        } else {
+            postPage = postRepository.findPost(
+                    postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                    new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo), pageable);
         }
+        return postPage;
     }
 
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
