@@ -33,12 +33,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtFilter jwtFilter;
 
     private static final String[] AUTH_WHITELIST = {
-            "/v2/api-docs",
             "/swagger-resources",
             "/swagger-resources/",
             "/configuration/ui",
             "/configuration/security",
             "/swagger-ui.html",
+            "/swagger-ui/**",
             "/webjars/",
             "/",
             "/static/**",
@@ -53,10 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/favicon.ico",
             "/js/**", "/css/**",
             "/change-password",
-            "/login",
             "/shift-email",
-            "/swagger-ui/**",
-            "/v1/api-docs",
             "/**/{path:[^\\\\.]*}"
     };
 

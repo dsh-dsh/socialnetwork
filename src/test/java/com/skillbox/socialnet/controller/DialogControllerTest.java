@@ -64,7 +64,7 @@ public class DialogControllerTest {
     @Test
     @Order(1)
     @WithUserDetails(EXISTING_EMAIL)
-    @Sql(value = {"/sql/dialog/before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/dialog/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void createDialogsTest() throws Exception {
         setTestingDialogId();
         DialogCreateDTORequest request = new DialogCreateDTORequest(List.of(NEW_DIALOG_RECIPIENT_ID));

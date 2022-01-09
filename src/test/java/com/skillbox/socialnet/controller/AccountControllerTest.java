@@ -61,8 +61,6 @@ public class AccountControllerTest {
     private static final String ENCODED_PASSWORD = "$2y$12$NKArmf9agtEQw7rPDN4zb.rE90zeewGAUWNRkSrYW662FwL77NyCS";
     private static final int EXISTING_PERSON_ID = 6;
 
-    private String confirmationCode;
-
     private AccountRegisterRQ getRegisterRequest(String email) {
         AccountRegisterRQ request = new AccountRegisterRQ();
         request.setFirstName(FIRST_NAME);
