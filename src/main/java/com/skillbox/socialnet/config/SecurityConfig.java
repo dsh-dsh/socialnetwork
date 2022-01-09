@@ -32,7 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtFilter jwtFilter;
 
-
     private static final String[] AUTH_WHITELIST = {
             "/v2/api-docs",
             "/swagger-resources",
@@ -54,9 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/js/**", "/css/**",
             "/change-password",
             "/login",
-            "/shift-email"
+            "/shift-email",
+            "/swagger-ui/**",
+            "/v1/api-docs"
     };
-
 
     @Bean
     public FilterRegistrationBean corsFilter() {
@@ -107,8 +107,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .cors(AbstractHttpConfigurer::disable);
     }
-
-
 
     @Value("${cors.urls}")
     private List<String> hosts = new ArrayList<>();

@@ -36,7 +36,6 @@ public class PostDTO {
     private String[] tags;
     private String type = "string";
 
-
     public static PostDTO getPostDTO(Post post, List<Post2tag> tags, List<PostComment> comments) {
         PostDTO postDTO = new PostDTO();
         postDTO.setId(postDTO.getId());
