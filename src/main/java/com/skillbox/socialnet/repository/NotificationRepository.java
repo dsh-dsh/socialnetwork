@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
 
-    @Query(value = "select * from notification where person_id = :id and seen = false limit 1",
+    @Query(value = "select * from notification where person_id = :id and seen = false",
     nativeQuery = true)
-    Optional<Notification> getFirstNotSeenNotificationsForUser(int id);
+    List<Notification> getAllNotSeenNotificationsForUser(int id);
 
     List<Notification> findAll();
 

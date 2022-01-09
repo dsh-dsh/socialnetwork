@@ -1,6 +1,5 @@
 package com.skillbox.socialnet.repository;
 
-import com.skillbox.socialnet.model.dto.CommentAuthorDTO;
 import com.skillbox.socialnet.model.entity.Person;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,9 +37,5 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "WHERE person NOT IN (:myFriends) " +
             "ORDER BY regDate DESC")
     List<Person> findNewFriendsLimit(Collection<Person> myFriends, Pageable pageable);
-
-    @Query(value = "SELECT first_name, id, last_name, photo FROM person WHERE id = :id",
-    nativeQuery = true)
-    CommentAuthorDTO getPersonForNotification(int id);
 }
 

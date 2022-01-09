@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(name = "/api/v1")
+@RequestMapping("/api/v1")
 public class NotificationController {
 
     private final NotificationService notificationService;

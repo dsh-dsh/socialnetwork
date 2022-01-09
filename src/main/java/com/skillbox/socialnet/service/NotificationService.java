@@ -2,6 +2,7 @@ package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.model.RS.NotificationDataRS;
 import com.skillbox.socialnet.model.RS.NotificationRS;
+import com.skillbox.socialnet.model.dto.CommentAuthorDTO;
 import com.skillbox.socialnet.model.entity.Notification;
 import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +23,18 @@ public class NotificationService {
 
 
     public NotificationRS getNotification(int itemPerPage, int offset) {
+        List<Notification> notifications = notificationRepository.getAllNotSeenNotificationsForUser(authService.getPersonFromSecurityContext().getId());
         NotificationRS notificationRS = new NotificationRS();
-
-        notificationRS.setError("error");
+        List<NotificationDataRS> dataRS = new ArrayList<>();
+        for (Notification notification : notifications) {
+            dataRS.add(createDataRS(notification));
+        }
+        notificationRS.setData(dataRS);
+        notificationRS.setError("string");
         notificationRS.setTimestamp(new Timestamp(System.currentTimeMillis()));
         notificationRS.setOffset(offset);
         notificationRS.setPerPage(itemPerPage);
         notificationRS.setTotal(0);
-        notificationRS.setData(createDataRS(notificationRepository.getFirstNotSeenNotificationsForUser(authService.getPersonFromSecurityContext().getId()).get()));
-
         return notificationRS;
     }
 
@@ -40,11 +46,11 @@ public class NotificationService {
         NotificationDataRS ndr = new NotificationDataRS();
         String[] whoIs = notification.getEntity().split(",");
 
-        ndr.setEntityAuthor(personRepository.getPersonForNotification(Integer.parseInt(whoIs[0])));
-        ndr.setEventType(notification.getType().toString());
+        ndr.setEntityAuthor(CommentAuthorDTO.getCommentAuthorDTO(personRepository.findPersonById(Integer.parseInt(whoIs[0]))));
+        ndr.setEventType(notification.getType().getName());
         ndr.setId(notification.getId());
         ndr.setSentTime(notification.getSentTime());
-        ndr.setInfo(notification.getEntity());
+        ndr.setInfo(notification.getType().getName());
         return ndr;
     }
 
