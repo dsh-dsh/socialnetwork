@@ -96,6 +96,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/").permitAll()
                 .antMatchers("/api/v1/dialogs/**").permitAll()
                 .antMatchers("/api/v1/friends/**").permitAll()
+                .antMatchers("/api/v1/storage/**").permitAll()
+                .antMatchers("/api/v1/likes/**").permitAll()
+                .antMatchers("/api/v1/liked/**").permitAll()
                 .antMatchers("/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/",

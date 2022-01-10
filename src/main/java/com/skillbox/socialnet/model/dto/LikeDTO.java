@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,7 +17,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LikeDTO {
     String likes = "string";
-    List<String> users;
+    List<String> users = new ArrayList<>();
 
     public static void addUser(LikeDTO likeDTO, Person person) {
         likeDTO.users.add(person.getFirstName() + " " + person.getLastName());
