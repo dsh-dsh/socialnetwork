@@ -22,9 +22,9 @@ public class UserDTO {
     @JsonProperty("last_name")
     private String lastName;
     @JsonProperty("reg_date")
-    private Long registrationDate;
+    private long registrationDate;
     @JsonProperty("birth_date")
-    private Long birthDate;
+    private long birthDate;
     private String email;
     private String phone;
     private String photo;
@@ -34,7 +34,7 @@ public class UserDTO {
     @JsonProperty("messages_permission")
     private MessagesPermission permission;
     @JsonProperty("last_online_time")
-    private Long lastOnlineTime;
+    private long lastOnlineTime;
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     @JsonProperty("is_friend")
