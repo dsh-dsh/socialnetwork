@@ -50,7 +50,7 @@ public class UserDTO {
         userDTO.setFirstName(person.getFirstName());
         userDTO.setLastName(person.getLastName());
         userDTO.setRegistrationDate(person.getRegDate().getTime());
-        userDTO.setBirthDate((person.getBirthDate() == null)? null : person.getBirthDate().getTime());
+//        userDTO.setBirthDate((person.getBirthDate() == null)? null : person.getBirthDate().getTime());
         userDTO.setEmail(person.getEMail());
         userDTO.setPhone(person.getPhone());
         userDTO.setPhoto(person.getPhoto());
