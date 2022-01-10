@@ -49,8 +49,8 @@ public class UserDTO {
         userDTO.setId(person.getId());
         userDTO.setFirstName(person.getFirstName());
         userDTO.setLastName(person.getLastName());
-        userDTO.setRegistrationDate(person.getRegDate().getTime());
-        userDTO.setBirthDate(person.getBirthDate().getTime());
+        userDTO.setRegistrationDate((person.getRegDate() == null)? null : person.getRegDate().getTime());
+//        userDTO.setBirthDate((person.getBirthDate() == null)? null : person.getBirthDate().getTime());
         userDTO.setEmail(person.getEMail());
         userDTO.setPhone(person.getPhone());
         userDTO.setPhoto(person.getPhoto());

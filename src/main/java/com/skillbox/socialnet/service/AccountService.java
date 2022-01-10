@@ -6,12 +6,11 @@ import com.skillbox.socialnet.model.RQ.AccountEmailRQ;
 import com.skillbox.socialnet.model.RQ.AccountNotificationRQ;
 import com.skillbox.socialnet.model.RQ.AccountPasswordSetRQ;
 import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.model.dto.NotificationSettingsDto;
 import com.skillbox.socialnet.model.entity.NotificationSetting;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.repository.SettingsRepository;
 import com.skillbox.socialnet.security.JwtProvider;
@@ -24,15 +23,12 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
-
-
-/**
- * @author Semen V
- * @created 18|11|2021
- */
 
 @Service
 @RequiredArgsConstructor
@@ -54,10 +50,22 @@ public class AccountService {
         person.setFirstName(accountRegisterRQ.getFirstName());
         person.setLastName(accountRegisterRQ.getLastName());
         person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
-        person.setLastOnlineTime(new Timestamp(new Date().getTime()));
+        person.setLastOnlineTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        person.setRegDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         personRepository.save(person);
 
+        setNotificationSettingsOnRegistering(person);
+
         return new MessageOkDTO();
+    }
+
+    private void setNotificationSettingsOnRegistering(Person person) {
+        NotificationTypeCode[] typeCodes = NotificationTypeCode.values();
+        for (NotificationTypeCode typeCode : typeCodes) {
+            NotificationSetting setting = getNotificationSetting(person, typeCode);
+            setting.setPermission(true);
+            settingsRepository.save(setting);
+        }
     }
 
     private boolean isEmailExist(String email) {
@@ -135,5 +143,14 @@ public class AccountService {
         return settingsRepository
                 .findByPersonAndNotificationTypeCode(person, notificationTypeCode)
                 .orElse(new NotificationSetting(person, notificationTypeCode, false));
+    }
+
+    public List<NotificationSettingsDto> getNotifications() {
+        Person currentPerson = authService.getPersonFromSecurityContext();
+        List<NotificationSetting> settings = settingsRepository.findByPerson(currentPerson);
+        List<NotificationSettingsDto> settingsDtoList = settings.stream()
+                .map(NotificationSettingsDto::new)
+                .collect(Collectors.toList());
+        return settingsDtoList;
     }
 }
