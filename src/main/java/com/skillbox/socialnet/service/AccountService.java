@@ -16,6 +16,7 @@ import com.skillbox.socialnet.repository.SettingsRepository;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
@@ -34,12 +35,16 @@ import static com.skillbox.socialnet.config.Config.bcrypt;
 @RequiredArgsConstructor
 public class AccountService {
 
+    public static final String EXPIRATION_PREFIX = "E";
     private final PersonRepository personRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final AuthService authService;
     private final SettingsRepository settingsRepository;
+
+    @Value("${expired.confirmation.code.milliseconds}")
+    private long expiredConfirmationCode;
 
    public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
         if (isEmailExist(accountRegisterRQ.getEmail())) {
@@ -89,15 +94,25 @@ public class AccountService {
     public String getConfirmationCode(String email) {
         Person person = personRepository.findByeMail(email)
                 .orElseThrow(NoSuchUserException::new);
-        String confirmationCode = jwtProvider.generateConfirmationCode(person);
+        long expiration = System.currentTimeMillis() + expiredConfirmationCode;
+        String confirmationCode = UUID.randomUUID()
+                .toString().replaceAll("-", "") + "E" + expiration;
         person.setConfirmationCode(confirmationCode);
         personRepository.save(person);
 
         return confirmationCode;
     }
 
+    private void validateExpirationConfirmationCode(String token) {
+        String expirationString = token.substring(token.lastIndexOf(EXPIRATION_PREFIX) + 1);
+        long expiration = Long.parseLong(expirationString);
+        if(expiration < System.currentTimeMillis()) {
+            throw new BadRequestException(Constants.RECOVERING_CODE_EXPIRED);
+        }
+    }
+
     public MessageOkDTO setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {
-        jwtProvider.validateConfirmationCode(accountPasswordSetRQ.getToken());
+        validateExpirationConfirmationCode(accountPasswordSetRQ.getToken());
         Person person = personRepository.findByConfirmationCode(accountPasswordSetRQ.getToken())
                 .orElseThrow(BadRequestException::new);
         person.setPassword(passwordEncoder.encode(accountPasswordSetRQ.getPassword()));

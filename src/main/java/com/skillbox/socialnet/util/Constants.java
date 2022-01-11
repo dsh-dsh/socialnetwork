@@ -37,4 +37,6 @@ public class Constants {
     public static final String OK = "ok";
     public static final String USER_ALREADY_EXIST = "Email is already registered";
 
+    public static final String RECOVERING_CODE_EXPIRED = "Recovering code expired";
+
 }
