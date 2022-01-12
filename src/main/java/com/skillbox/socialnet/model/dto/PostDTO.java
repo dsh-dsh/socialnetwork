@@ -34,11 +34,11 @@ public class PostDTO {
     private int myLike;
     private List<CommentDTO> comments;
     private String[] tags;
-    private String type = "string";
+    private String type = "POSTED";
 
     public static PostDTO getPostDTO(Post post, List<Post2tag> tags, List<PostComment> comments) {
         PostDTO postDTO = new PostDTO();
-        postDTO.setId(postDTO.getId());
+        postDTO.setId(post.getId());
         postDTO.setTime(post.getTime().getTime());
         postDTO.setAuthor(UserDTO.getUserDTO(post.getAuthor()));
         postDTO.setTitle(postDTO.getTitle());

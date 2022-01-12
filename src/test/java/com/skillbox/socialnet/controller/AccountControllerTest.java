@@ -72,7 +72,9 @@ public class AccountControllerTest {
     }
 
     @Test
-    @Sql(statements = {"DELETE FROM person WHERE person.e_mail = '" + NEW_EMAIL + "'"},
+    @Sql(statements = {
+            "DELETE FROM notification_setting WHERE person_id = (SELECT person.id FROM person WHERE person.e_mail = '" + NEW_EMAIL + "')",
+            "DELETE FROM person WHERE person.e_mail = '" + NEW_EMAIL + "'"},
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void registerTest() throws Exception {
         AccountRegisterRQ request = getRegisterRequest(NEW_EMAIL);
@@ -144,8 +146,21 @@ public class AccountControllerTest {
     }
 
     @Test
+    public void passwordSetWithExpiredCodeTest() throws Exception{
+        AccountPasswordSetRQ request = new AccountPasswordSetRQ(getExpiredConfirmationCode(), NEW_PASSWORD);
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/password/set")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.RECOVERING_CODE_EXPIRED));
+    }
+
+    @Test
     public void passwordSetWithWrongCodeTest() throws Exception{
-        AccountPasswordSetRQ request = new AccountPasswordSetRQ("wrongConfirmationCode", NEW_PASSWORD);
+        String wrongConfirmationCode = "wrong" + accountService.getConfirmationCode(EXISTING_EMAIL);
+        AccountPasswordSetRQ request = new AccountPasswordSetRQ(wrongConfirmationCode, NEW_PASSWORD);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/password/set")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -216,5 +231,10 @@ public class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
+    }
+
+    private String getExpiredConfirmationCode() {
+        String confirmationCode = accountService.getConfirmationCode(EXISTING_EMAIL);
+        return confirmationCode.substring(0, confirmationCode.lastIndexOf("E") + 1) + "12345";
     }
 }

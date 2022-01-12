@@ -71,12 +71,13 @@ public class FriendControllerTest {
 
     @Order(2)
     @Test
-    @WithUserDetails(EMAIL_PERSON_ID5) // "p5@mail.ru"
+    @WithUserDetails(EMAIL_PERSON_ID5)
     public void getFriendsOfPersonWithOneFriend() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.[0].id").value(ONE_FRIEND_ID));
+                .andExpect(jsonPath("$.data.[0].id").value(ONE_FRIEND_ID))
+                .andExpect(jsonPath("$.data.[1]").doesNotExist());
     }
 
     @Order(3)
@@ -135,7 +136,8 @@ public class FriendControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.[0]").exists());
+                .andExpect(jsonPath("$.data.[0]").exists())
+                .andExpect(jsonPath("$.data.[1]").doesNotExist());
     }
 
     @Order(8)

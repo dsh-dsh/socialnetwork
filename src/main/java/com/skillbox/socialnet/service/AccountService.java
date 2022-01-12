@@ -44,7 +44,7 @@ public class AccountService {
     private final SettingsRepository settingsRepository;
 
     @Value("${expired.confirmation.code.milliseconds}")
-    private long expiredConfirmationCode;
+    private long expirationTime;
 
    public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
         if (isEmailExist(accountRegisterRQ.getEmail())) {
@@ -94,7 +94,7 @@ public class AccountService {
     public String getConfirmationCode(String email) {
         Person person = personRepository.findByeMail(email)
                 .orElseThrow(NoSuchUserException::new);
-        long expiration = System.currentTimeMillis() + expiredConfirmationCode;
+        long expiration = System.currentTimeMillis() + expirationTime;
         String confirmationCode = UUID.randomUUID()
                 .toString().replaceAll("-", "") + "E" + expiration;
         person.setConfirmationCode(confirmationCode);
