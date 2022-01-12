@@ -54,9 +54,8 @@ public class DialogService {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
-        Person recipient = getRecipient(dialog, author);
         Page<Message> messagePage = messageService.getMessagePageByDialog(dialog, pageable);
-        messageService.setMessagesStatusRead(messagePage.getContent(), recipient);
+        messageService.setMessagesStatusRead(messagePage.getContent(), author);
         List<MessageDTO> messages = getMessageDTOList(author, messagePage.getContent());
 
         return new GeneralListResponse<>(messages, messagePage);

@@ -57,8 +57,8 @@ public class MessageService {
         return messageRepository.countByDialogAndRecipientAndReadStatus(dialog, recipient, MessageReadStatus.SENT);
     }
 
-    public void setMessagesStatusRead(List<Message> messages, Person recipient) {
-        messageRepository.setMessagesReadStatus(messages, recipient, MessageReadStatus.READ);
+    public void setMessagesStatusRead(List<Message> messages, Person author) {
+        messageRepository.setMessagesReadStatus(messages, author, MessageReadStatus.READ);
     }
 
     //покаНеИспользуется
