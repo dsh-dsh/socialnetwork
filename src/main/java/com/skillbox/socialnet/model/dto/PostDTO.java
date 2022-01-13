@@ -2,14 +2,16 @@ package com.skillbox.socialnet.model.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnet.model.entity.Post;
-import com.skillbox.socialnet.model.entity.Post2tag;
-import com.skillbox.socialnet.model.entity.PostComment;
+import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.PostPublishType;
+import com.skillbox.socialnet.service.AuthService;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -33,7 +35,7 @@ public class PostDTO {
     private String[] tags;
     private String type = "POSTED";
 
-    public static PostDTO getPostDTO(Post post, List<Post2tag> tags, List<PostComment> comments) {
+    public static PostDTO getPostDTO(Post post) {
         PostDTO postDTO = new PostDTO();
         postDTO.setId(post.getId());
         postDTO.setTime(post.getTime().getTime());
@@ -41,19 +43,24 @@ public class PostDTO {
         postDTO.setTitle(post.getTitle());
         postDTO.setPostText(post.getPostText());
         postDTO.setBlocked(post.isBlocked());
-        postDTO.setLikes(postDTO.getLikes());
-        postDTO.setMyLike(postDTO.getMyLike());
+        postDTO.setLikes(post.getLikes().size());
+        postDTO.setTags(getTagNames(post.getTags()));
+        postDTO.setComments(getComments(post));
+        postDTO.setType(getPostType(post));
 
+        return postDTO;
+    }
 
-        String[] tagNames = post.getTags().stream()
+    private static List<CommentDTO> getComments(Post post) {
+        return post.getComments().stream()
+                .map(CommentDTO::getCommentDTO)
+                .collect(Collectors.toList());
+    }
+
+    private static String[] getTagNames(Set<Post2tag> tags) {
+        return tags.stream()
                 .map(tag2post -> tag2post.getTag().getTag())
                 .toArray(String[]::new);
-        postDTO.setTags(tagNames);
-//        postDTO.setTags(tags.stream().map(tag2post -> tag2post.getTag().getTag()).toArray(String[]::new));
-
-        postDTO.setComments(comments.stream().map(CommentDTO::getCommentDTO).collect(Collectors.toList()));
-        postDTO.setType(getPostType(post));
-        return postDTO;
     }
 
     private static String getPostType(Post post) {
@@ -64,6 +71,7 @@ public class PostDTO {
         } else {
             postType = String.valueOf(PostPublishType.QUEUED);
         }
+
         return postType;
     }
 }

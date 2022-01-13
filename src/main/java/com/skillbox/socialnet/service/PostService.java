@@ -38,9 +38,8 @@ public class PostService {
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
         Page<Post> postPage = getPostsPage(postSearchRQ, pageable, dateTo);
-        List<PostDTO> postsDTOList = postPage.stream()
-                .map(this::getPostDTO)
-                .collect(Collectors.toList());
+        List<PostDTO> postsDTOList = getPostDTOList(postPage.getContent());
+
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
@@ -56,6 +55,7 @@ public class PostService {
                     postSearchRQ.getAuthor(), postSearchRQ.getText(),
                     new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo), pageable);
         }
+
         return postPage;
     }
 
@@ -76,6 +76,7 @@ public class PostService {
                     .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
             postList.addAll(additionalPosts);
         }
+
         return postList;
     }
 
@@ -83,6 +84,7 @@ public class PostService {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
         return getPostDTO(post);
     }
+
     public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Person person = personService.getPersonById(id);
         Post post = new Post();
@@ -92,7 +94,8 @@ public class PostService {
         post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
         post = postRepository.save(post);
         addTags2Post(post, postChangeRQ.getTags());
-        return PostDTO.getPostDTO(post, tag2PostRepository.getAllByPost(post), new ArrayList<>());
+
+        return getPostDTO(post);
     }
 
     public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
@@ -125,17 +128,15 @@ public class PostService {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
         postRepository.delete(post);
+
         return new DeleteDTO(id);
     }
 
     public List<PostDTO> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
-        List<PostDTO> postDTOs = postPage.stream()
-                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
-                        tag2PostRepository.getAllByPost(postFromDB),
-                        commentRepository.findByPostAndIsBlocked(postFromDB, false)))
-                .collect(Collectors.toList());
+        List<PostDTO> postDTOs = getPostDTOList(postPage.getContent());
+
         return postDTOs;
     }
 
@@ -193,6 +194,17 @@ public class PostService {
         return DefaultRSMapper.of(new MessageOkDTO());
     }
 
+    private PostDTO getPostDTO(Post post) {
+        PostDTO postDTO = PostDTO.getPostDTO(post);
+        postDTO.setMyLike(getMyLike(post.getLikes()));
+        return postDTO;
+    }
+
+    private int getMyLike(List<PostLike> likes) {
+        Person me = authService.getPersonFromSecurityContext();
+        return (int)likes.stream().filter(like -> like.getPerson().equals(me)).count();
+    }
+
     private void addTags2Post(Post post, List<String> tagNames) {
         List<Tag> tags = addTagsIfNotExists(tagNames);
         Set<Post2tag> newTagPosts = tags.stream()
@@ -210,12 +222,14 @@ public class PostService {
                     .orElseGet(() -> createNewTag(tagName));
             tags.add(tag);
         }
+
         return tags;
     }
 
     private Tag createNewTag(String tagName) {
         Tag tag = new Tag();
         tag.setTag(tagName);
+
         return tagRepository.save(tag);
     }
 
@@ -225,17 +239,11 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    private PostDTO getPostDTO(Post post) {
-        return PostDTO.getPostDTO(
-                post,
-                tag2PostRepository.getAllByPost(post),
-                commentRepository.findByPostAndIsBlocked(post, false));
-    }
-
     private long checkDate(long dateTo) {
         if (dateTo == 0) {
             dateTo = new Date().getTime();
         }
+
         return dateTo;
     }
 
