@@ -7,13 +7,12 @@ import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.entity.Post;
-import com.skillbox.socialnet.model.entity.PostComment;
+import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.repository.Tag2PostRepository;
+import com.skillbox.socialnet.repository.TagRepository;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +31,9 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final FriendsService friendsService;
     private final AuthService authService;
-    private final  Tag2PostRepository tag2PostRepository;
+    private final Tag2PostRepository tag2PostRepository;
+    private final TagRepository tagRepository;
+    private final PersonService personService;
 
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
@@ -82,6 +83,43 @@ public class PostService {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
         return getPostDTO(post);
     }
+    public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
+        Person person = personService.getPersonById(id);
+        Post post = new Post();
+        post.setAuthor(person);
+        post.setTitle(postChangeRQ.getTitle());
+        post.setPostText(postChangeRQ.getPostText());
+        post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
+        post = postRepository.save(post);
+        addTags2Post(post, postChangeRQ.getTags());
+        return PostDTO.getPostDTO(post, tag2PostRepository.getAllByPost(post), new ArrayList<>());
+    }
+
+    private void addTags2Post(Post post, List<String> tagNames) {
+        List<Tag> tags = addTagsIfNotExists(tagNames);
+        Set<Post2tag> newTagPosts = tags.stream()
+                .map(tag -> new Post2tag(post, tag))
+                .collect(Collectors.toSet());
+        post.getTags().clear();
+        post.getTags().addAll(newTagPosts);
+        postRepository.save(post);
+    }
+
+    private List<Tag> addTagsIfNotExists(List<String> tagNames) {
+        List<Tag> tags = new ArrayList<>();
+        for (String tagName : tagNames) {
+            Tag tag = tagRepository.findByTag(tagName)
+                    .orElseGet(() -> createNewTag(tagName));
+            tags.add(tag);
+        }
+        return tags;
+    }
+
+    private Tag createNewTag(String tagName) {
+        Tag tag = new Tag();
+        tag.setTag(tagName);
+        return tagRepository.save(tag);
+    }
 
     public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = postRepository.findPostById(id)
@@ -89,15 +127,41 @@ public class PostService {
         changePostPublishDate(publishDate, post);
         changePostTexts(postChangeRQ, post);
         postRepository.save(post);
+        addTags2Post(post, postChangeRQ.getTags());
 
         return getPostDTO(post);
     }
 
+    private void changePostPublishDate(long publishDate, Post post) {
+        if (publishDate != 0) {
+            post.setTime(new Timestamp(publishDate));
+        }
+    }
+
+    private void changePostTexts(PostChangeRQ postChangeRQ, Post post) {
+        if (!postChangeRQ.getPostText().isEmpty()) {
+            post.setPostText(postChangeRQ.getPostText());
+        }
+        if (!postChangeRQ.getTitle().isEmpty()) {
+            post.setTitle(postChangeRQ.getTitle());
+        }
+    }
 
     public DeleteDTO deletePostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
 //            postRepository.delete(post); // TODO сначала удалять все что ссылается на этот post
         return new DeleteDTO(id);
+    }
+
+    public List<PostDTO> getUserWall(int id, Pageable pageable) {
+        Person person = personService.getPersonById(id);
+        Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
+        List<PostDTO> postDTOs = postPage.stream()
+                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
+                        tag2PostRepository.getAllByPost(postFromDB),
+                        commentRepository.findByPostAndIsBlocked(postFromDB, false)))
+                .collect(Collectors.toList());
+        return postDTOs;
     }
 
     public PostDTO recoverPostById(int id) {
@@ -172,21 +236,6 @@ public class PostService {
             dateTo = new Date().getTime();
         }
         return dateTo;
-    }
-
-    private void changePostPublishDate(long publishDate, Post post) {
-        if (publishDate != 0) {
-            post.setTime(new Timestamp(publishDate));
-        }
-    }
-
-    private void changePostTexts(PostChangeRQ postChangeRQ, Post post) {
-        if (!postChangeRQ.getPostText().isEmpty()) {
-            post.setPostText(postChangeRQ.getPostText());
-        }
-        if (!postChangeRQ.getTitle().isEmpty()) {
-            post.setTitle(postChangeRQ.getTitle());
-        }
     }
 
     private PostComment createPostComment(CommentRQ commentRQ, Person currentPerson, Post post) {

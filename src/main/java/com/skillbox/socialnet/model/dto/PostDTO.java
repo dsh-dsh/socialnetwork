@@ -5,13 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.Post2tag;
 import com.skillbox.socialnet.model.entity.PostComment;
-import com.skillbox.socialnet.model.entity.Tag;
-import com.skillbox.socialnet.repository.Tag2PostRepository;
-import com.skillbox.socialnet.service.PostService;
+import com.skillbox.socialnet.model.enums.PostPublishType;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +38,33 @@ public class PostDTO {
         postDTO.setId(post.getId());
         postDTO.setTime(post.getTime().getTime());
         postDTO.setAuthor(UserDTO.getUserDTO(post.getAuthor()));
-        postDTO.setTitle(postDTO.getTitle());
+        postDTO.setTitle(post.getTitle());
         postDTO.setPostText(post.getPostText());
-        postDTO.setBlocked(postDTO.isBlocked());
+        postDTO.setBlocked(post.isBlocked());
         postDTO.setLikes(postDTO.getLikes());
         postDTO.setMyLike(postDTO.getMyLike());
-        postDTO.setTags(tags.stream().map(tag2post -> tag2post.getTag().getTag()).collect(Collectors.toList()).toArray(String[]::new));
+
+
+        String[] tagNames = post.getTags().stream()
+                .map(tag2post -> tag2post.getTag().getTag())
+                .toArray(String[]::new);
+        postDTO.setTags(tagNames);
+//        postDTO.setTags(tags.stream().map(tag2post -> tag2post.getTag().getTag()).toArray(String[]::new));
+
         postDTO.setComments(comments.stream().map(CommentDTO::getCommentDTO).collect(Collectors.toList()));
+        postDTO.setType(getPostType(post));
         return postDTO;
+    }
+
+    private static String getPostType(Post post) {
+        long postTime = post.getTime().getTime();
+        String postType;
+        if(postTime < Calendar.getInstance().getTimeInMillis()) {
+            postType = String.valueOf(PostPublishType.POSTED);
+        } else {
+            postType = String.valueOf(PostPublishType.QUEUED);
+        }
+        return postType;
     }
 }
 

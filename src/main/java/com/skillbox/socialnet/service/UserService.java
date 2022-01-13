@@ -43,10 +43,6 @@ public class UserService {
     private final PersonService personService;
     private final PersonRepository personRepository;
     private final AuthService authService;
-    private final PostRepository postRepository;
-    private final TagRepository tagRepository;
-    private final Tag2PostRepository tag2PostRepository;
-    private final CommentRepository commentRepository;
 
     public UserDTO getUser() {
         Person person = authService.getPersonFromSecurityContext();
@@ -66,53 +62,6 @@ public class UserService {
     public String deleteUser() {
         personRepository.delete(authService.getPersonFromSecurityContext());
         return "User deleted successfully";
-    }
-
-
-    public List<PostDTO> getUserWall(int id, Pageable pageable) {
-        Person person = personService.getPersonById(id);
-        Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
-        List<PostDTO> postDTOs = postPage.stream()
-                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
-                        tag2PostRepository.getAllByPost(postFromDB),
-                        commentRepository.findByPostAndIsBlocked(postFromDB, false)))
-                .collect(Collectors.toList());
-        return postDTOs;
-    }
-
-
-    public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
-        Post post = new Post();
-        Person person = personService.getPersonById(id);
-        post.setAuthor(person);
-        post.setTitle(postChangeRQ.getTitle());
-        post.setPostText(postChangeRQ.getPostText());
-        post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
-        post = postRepository.save(post);
-        List<String> tagsList = postChangeRQ.getTags();
-        if (tagsList.size() != 0) {
-            checkTags(tagsList);
-            addTags2Post(post, tagsList);
-        }
-        return PostDTO.getPostDTO(post, tag2PostRepository.getAllByPost(post), new ArrayList<>());
-    }
-
-    private void addTags2Post(Post post, List<String> tags) {
-        for (String tagName : tags) {
-            Post2tag post2tag = new Post2tag();
-            post2tag.setPost(post);
-            post2tag.setTag(tagRepository.getTagByTag(tagName));
-            tag2PostRepository.save(post2tag);
-        }
-    }
-    private void checkTags(List<String> tags) {
-        for (String tagName : tags) {
-            if (tagRepository.getTagByTag(tagName) == null) {
-                Tag tag = new Tag();
-                tag.setTag(tagName);
-                tagRepository.save(tag);
-            }
-        }
     }
 
     public GeneralListResponse<?> searchUsers(String firstOrLastName, Pageable pageable) {
