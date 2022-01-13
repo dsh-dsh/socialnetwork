@@ -11,8 +11,6 @@ import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.PostRepository;
-import com.skillbox.socialnet.repository.Tag2PostRepository;
-import com.skillbox.socialnet.repository.TagRepository;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,9 +29,8 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final FriendsService friendsService;
     private final AuthService authService;
-    private final Tag2PostRepository tag2PostRepository;
-    private final TagRepository tagRepository;
     private final PersonService personService;
+    private final TagService tagService;
 
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
@@ -206,31 +203,11 @@ public class PostService {
     }
 
     private void addTags2Post(Post post, List<String> tagNames) {
-        List<Tag> tags = addTagsIfNotExists(tagNames);
-        Set<Post2tag> newTagPosts = tags.stream()
-                .map(tag -> new Post2tag(post, tag))
-                .collect(Collectors.toSet());
+        List<Tag> tags = tagService.addTagsIfNotExists(tagNames);
+        Set<Post2tag> newTagPosts = tagService.getPost2tagSet(post, tags);
         post.getTags().clear();
         post.getTags().addAll(newTagPosts);
         postRepository.save(post);
-    }
-
-    private List<Tag> addTagsIfNotExists(List<String> tagNames) {
-        List<Tag> tags = new ArrayList<>();
-        for (String tagName : tagNames) {
-            Tag tag = tagRepository.findByTag(tagName)
-                    .orElseGet(() -> createNewTag(tagName));
-            tags.add(tag);
-        }
-
-        return tags;
-    }
-
-    private Tag createNewTag(String tagName) {
-        Tag tag = new Tag();
-        tag.setTag(tagName);
-
-        return tagRepository.save(tag);
     }
 
     private List<PostDTO> getPostDTOList(List<Post> posts) {
