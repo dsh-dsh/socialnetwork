@@ -95,32 +95,6 @@ public class PostService {
         return PostDTO.getPostDTO(post, tag2PostRepository.getAllByPost(post), new ArrayList<>());
     }
 
-    private void addTags2Post(Post post, List<String> tagNames) {
-        List<Tag> tags = addTagsIfNotExists(tagNames);
-        Set<Post2tag> newTagPosts = tags.stream()
-                .map(tag -> new Post2tag(post, tag))
-                .collect(Collectors.toSet());
-        post.getTags().clear();
-        post.getTags().addAll(newTagPosts);
-        postRepository.save(post);
-    }
-
-    private List<Tag> addTagsIfNotExists(List<String> tagNames) {
-        List<Tag> tags = new ArrayList<>();
-        for (String tagName : tagNames) {
-            Tag tag = tagRepository.findByTag(tagName)
-                    .orElseGet(() -> createNewTag(tagName));
-            tags.add(tag);
-        }
-        return tags;
-    }
-
-    private Tag createNewTag(String tagName) {
-        Tag tag = new Tag();
-        tag.setTag(tagName);
-        return tagRepository.save(tag);
-    }
-
     public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -148,8 +122,9 @@ public class PostService {
     }
 
     public DeleteDTO deletePostById(int id) {
-        Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
-//            postRepository.delete(post); // TODO сначала удалять все что ссылается на этот post
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
+        postRepository.delete(post);
         return new DeleteDTO(id);
     }
 
@@ -216,6 +191,32 @@ public class PostService {
 
     public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
         return DefaultRSMapper.of(new MessageOkDTO());
+    }
+
+    private void addTags2Post(Post post, List<String> tagNames) {
+        List<Tag> tags = addTagsIfNotExists(tagNames);
+        Set<Post2tag> newTagPosts = tags.stream()
+                .map(tag -> new Post2tag(post, tag))
+                .collect(Collectors.toSet());
+        post.getTags().clear();
+        post.getTags().addAll(newTagPosts);
+        postRepository.save(post);
+    }
+
+    private List<Tag> addTagsIfNotExists(List<String> tagNames) {
+        List<Tag> tags = new ArrayList<>();
+        for (String tagName : tagNames) {
+            Tag tag = tagRepository.findByTag(tagName)
+                    .orElseGet(() -> createNewTag(tagName));
+            tags.add(tag);
+        }
+        return tags;
+    }
+
+    private Tag createNewTag(String tagName) {
+        Tag tag = new Tag();
+        tag.setTag(tagName);
+        return tagRepository.save(tag);
     }
 
     private List<PostDTO> getPostDTOList(List<Post> posts) {

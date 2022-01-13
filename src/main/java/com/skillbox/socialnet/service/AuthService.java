@@ -1,16 +1,13 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.model.RQ.AuthUserRQ;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.security.CustomUserDetails;
 import com.skillbox.socialnet.security.JwtProvider;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
