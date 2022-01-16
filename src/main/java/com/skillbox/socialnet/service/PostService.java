@@ -46,22 +46,6 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
-    private Page<Post> getPostsPage(PostSearchRQ postSearchRQ, Pageable pageable, long dateTo) {
-        Page<Post> postPage;
-        if(postSearchRQ.getTags().size() > 0) {
-            postPage = postRepository.findPostWithTags(
-                    postSearchRQ.getAuthor(), postSearchRQ.getText(),
-                    new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
-                    postSearchRQ.getTags(), pageable);
-        } else {
-            postPage = postRepository.findPost(
-                    postSearchRQ.getAuthor(), postSearchRQ.getText(),
-                    new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo), pageable);
-        }
-
-        return postPage;
-    }
-
     @LogResult
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
         List<Person> friends = friendsService.getMyFriends();
@@ -72,21 +56,10 @@ public class PostService {
         return new GeneralListResponse<>(postDTOs, postPage);
     }
 
-    private List<Post> addPostsToLimit(List<Post> posts) {
-        List<Post> postList = new ArrayList<>(posts);
-        if(posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
-            int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
-            List<Post> additionalPosts = postRepository
-                    .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
-            postList.addAll(additionalPosts);
-        }
-
-        return postList;
-    }
-
     @LogResult
     public PostDTO getPostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
+
         return getPostDTO(post);
     }
 
@@ -116,6 +89,108 @@ public class PostService {
         return getPostDTO(post);
     }
 
+    @LogResult
+    public DeleteDTO deletePostById(int id) {
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
+        postRepository.delete(post);
+
+        return new DeleteDTO(id);
+    }
+
+    @LogResult
+    public List<PostDTO> getUserWall(int id, Pageable pageable) {
+        Person person = personService.getPersonById(id);
+        Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
+
+        return getPostDTOList(postPage.getContent());
+    }
+
+    @LogResult
+    public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
+        Page<PostComment> commentPage = commentRepository.findByPostAndIsBlocked(post, false, pageable);
+        List<CommentDTO> commentsDTO = commentPage.stream()
+                .map(CommentDTO::getCommentDTO)
+                .collect(Collectors.toList());
+
+        return new GeneralListResponse<>(commentsDTO, commentPage);
+    }
+
+    @LogResult
+    public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
+        Person currentPerson = authService.getPersonFromSecurityContext();
+        Post post = postRepository.findPostById(postId)
+                .orElseThrow(BadRequestException::new);
+        PostComment postComment = createPostComment(commentRQ, currentPerson, post);
+
+        return CommentDTO.getCommentDTO(postComment);
+    }
+
+    @LogResult
+    public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
+        PostComment postComment = commentRepository.findById(commentId)
+                .orElseThrow(BadRequestException::new);
+        postComment.setCommentText(commentRQ.getCommentText());
+        commentRepository.save(postComment);
+
+        return CommentDTO.getCommentDTO(postComment);
+    }
+
+    @LogResult
+    public DeleteDTO deleteCommentToThePost(int id, int commentId) {
+        PostComment postComment = commentRepository.findById(commentId)
+                .orElseThrow(BadRequestException::new);
+        commentRepository.delete(postComment);
+
+        return new DeleteDTO(id);
+    }
+
+    public PostDTO recoverPostById(int id) {
+        return new PostDTO();
+    }
+
+    public CommentDTO recoverCommentToPost(int id, int commentId) {
+        return new CommentDTO();
+    }
+
+    public MessageOkDTO reportPostById(int id) {
+        return new MessageOkDTO();
+    }
+
+    public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
+        return DefaultRSMapper.of(new MessageOkDTO());
+    }
+
+    private List<Post> addPostsToLimit(List<Post> posts) {
+        List<Post> postList = new ArrayList<>(posts);
+        if(posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
+            int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
+            List<Post> additionalPosts = postRepository
+                    .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
+            postList.addAll(additionalPosts);
+        }
+
+        return postList;
+    }
+
+    private Page<Post> getPostsPage(PostSearchRQ postSearchRQ, Pageable pageable, long dateTo) {
+        Page<Post> postPage;
+        if(postSearchRQ.getTags().size() > 0) {
+            postPage = postRepository.findPostWithTags(
+                    postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                    new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
+                    postSearchRQ.getTags(), pageable);
+        } else {
+            postPage = postRepository.findPost(
+                    postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                    new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo), pageable);
+        }
+
+        return postPage;
+    }
+
     private void changePostPublishDate(long publishDate, Post post) {
         if (publishDate != 0) {
             post.setTime(new Timestamp(publishDate));
@@ -129,76 +204,6 @@ public class PostService {
         if (!postChangeRQ.getTitle().isEmpty()) {
             post.setTitle(postChangeRQ.getTitle());
         }
-    }
-
-    public DeleteDTO deletePostById(int id) {
-        Post post = postRepository.findPostById(id)
-                .orElseThrow(BadRequestException::new);
-        postRepository.delete(post);
-
-        return new DeleteDTO(id);
-    }
-
-    public List<PostDTO> getUserWall(int id, Pageable pageable) {
-        Person person = personService.getPersonById(id);
-        Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
-        List<PostDTO> postDTOs = getPostDTOList(postPage.getContent());
-
-        return postDTOs;
-    }
-
-    public PostDTO recoverPostById(int id) {
-        return new PostDTO();
-    }
-
-    public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
-        Post post = postRepository.findPostById(id)
-                .orElseThrow(BadRequestException::new);
-        Page<PostComment> commentPage = commentRepository.findByPostAndIsBlocked(post, false, pageable);
-        List<CommentDTO> commentsDTO = commentPage.stream()
-                .map(CommentDTO::getCommentDTO)
-                .collect(Collectors.toList());
-
-        return new GeneralListResponse<>(commentsDTO, commentPage);
-    }
-
-
-    public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
-        Person currentPerson = authService.getPersonFromSecurityContext();
-        Post post = postRepository.findPostById(postId)
-                .orElseThrow(BadRequestException::new);
-        PostComment postComment = createPostComment(commentRQ, currentPerson, post);
-
-        return CommentDTO.getCommentDTO(postComment);
-    }
-
-    public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
-        PostComment postComment = commentRepository.findById(commentId)
-                .orElseThrow(BadRequestException::new);
-        postComment.setCommentText(commentRQ.getCommentText());
-        commentRepository.save(postComment);
-
-        return CommentDTO.getCommentDTO(postComment);
-    }
-
-    public DeleteDTO deleteCommentToThePost(int id, int commentId) {
-        PostComment postComment = commentRepository.findById(commentId)
-                .orElseThrow(BadRequestException::new);
-        commentRepository.delete(postComment);
-
-        return new DeleteDTO(id);
-    }
-
-    public CommentDTO recoverCommentToPost(int id, int commentId) {
-        return new CommentDTO();
-    }
-
-    public MessageOkDTO reportPostById(int id) {
-        return new MessageOkDTO();
-    }
-
-    public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
-        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     private PostDTO getPostDTO(Post post) {
