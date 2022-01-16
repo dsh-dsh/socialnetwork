@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.RS.NotificationDataRS;
 import com.skillbox.socialnet.model.RS.NotificationRS;
 import com.skillbox.socialnet.model.dto.CommentAuthorDTO;
@@ -7,6 +8,7 @@ import com.skillbox.socialnet.model.entity.Notification;
 import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -21,6 +23,11 @@ public class NotificationService {
     private final AuthService authService;
     private final NotificationRepository notificationRepository;
 
+    @Value("${socialnet.item-per-page}")
+    private int itemPerPage;
+
+    @Value("${socialnet.offset}")
+    private int offset;
 
     public NotificationRS getNotification(int itemPerPage, int offset) {
         List<Notification> notifications = notificationRepository.getAllNotSeenNotificationsForUser(authService.getPersonFromSecurityContext().getId());
@@ -38,8 +45,14 @@ public class NotificationService {
         return notificationRS;
     }
 
-    public NotificationRS putNotification(boolean all, int id) {
-        return new NotificationRS();
+    public NotificationRS setNotification(boolean all, int id) {
+        int currentPersonID = authService.getPersonFromSecurityContext().getId();
+        if(!all){
+            notificationRepository.makeOneNotificatonRead(id);
+        } else {
+            notificationRepository.makeAllNotificationRead(currentPersonID);
+        }
+        return getNotification(itemPerPage, offset);
     }
 
     private NotificationDataRS createDataRS(Notification notification) {

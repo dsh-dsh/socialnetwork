@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 
 @CrossOrigin
@@ -29,6 +28,6 @@ public class NotificationController {
             @RequestParam(name = "all", required = false, defaultValue = "false") boolean all,
             @RequestParam(name = "id", required = false, defaultValue = "0") int id
     ) {
-        return ResponseEntity.ok(notificationService.putNotification(all, id));
+        return ResponseEntity.ok(notificationService.setNotification(all, id));
     }
 }
