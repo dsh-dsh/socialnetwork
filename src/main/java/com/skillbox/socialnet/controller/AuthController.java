@@ -2,14 +2,11 @@ package com.skillbox.socialnet.controller;
 
 
 import com.skillbox.socialnet.model.RQ.AuthUserRQ;
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 @CrossOrigin

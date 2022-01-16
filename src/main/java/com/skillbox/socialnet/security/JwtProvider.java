@@ -1,16 +1,17 @@
 package com.skillbox.socialnet.security;
 
-import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.util.Constants;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
@@ -18,7 +19,6 @@ import static org.springframework.util.StringUtils.hasText;
 
 @Component
 @RequiredArgsConstructor
-@Log
 public class JwtProvider {
 
     @Value("${jwt.secret}")
@@ -44,11 +44,9 @@ public class JwtProvider {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expiredJwtException) {
-            log.warning(Constants.TOKEN_EXPIRED_MESSAGE);
             return false;
         } catch (RuntimeException exception) {
             // UnsupportedJwtException MalformedJwtException SignatureException
-            log.warning(Constants.INVALID_TOKEN_MESSAGE);
             return false;
         }
     }

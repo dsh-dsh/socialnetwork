@@ -13,6 +13,8 @@ import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,8 @@ public class PostService {
     private final AuthService authService;
     private final PersonService personService;
     private final TagService tagService;
+
+    public static final Logger logger = LogManager.getLogger("file");
 
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
@@ -61,6 +65,12 @@ public class PostService {
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
+
+        logger.info("console", "info");
+        logger.warn("warn");
+        logger.debug("debug");
+        logger.fatal("fatal");
+        logger.error("error");
 
         return new GeneralListResponse<>(postDTOs, postPage);
     }

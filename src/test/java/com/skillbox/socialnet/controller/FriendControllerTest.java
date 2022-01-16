@@ -6,7 +6,6 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.service.PersonService;
-import lombok.extern.java.Log;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Log
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
