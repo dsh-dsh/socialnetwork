@@ -2,17 +2,29 @@
 <Configuration>
     <Appenders>
         <Console name="ConsoleAppender" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d [%t] %-5level %logger{36} - %msg%n%throwable"/>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%throwable"/>
         </Console>
 
         <File name="ErrorAppender" fileName="logs/errors.log">
-            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %l [%t]%n %m%n"/>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p [%t] %m%n"/>
         </File>
+
+        <File name="MethodReturnAppender" fileName="logs/methodReturns.log">
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %m%n"/>
+        </File>
+
+        <Async name="AsyncAppender" bufferSize="50">
+            <AppenderRef ref="ErrorAppender"/>
+        </Async>
     </Appenders>
 
     <Loggers>
-        <logger name="file">
-            <appenderRef ref="ErrorAppender"/>
+        <logger name="methodReturn" level="info">
+            <AppenderRef ref="MethodReturnAppender"/>
+        </logger>
+
+        <logger name="errorFile" level="error">
+            <AppenderRef ref="ErrorAppender"/>
         </logger>
 
         <Root level="info">
