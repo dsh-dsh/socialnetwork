@@ -31,7 +31,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     @Transactional
     @Modifying
-    @Query(value = "update notification set seen = true where entity_id = :id",
+    @Query(value = "update notification set seen = true where person_id = :id",
     nativeQuery = true)
     void makeAllNotificationRead(int id);
 }
