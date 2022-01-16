@@ -12,6 +12,7 @@ import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.util.anotation.LogResult;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +35,9 @@ public class PostService {
     private final PersonService personService;
     private final TagService tagService;
 
-    public static final Logger logger = LogManager.getLogger("file");
+    public static final Logger logger = LogManager.getLogger("errorFile");
 
+    @LogResult
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
         Page<Post> postPage = getPostsPage(postSearchRQ, pageable, dateTo);
@@ -60,17 +62,12 @@ public class PostService {
         return postPage;
     }
 
+    @LogResult
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
         List<Person> friends = friendsService.getMyFriends();
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
-
-        logger.info("console", "info");
-        logger.warn("warn");
-        logger.debug("debug");
-        logger.fatal("fatal");
-        logger.error("error");
 
         return new GeneralListResponse<>(postDTOs, postPage);
     }
@@ -87,11 +84,13 @@ public class PostService {
         return postList;
     }
 
+    @LogResult
     public PostDTO getPostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
         return getPostDTO(post);
     }
 
+    @LogResult
     public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Person person = personService.getPersonById(id);
         Post post = new Post();
@@ -105,6 +104,7 @@ public class PostService {
         return getPostDTO(post);
     }
 
+    @LogResult
     public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -250,4 +250,7 @@ public class PostService {
         return postComment;
     }
 
+    public void errorLogTest() {
+        logger.error("error to file test");
+    }
 }
