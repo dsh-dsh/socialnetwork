@@ -7,11 +7,14 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +33,7 @@ public class StorageLoggingService {
     private AmazonS3 s3Client;
 
     @Scheduled(cron = "${log.files.scheduling.cron.expression}")
-    public void updateLogFilesToCloud() {
+    public void updateLogFilesToCloud() throws FileNotFoundException {
         this.s3Client = getAmazonS3();
         deleteFilesFromCloud();
         saveLogFilesToCloud();
@@ -41,13 +44,20 @@ public class StorageLoggingService {
         return logDir.listFiles();
     }
 
-    private void saveLogFilesToCloud() {
+    private void saveLogFilesToCloud() throws FileNotFoundException {
         File[] files = getLogFiles();
         if(files != null & files.length > 0) {
             for(File file : files) {
                 saveFileToCloud(file);
+                emptyFile(file);
             }
         }
+    }
+
+    private void emptyFile(File file) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(file);
+        writer.print("");
+        writer.close();
     }
 
     private void saveFileToCloud(File file) {

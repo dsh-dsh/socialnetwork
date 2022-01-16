@@ -19,8 +19,8 @@ public class LogResultAspect {
     @Around("@annotation(LogResult)")
     public Object loggingResultOfMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();
-        String prettyResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
-        logger.info(String.format("%s\n%s", joinPoint.getSignature(), prettyResult));
+//        String prettyResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+        logger.info(String.format("%s\n%s", joinPoint.getSignature(), result));
         return result;
     }
 }
