@@ -1,6 +1,5 @@
 package com.skillbox.socialnet.service;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.RS.NotificationDataRS;
 import com.skillbox.socialnet.model.RS.NotificationRS;
 import com.skillbox.socialnet.model.dto.CommentAuthorDTO;
@@ -66,5 +65,6 @@ public class NotificationService {
         ndr.setInfo(notification.getType().getName());
         return ndr;
     }
+
 
 }

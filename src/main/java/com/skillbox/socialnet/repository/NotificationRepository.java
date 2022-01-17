@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,4 +35,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     @Query(value = "update notification set seen = true where person_id = :id",
     nativeQuery = true)
     void makeAllNotificationRead(int id);
+
+    @Transactional
+    @Modifying
+    @Query(value = "insert into notification(type_id, sent_time, person_id, entity_id, contact, seen)" +
+                   "values(:typeId, :sentTime, :personId, :entityId, :contact, :seen)",
+    nativeQuery = true)
+    void createNewNotification(int typeId, Timestamp sentTime, int personId, String entityId, String contact, boolean seen);
 }
