@@ -11,6 +11,7 @@ import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.security.JwtProvider;
+import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.List;
 public class ProfileController {
 
     private final UserService userService;
+    private final PostService postService;
 
     @GetMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
@@ -53,7 +55,7 @@ public class ProfileController {
     @GetMapping("/{id}/wall")
     public ResponseEntity<GeneralListResponse<PostDTO>> getUserWall(
             @PathVariable int id, ElementPageable pageable) {
-        return ResponseEntity.ok(new GeneralListResponse<>(userService.getUserWall(id, pageable), pageable));
+        return ResponseEntity.ok(new GeneralListResponse<>(postService.getUserWall(id, pageable), pageable));
     }
 
     @PostMapping("/{id}/wall")
@@ -61,7 +63,7 @@ public class ProfileController {
             @PathVariable int id,
             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
             @RequestBody PostChangeRQ postChangeRQ) {
-        return ResponseEntity.ok(new GeneralResponse<>(userService.addPostToUserWall(id, publishDate, postChangeRQ)));
+        return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(id, publishDate, postChangeRQ)));
     }
 
     @GetMapping("/search")
@@ -86,17 +88,17 @@ public class ProfileController {
     }
 
     @PutMapping("/block/{id}")
-    public ResponseEntity<GeneralResponse<String>> blockUser(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> blockUser(@PathVariable int id) {
         return ResponseEntity.ok(new GeneralResponse<>(userService.blockUser(id)));
     }
 
     @DeleteMapping("/block/{id}")
-    public ResponseEntity<GeneralResponse<String>> unblockUser(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> unblockUser(@PathVariable int id) {
         return ResponseEntity.ok(new GeneralResponse<>(userService.unblockUser(id)));
     }
 
     @PutMapping("/checkonline")
-    public ResponseEntity<GeneralResponse<String>> checkOnline() {
-        return ResponseEntity.ok(new GeneralResponse<>("User is online"));
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> checkOnline() {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.checkOnline()));
     }
 }

@@ -1,13 +1,9 @@
 package com.skillbox.socialnet;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.platform.suite.api.*;
 
-@SpringBootTest
+@Suite
+//@SelectClasses( {DefaultControllerTest.class, AccountControllerTest.class, AuthControllerTest.class, DialogControllerTest.class} )
+@SelectPackages("com/skillbox/socialnet/controller")
 class SocialnetApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
 }

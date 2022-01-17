@@ -7,17 +7,17 @@ import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.entity.Post;
-import com.skillbox.socialnet.model.entity.PostComment;
+import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.model.mapper.PostCommentMapper;
-import com.skillbox.socialnet.model.mapper.PostMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.PostRepository;
-import com.skillbox.socialnet.repository.Tag2PostRepository;
 import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.util.anotation.LogResult;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,38 +32,144 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    private final PostMapper postMapper;
     private final FriendsService friendsService;
     private final AuthService authService;
-    private final PostCommentMapper commentMapper;
-    private final Tag2PostRepository tag2PostRepository;
+    private final PersonService personService;
+    private final TagService tagService;
 
-    public DefaultRS<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+    public static final Logger logger = LogManager.getLogger(PostService.class);
+    public static final Marker INFO_MARKER = MarkerManager.getMarker("INFO_MARKER");
+    public static final Marker DEBUG_MARKER = MarkerManager.getMarker("DEBUG_MARKER");
+    public static final Marker ERROR_MARKER = MarkerManager.getMarker("ERROR_MARKER");
+
+    @LogResult
+    public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
+        Page<Post> postPage = getPostsPage(postSearchRQ, pageable, dateTo);
+        List<PostDTO> postsDTOList = getPostDTOList(postPage.getContent());
 
-        // FIXME если тегов нет фронт посылает пустой массив, найти решение проверки :tags is empty в hql
-        if(postSearchRQ.getTags() != null) {
-            if (postSearchRQ.getTags().size() == 0) {
-                postSearchRQ.setTags(null);
-            }
-        }
-
-        Page<Post> postPage = postRepository.findPost(
-                postSearchRQ.getAuthor(), postSearchRQ.getText(),
-                new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
-                postSearchRQ.getTags(), pageable);
-        List<PostDTO> postsDTOList = postPage.stream()
-                .map(postMapper::mapToPostDTO)
-                .collect(Collectors.toList());
-        return DefaultRSMapper.of(postsDTOList, postPage);
+        return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
+    @LogResult
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
         List<Person> friends = friendsService.getMyFriends();
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
+
+        logger.info(INFO_MARKER, "info");
+        logger.debug(DEBUG_MARKER, "debug");
+        logger.error(ERROR_MARKER, "error");
+
         return new GeneralListResponse<>(postDTOs, postPage);
+    }
+
+    @LogResult
+    public PostDTO getPostById(int id) {
+        Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
+
+        return getPostDTO(post);
+    }
+
+    @LogResult
+    public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
+        Person person = personService.getPersonById(id);
+        Post post = new Post();
+        post.setAuthor(person);
+        post.setTitle(postChangeRQ.getTitle());
+        post.setPostText(postChangeRQ.getPostText());
+        post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
+        post = postRepository.save(post);
+        addTags2Post(post, postChangeRQ.getTags());
+
+        return getPostDTO(post);
+    }
+
+    @LogResult
+    public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
+        changePostPublishDate(publishDate, post);
+        changePostTexts(postChangeRQ, post);
+        postRepository.save(post);
+        addTags2Post(post, postChangeRQ.getTags());
+
+        return getPostDTO(post);
+    }
+
+    @LogResult
+    public DeleteDTO deletePostById(int id) {
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
+        postRepository.delete(post);
+
+        return new DeleteDTO(id);
+    }
+
+    @LogResult
+    public List<PostDTO> getUserWall(int id, Pageable pageable) {
+        Person person = personService.getPersonById(id);
+        Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
+
+        return getPostDTOList(postPage.getContent());
+    }
+
+    @LogResult
+    public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
+        Post post = postRepository.findPostById(id)
+                .orElseThrow(BadRequestException::new);
+        Page<PostComment> commentPage = commentRepository.findByPostAndIsBlocked(post, false, pageable);
+        List<CommentDTO> commentsDTO = commentPage.stream()
+                .map(CommentDTO::getCommentDTO)
+                .collect(Collectors.toList());
+
+        return new GeneralListResponse<>(commentsDTO, commentPage);
+    }
+
+    @LogResult
+    public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
+        Person currentPerson = authService.getPersonFromSecurityContext();
+        Post post = postRepository.findPostById(postId)
+                .orElseThrow(BadRequestException::new);
+        PostComment postComment = createPostComment(commentRQ, currentPerson, post);
+
+        return CommentDTO.getCommentDTO(postComment);
+    }
+
+    @LogResult
+    public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
+        PostComment postComment = commentRepository.findById(commentId)
+                .orElseThrow(BadRequestException::new);
+        postComment.setCommentText(commentRQ.getCommentText());
+        commentRepository.save(postComment);
+
+        return CommentDTO.getCommentDTO(postComment);
+    }
+
+    @LogResult
+    public DeleteDTO deleteCommentToThePost(int id, int commentId) {
+        PostComment postComment = commentRepository.findById(commentId)
+                .orElseThrow(BadRequestException::new);
+        commentRepository.delete(postComment);
+
+        return new DeleteDTO(id);
+    }
+
+    public PostDTO recoverPostById(int id) {
+        return new PostDTO();
+    }
+
+    public CommentDTO recoverCommentToPost(int id, int commentId) {
+        return new CommentDTO();
+    }
+
+    public MessageOkDTO reportPostById(int id) {
+        return new MessageOkDTO();
+    }
+
+    public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
+        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     private List<Post> addPostsToLimit(List<Post> posts) {
@@ -72,100 +178,26 @@ public class PostService {
             int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
             List<Post> additionalPosts = postRepository
                     .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
-            System.out.println(additionalPosts);
             postList.addAll(additionalPosts);
         }
+
         return postList;
     }
 
-    private List<PostDTO> getPostDTOList(List<Post> posts) {
-        return posts.stream()
-                .map(post -> PostDTO.getPostDTO(
-                        post,
-                        tag2PostRepository.getAllByPost(post),
-                        commentRepository.findByPost(post)))
-                .collect(Collectors.toList());
-    }
-
-    public DefaultRS<?> getPostById(int id) {
-        Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
-        PostDTO postDTO = postMapper.mapToPostDTO(post);
-        return DefaultRSMapper.of(postDTO);
-    }
-
-    public DefaultRS<?> changePostById(int id, PostChangeRQ postChangeRQ) {
-        Post post = postRepository.findPostById(id)
-                .orElseThrow(BadRequestException::new);
-        Timestamp publishDate = new Timestamp(System.currentTimeMillis());
-        changePostPublishDate(publishDate.getTime(), post);
-        changePostTexts(postChangeRQ, post);
-        postRepository.save(post);
-        PostDTO postDTO = postMapper.mapToPostDTO(post);
-        return DefaultRSMapper.of(postDTO);
-    }
-
-
-    public DefaultRS<?> deletePostById(int id) {
-        Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
-        postRepository.delete(post);
-        DeleteDTO deleteDTO = new DeleteDTO(id);
-        return DefaultRSMapper.of(deleteDTO);
-    }
-
-    public DefaultRS<?> recoverPostById(int id) {
-        return DefaultRSMapper.of(new PostDTO());
-    }
-
-    public DefaultRS<?> getCommentsToPost(int id, Pageable pageable) {
-        List<PostComment> comments = commentRepository.findByPostId(id, pageable);
-        List<CommentDTO> commentsDTO = comments.stream()
-                .map(commentMapper::mapToCommentDTO)
-                .collect(Collectors.toList());
-        return DefaultRSMapper.of(commentsDTO);
-    }
-
-
-    public DefaultRS<?> makeCommentToPost(int postId, CommentRQ commentRQ) {
-        Person currentPerson = authService.getPersonFromSecurityContext();
-        Post post = postRepository.findPostById(postId).orElseThrow(BadRequestException::new);
-        PostComment postComment = createPostComment(commentRQ, currentPerson, post);
-        CommentDTO commentDTO = commentMapper.mapToCommentDTO(postComment);
-        return DefaultRSMapper.of(commentDTO);
-    }
-
-    public DefaultRS<?> rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
-        PostComment postComment = commentRepository.findById(commentId).orElseThrow(BadRequestException::new);
-        postComment.setCommentText(commentRQ.getCommentText());
-        commentRepository.save(postComment);
-        CommentDTO commentDTO = commentMapper.mapToCommentDTO(postComment);
-        return DefaultRSMapper.of(commentDTO);
-    }
-
-
-    public DefaultRS<?> deleteCommentToThePost(int id, int commentId) {
-        PostComment postComment = commentRepository.findById(commentId).orElseThrow(BadRequestException::new);
-        commentRepository.delete(postComment);
-        DeleteDTO deleteDTO = new DeleteDTO(id);
-        return DefaultRSMapper.of(deleteDTO);
-    }
-
-    public DefaultRS<?> recoverCommentToPost(int id, int commentId) {
-        return DefaultRSMapper.of(new CommentDTO());
-    }
-
-    public DefaultRS<?> reportPostById(int id) {
-        return DefaultRSMapper.of(new MessageOkDTO());
-    }
-
-    public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
-        return DefaultRSMapper.of(new MessageOkDTO());
-    }
-
-    private long checkDate(long dateTo) {
-        if (dateTo == 0) {
-            dateTo = new Date().getTime();
+    private Page<Post> getPostsPage(PostSearchRQ postSearchRQ, Pageable pageable, long dateTo) {
+        Page<Post> postPage;
+        if(postSearchRQ.getTags().size() > 0) {
+            postPage = postRepository.findPostWithTags(
+                    postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                    new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),
+                    postSearchRQ.getTags(), pageable);
+        } else {
+            postPage = postRepository.findPost(
+                    postSearchRQ.getAuthor(), postSearchRQ.getText(),
+                    new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo), pageable);
         }
-        return dateTo;
+
+        return postPage;
     }
 
     private void changePostPublishDate(long publishDate, Post post) {
@@ -183,17 +215,56 @@ public class PostService {
         }
     }
 
+    private PostDTO getPostDTO(Post post) {
+        PostDTO postDTO = PostDTO.getPostDTO(post);
+        postDTO.setMyLike(getMyLike(post.getLikes()));
+        return postDTO;
+    }
+
+    private int getMyLike(List<PostLike> likes) {
+        Person me = authService.getPersonFromSecurityContext();
+        return (int)likes.stream().filter(like -> like.getPerson().equals(me)).count();
+    }
+
+    private void addTags2Post(Post post, List<String> tagNames) {
+        List<Tag> tags = tagService.addTagsIfNotExists(tagNames);
+        Set<Post2tag> newTagPosts = tagService.getPost2tagSet(post, tags);
+        post.getTags().clear();
+        post.getTags().addAll(newTagPosts);
+        postRepository.save(post);
+    }
+
+    private List<PostDTO> getPostDTOList(List<Post> posts) {
+        return posts.stream()
+                .map(this::getPostDTO)
+                .collect(Collectors.toList());
+    }
+
+    private long checkDate(long dateTo) {
+        if (dateTo == 0) {
+            dateTo = new Date().getTime();
+        }
+
+        return dateTo;
+    }
+
     private PostComment createPostComment(CommentRQ commentRQ, Person currentPerson, Post post) {
         PostComment postComment = new PostComment();
         postComment.setCommentText(commentRQ.getCommentText());
         if (commentRQ.getParentId() != null) {
-            PostComment parentComment = commentRepository.findById(commentRQ.getParentId()).orElseThrow(BadRequestException::new);
+            PostComment parentComment = commentRepository.findById(commentRQ.getParentId())
+                    .orElseThrow(BadRequestException::new);
             postComment.setParent(parentComment);
         }
         postComment.setPost(post);
         postComment.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         postComment.setAuthor(currentPerson);
         commentRepository.save(postComment);
+
         return postComment;
+    }
+
+    public void errorLogTest() {
+        logger.error("error to file test");
     }
 }

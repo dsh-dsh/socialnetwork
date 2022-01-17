@@ -2,17 +2,16 @@ package com.skillbox.socialnet.model.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnet.model.entity.Post;
-import com.skillbox.socialnet.model.entity.Post2tag;
-import com.skillbox.socialnet.model.entity.PostComment;
-import com.skillbox.socialnet.model.entity.Tag;
-import com.skillbox.socialnet.repository.Tag2PostRepository;
-import com.skillbox.socialnet.service.PostService;
+import com.skillbox.socialnet.model.entity.*;
+import com.skillbox.socialnet.model.enums.PostPublishType;
+import com.skillbox.socialnet.service.AuthService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
+import javax.annotation.PostConstruct;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -34,21 +33,46 @@ public class PostDTO {
     private int myLike;
     private List<CommentDTO> comments;
     private String[] tags;
-    private String type = "string";
+    private String type = "POSTED";
 
-    public static PostDTO getPostDTO(Post post, List<Post2tag> tags, List<PostComment> comments) {
+    public static PostDTO getPostDTO(Post post) {
         PostDTO postDTO = new PostDTO();
-        postDTO.setId(postDTO.getId());
+        postDTO.setId(post.getId());
         postDTO.setTime(post.getTime().getTime());
         postDTO.setAuthor(UserDTO.getUserDTO(post.getAuthor()));
-        postDTO.setTitle(postDTO.getTitle());
+        postDTO.setTitle(post.getTitle());
         postDTO.setPostText(post.getPostText());
-        postDTO.setBlocked(postDTO.isBlocked());
-        postDTO.setLikes(postDTO.getLikes());
-        postDTO.setMyLike(postDTO.getMyLike());
-        postDTO.setTags(tags.stream().map(tag2post -> tag2post.getTag().getTag()).collect(Collectors.toList()).toArray(String[]::new));
-        postDTO.setComments(comments.stream().map(CommentDTO::getCommentDTO).collect(Collectors.toList()));
+        postDTO.setBlocked(post.isBlocked());
+        postDTO.setLikes(post.getLikes().size());
+        postDTO.setTags(getTagNames(post.getTags()));
+        postDTO.setComments(getComments(post));
+        postDTO.setType(getPostType(post));
+
         return postDTO;
+    }
+
+    private static List<CommentDTO> getComments(Post post) {
+        return post.getComments().stream()
+                .map(CommentDTO::getCommentDTO)
+                .collect(Collectors.toList());
+    }
+
+    private static String[] getTagNames(Set<Post2tag> tags) {
+        return tags.stream()
+                .map(tag2post -> tag2post.getTag().getTag())
+                .toArray(String[]::new);
+    }
+
+    private static String getPostType(Post post) {
+        long postTime = post.getTime().getTime();
+        String postType;
+        if(postTime < Calendar.getInstance().getTimeInMillis()) {
+            postType = String.valueOf(PostPublishType.POSTED);
+        } else {
+            postType = String.valueOf(PostPublishType.QUEUED);
+        }
+
+        return postType;
     }
 }
 

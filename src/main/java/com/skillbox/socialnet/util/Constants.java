@@ -32,4 +32,11 @@ public class Constants {
     public static final int RECOMMENDED_FRIENDS_LIMIT = 10;
     public static final int RECOMMENDED_POST_LIMIT = 10;
 
+    public static final String USER_BLOCKED_RS = "User is blocked";
+    public static final String USER_UNBLOCKED_RS = "User is unblocked";
+    public static final String OK = "ok";
+    public static final String USER_ALREADY_EXIST = "Email is already registered";
+
+    public static final String RECOVERING_CODE_EXPIRED = "Recovering code expired";
+
 }

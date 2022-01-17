@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"post", "tag"})
 @Entity
 @Table(name = "post2tag")
 public class Post2tag {
@@ -24,4 +24,9 @@ public class Post2tag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;
+
+    public Post2tag(Post post, Tag tag) {
+        this.post = post;
+        this.tag = tag;
+    }
 }

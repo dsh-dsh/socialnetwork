@@ -16,5 +16,5 @@ import javax.validation.constraints.Email;
 @NoArgsConstructor
 public class AccountEmailRQ {
     @Email
-    String email;
+    private String email;
 }

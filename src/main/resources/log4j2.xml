@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%throwable"/>
+        </Console>
+
+        <File name="InfoAppender" fileName="logs/info.log">
+            <MarkerFilter marker="INFO_MARKER"/>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %logger{36} %m%n"/>
+        </File>
+
+        <File name="DebugAppender" fileName="logs/debug.log">
+            <MarkerFilter marker="DEBUG_MARKER"/>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %logger{36} %m%n%throwable"/>
+        </File>
+
+        <File name="ErrorAppender" fileName="logs/error.log">
+            <MarkerFilter marker="ERROR_MARKER"/>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %logger{36} %m%n%throwable"/>
+        </File>
+
+        <File name="MethodReturnAppender" fileName="logs/methodReturns.log">
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %m%n"/>
+        </File>
+
+        <Async name="AsyncErrorAppender" bufferSize="50">
+            <AppenderRef ref="ErrorAppender"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <logger name="methodReturn" level="info">
+            <AppenderRef ref="MethodReturnAppender"/>
+        </logger>
+
+        <Root level="debug">
+            <AppenderRef ref="InfoAppender"/>
+            <AppenderRef ref="DebugAppender"/>
+            <AppenderRef ref="ErrorAppender"/>
+            <AppenderRef ref="ConsoleAppender" level="info"/>
+        </Root>
+    </Loggers>
+
+</Configuration>

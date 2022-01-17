@@ -13,19 +13,10 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<PostComment, Integer> {
 
-    @Query(value = "select c from PostComment c where c.post = :post and c.isBlocked = false")
-    List<PostComment> findByPost(Post post);
+    List<PostComment> findByPostAndIsBlocked(Post post, boolean isBlocked);
 
-    @Query(value = "select c from PostComment c where c.post.id = :postId and c.isBlocked = false")
-    List<PostComment> findByPostId(int postId, Pageable pageable);
+    Page<PostComment> findByPostAndIsBlocked(Post post, boolean isBlocked, Pageable pageable);
 
-    @Query(value = "select c from PostComment c where c.post.id = :postId and c.isBlocked = false")
-    Page<PostComment> findByPostIdPageable(int postId, Pageable pageable);
-
-    @Query(value = "select c from PostComment c where c.id = :id")
     Optional<PostComment> findById(int id);
-
-
-
 
 }

@@ -33,6 +33,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.skillbox.socialnet.util.Constants.USER_BLOCKED_RS;
+import static com.skillbox.socialnet.util.Constants.USER_UNBLOCKED_RS;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -40,11 +43,6 @@ public class UserService {
     private final PersonService personService;
     private final PersonRepository personRepository;
     private final AuthService authService;
-    private final PostRepository postRepository;
-    private final PostService postService;
-    private final TagRepository tagRepository;
-    private final Tag2PostRepository tag2PostRepository;
-    private final CommentRepository commentRepository;
 
     public UserDTO getUser() {
         Person person = authService.getPersonFromSecurityContext();
@@ -64,53 +62,6 @@ public class UserService {
     public String deleteUser() {
         personRepository.delete(authService.getPersonFromSecurityContext());
         return "User deleted successfully";
-    }
-
-
-    public List<PostDTO> getUserWall(int id, Pageable pageable) {
-        Person person = personService.getPersonById(id);
-        Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
-        List<PostDTO> postDTOs = postPage.stream()
-                .map(postFromDB -> PostDTO.getPostDTO(postFromDB,
-                        tag2PostRepository.getAllByPost(postFromDB),
-                        commentRepository.findByPost(postFromDB)))
-                .collect(Collectors.toList());
-        return postDTOs;
-    }
-
-
-    public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
-        Post post = new Post();
-        Person person = personService.getPersonById(id);
-        post.setAuthor(person);
-        post.setTitle(postChangeRQ.getTitle());
-        post.setPostText(postChangeRQ.getPostText());
-        post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
-        post = postRepository.save(post);
-        List<String> tagsList = postChangeRQ.getTags();
-        if (tagsList.size() != 0) {
-            checkTags(tagsList);
-            addTags2Post(post, tagsList);
-        }
-        return PostDTO.getPostDTO(post, tag2PostRepository.getAllByPost(post), new ArrayList<>());
-    }
-
-    private void addTags2Post(Post post, List<String> tags) {
-        for (String tagName : tags) {
-            Post2tag post2tag = new Post2tag();
-            post2tag.setPost(post);
-            post2tag.setTag(tagRepository.getTagByTag(tagName));
-            tag2PostRepository.save(post2tag);
-        }
-    }
-    private void checkTags(List<String> tags) {
-        for (String tagName : tags) {
-            if (tagRepository.getTagByTag(tagName) == null) {
-                Tag tag = new Tag();
-                tag.setTag(tagName);
-                tagRepository.save(tag);
-            }
-        }
     }
 
     public GeneralListResponse<?> searchUsers(String firstOrLastName, Pageable pageable) {
@@ -134,18 +85,25 @@ public class UserService {
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 
-    public String blockUser(int id) {
+    public MessageOkDTO blockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(true);
         personRepository.save(person);
-        return "User is blocked";
+        return new MessageOkDTO();
     }
 
-    public String unblockUser(int id) {
+    public MessageOkDTO unblockUser(int id) {
         Person person = personService.getPersonById(id);
         person.setBlocked(false);
         personRepository.save(person);
-        return "Usr is unblocked";
+        return new MessageOkDTO();
+    }
+
+    public MessageOkDTO checkOnline() {
+        Person me = authService.getPersonFromSecurityContext();
+        me.setLastOnlineTime(new Timestamp(new Date().getTime()));
+        personRepository.save(me);
+        return new MessageOkDTO();
     }
 
 

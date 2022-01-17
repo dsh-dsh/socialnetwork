@@ -1,6 +1,7 @@
 package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.entity.Friendship;
+import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import org.springframework.data.domain.Page;
@@ -21,34 +22,42 @@ import java.util.Optional;
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Integer> {
 
-    @Query("FROM Friendship WHERE (srcPerson = :person or dstPerson = :person) and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND")
-    List<Friendship> findAllFriends(Person person);
+    @Query("FROM Friendship " +
+            "WHERE (srcPerson = :person or dstPerson = :person) " +
+            "AND status.code = :code")
+    List<Friendship> findAllFriends(Person person, FriendshipStatusCode code);
 
     @Query("SELECT friendship " +
             "FROM Friendship AS friendship " +
             "WHERE (friendship.srcPerson = :person or friendship.dstPerson = :person) " +
-            "AND friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND")
-    Page<Friendship> findAllFriendsPageable(Person person, Pageable pageable);
-
-    @Query("FROM Friendship WHERE dstPerson = :person and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.REQUEST")
-    List<Friendship> findAllRequest(Person person);
+            "AND friendship.status.code = :code")
+    Page<Friendship> findAllFriendsPageable(Person person, FriendshipStatusCode code, Pageable pageable);
 
     @Query("SELECT friendship " +
             "FROM Friendship AS friendship " +
             "WHERE friendship.dstPerson = :person " +
-            "AND friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.REQUEST")
-    Page<Friendship> findAllRequestPageable(Person person, Pageable pageable);
+            "AND friendship.status.code = :code")
+    Page<Friendship> findAllRequestPageable(Person person, FriendshipStatusCode code, Pageable pageable);
 
-    @Query("FROM Friendship WHERE dstPerson = :currentPerson and srcPerson = :dstPerson and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.REQUEST")
-    List<Friendship> findRequests(Person currentPerson, Person dstPerson);
+    @Query("FROM Friendship " +
+            "WHERE (srcPerson = :srcPerson AND dstPerson = :dstPerson) " +
+            "OR ( srcPerson = :dstPerson AND dstPerson = :srcPerson) " +
+            "AND status.code = :code")
+    List<Friendship> findRequests(Person srcPerson, Person dstPerson, FriendshipStatusCode code);
 
-    @Query("FROM Friendship WHERE ((dstPerson = :currentPerson and srcPerson = :dstPerson) or (dstPerson = :dstPerson and srcPerson = :currentPerson))")
+    @Query("FROM Friendship " +
+            "WHERE ((dstPerson = :currentPerson and srcPerson = :dstPerson) " +
+            "OR (dstPerson = :dstPerson and srcPerson = :currentPerson))")
     Optional<Friendship> getRelationship(Person currentPerson, Person dstPerson);
 
-    @Query("FROM Friendship WHERE ((dstPerson = :currentPerson and srcPerson = :dstPerson)" +
-             "or (dstPerson = :dstPerson and srcPerson = :currentPerson)) and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND")
-    List<Friendship> isFriends(Person currentPerson, Person dstPerson);
+    @Query("FROM Friendship " +
+            "WHERE ((dstPerson = :currentPerson and srcPerson = :dstPerson) " +
+            "OR (dstPerson = :dstPerson and srcPerson = :currentPerson)) " +
+            "AND status.code = :code")
+    List<Friendship> isFriends(Person currentPerson, Person dstPerson, FriendshipStatusCode code);
 
-    @Query("FROM Friendship WHERE (srcPerson IN (:persons) OR dstPerson IN (:persons)) and status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND")
-    List<Friendship> findAllFriendsOfMyFriends(Collection<Person> persons);
+    @Query("FROM Friendship " +
+            "WHERE (srcPerson IN (:persons) OR dstPerson IN (:persons)) " +
+            "AND status.code = :code")
+    List<Friendship> findAllFriendsOfMyFriends(Collection<Person> persons, FriendshipStatusCode code);
 }

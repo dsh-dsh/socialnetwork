@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"author", "time"})
 @ToString
 @Entity
 @Table(name = "post_comment")

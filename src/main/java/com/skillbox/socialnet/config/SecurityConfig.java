@@ -33,12 +33,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtFilter jwtFilter;
 
     private static final String[] AUTH_WHITELIST = {
-            "/v2/api-docs",
             "/swagger-resources",
             "/swagger-resources/",
             "/configuration/ui",
             "/configuration/security",
+            "/webjars/springfox-swagger-ui/**",
             "/swagger-ui.html",
+            "/swagger-ui/**",
             "/webjars/",
             "/",
             "/static/**",
@@ -46,16 +47,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/v1/platform/**",
             "/api/v1/account/register",
             "/api/v1/account/password/**",
+            "/api/v1/account/shift-email",
             "/profile/storage/",
             "/storage/",
             "api/v1/admin/login",
             "/favicon.ico",
             "/js/**", "/css/**",
             "/change-password",
-            "/login",
             "/shift-email",
-            "/swagger-ui/**",
-            "/v1/api-docs"
+            "/**/{path:[^\\\\.]*}"
     };
 
     @Bean
@@ -96,6 +96,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/").permitAll()
                 .antMatchers("/api/v1/dialogs/**").permitAll()
                 .antMatchers("/api/v1/friends/**").permitAll()
+                .antMatchers("/api/v1/storage/**").permitAll()
+                .antMatchers("/api/v1/likes/**").permitAll()
+                .antMatchers("/api/v1/liked/**").permitAll()
                 .antMatchers("/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/",

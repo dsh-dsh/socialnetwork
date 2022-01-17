@@ -17,10 +17,14 @@ import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Integer> {
+    @Modifying
+    @Transactional
     @Query("DELETE FROM Message AS messages WHERE messages IN (:messages)")
     void deleteMessagesByList(List<Message> messages);
 
     Page<Message> findByDialog(Dialog dialog, Pageable pageable);
+
+    List<Message> findByDialog(Dialog dialog);
 
     Optional<Message> findFirst1ByDialogOrderByTimeDesc(Dialog dialog);
 
