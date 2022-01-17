@@ -12,7 +12,7 @@ import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.anotation.LogResult;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,7 +42,7 @@ public class PostService {
     public static final Marker DEBUG_MARKER = MarkerManager.getMarker("DEBUG_MARKER");
     public static final Marker ERROR_MARKER = MarkerManager.getMarker("ERROR_MARKER");
 
-    @LogResult
+    @MethodLog
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
         Page<Post> postPage = getPostsPage(postSearchRQ, pageable, dateTo);
@@ -51,7 +51,7 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
-    @LogResult
+    @MethodLog
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
         List<Person> friends = friendsService.getMyFriends();
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
@@ -65,14 +65,14 @@ public class PostService {
         return new GeneralListResponse<>(postDTOs, postPage);
     }
 
-    @LogResult
+    @MethodLog
     public PostDTO getPostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
 
         return getPostDTO(post);
     }
 
-    @LogResult
+    @MethodLog
     public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Person person = personService.getPersonById(id);
         Post post = new Post();
@@ -86,7 +86,7 @@ public class PostService {
         return getPostDTO(post);
     }
 
-    @LogResult
+    @MethodLog
     public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -98,7 +98,7 @@ public class PostService {
         return getPostDTO(post);
     }
 
-    @LogResult
+    @MethodLog
     public DeleteDTO deletePostById(int id) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -107,7 +107,7 @@ public class PostService {
         return new DeleteDTO(id);
     }
 
-    @LogResult
+    @MethodLog
     public List<PostDTO> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
@@ -115,7 +115,7 @@ public class PostService {
         return getPostDTOList(postPage.getContent());
     }
 
-    @LogResult
+    @MethodLog
     public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -127,7 +127,7 @@ public class PostService {
         return new GeneralListResponse<>(commentsDTO, commentPage);
     }
 
-    @LogResult
+    @MethodLog
     public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Post post = postRepository.findPostById(postId)
@@ -137,7 +137,7 @@ public class PostService {
         return CommentDTO.getCommentDTO(postComment);
     }
 
-    @LogResult
+    @MethodLog
     public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);
@@ -147,7 +147,7 @@ public class PostService {
         return CommentDTO.getCommentDTO(postComment);
     }
 
-    @LogResult
+    @MethodLog
     public DeleteDTO deleteCommentToThePost(int id, int commentId) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);
