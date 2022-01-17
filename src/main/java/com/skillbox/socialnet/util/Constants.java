@@ -39,4 +39,6 @@ public class Constants {
 
     public static final String RECOVERING_CODE_EXPIRED = "Recovering code expired";
 
+    public static final String DELETED_USER = "User deleted successfully";
+
 }

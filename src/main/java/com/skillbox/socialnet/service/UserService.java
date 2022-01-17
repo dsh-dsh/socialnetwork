@@ -33,8 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.skillbox.socialnet.util.Constants.USER_BLOCKED_RS;
-import static com.skillbox.socialnet.util.Constants.USER_UNBLOCKED_RS;
+import static com.skillbox.socialnet.util.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +60,7 @@ public class UserService {
 
     public String deleteUser() {
         personRepository.delete(authService.getPersonFromSecurityContext());
-        return "User deleted successfully";
+        return DELETED_USER;
     }
 
     public GeneralListResponse<?> searchUsers(String firstOrLastName, Pageable pageable) {
