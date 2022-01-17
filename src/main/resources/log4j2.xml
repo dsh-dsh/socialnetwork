@@ -5,15 +5,26 @@
             <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%throwable"/>
         </Console>
 
-        <File name="ErrorAppender" fileName="logs/errors.log">
-            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p [%t] %m%n"/>
+        <File name="InfoAppender" fileName="logs/info.log">
+            <MarkerFilter marker="INFO_MARKER"/>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %logger{36} %m%n"/>
+        </File>
+
+        <File name="DebugAppender" fileName="logs/debug.log">
+            <MarkerFilter marker="DEBUG_MARKER"/>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %logger{36} %m%n%throwable"/>
+        </File>
+
+        <File name="ErrorAppender" fileName="logs/error.log">
+            <MarkerFilter marker="ERROR_MARKER"/>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %logger{36} %m%n%throwable"/>
         </File>
 
         <File name="MethodReturnAppender" fileName="logs/methodReturns.log">
             <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %m%n"/>
         </File>
 
-        <Async name="AsyncAppender" bufferSize="50">
+        <Async name="AsyncErrorAppender" bufferSize="50">
             <AppenderRef ref="ErrorAppender"/>
         </Async>
     </Appenders>
@@ -23,12 +34,11 @@
             <AppenderRef ref="MethodReturnAppender"/>
         </logger>
 
-        <logger name="errorFile" level="error">
+        <Root level="debug">
+            <AppenderRef ref="InfoAppender"/>
+            <AppenderRef ref="DebugAppender"/>
             <AppenderRef ref="ErrorAppender"/>
-        </logger>
-
-        <Root level="info">
-            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="ConsoleAppender" level="info"/>
         </Root>
     </Loggers>
 

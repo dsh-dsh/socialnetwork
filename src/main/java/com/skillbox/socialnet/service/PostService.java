@@ -16,6 +16,8 @@ import com.skillbox.socialnet.util.anotation.LogResult;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +37,10 @@ public class PostService {
     private final PersonService personService;
     private final TagService tagService;
 
-    public static final Logger logger = LogManager.getLogger("errorFile");
+    public static final Logger logger = LogManager.getLogger(PostService.class);
+    public static final Marker INFO_MARKER = MarkerManager.getMarker("INFO_MARKER");
+    public static final Marker DEBUG_MARKER = MarkerManager.getMarker("DEBUG_MARKER");
+    public static final Marker ERROR_MARKER = MarkerManager.getMarker("ERROR_MARKER");
 
     @LogResult
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
@@ -52,6 +57,10 @@ public class PostService {
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
+
+        logger.info(INFO_MARKER, "info");
+        logger.debug(DEBUG_MARKER, "debug");
+        logger.error(ERROR_MARKER, "error");
 
         return new GeneralListResponse<>(postDTOs, postPage);
     }
