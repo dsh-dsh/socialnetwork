@@ -261,8 +261,4 @@ public class PostService {
 
         return postComment;
     }
-
-    public void errorLogTest() {
-        logger.error("error to file test");
-    }
 }
