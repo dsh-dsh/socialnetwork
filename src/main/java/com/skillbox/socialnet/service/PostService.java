@@ -38,9 +38,6 @@ public class PostService {
     private final TagService tagService;
 
     public static final Logger logger = LogManager.getLogger(PostService.class);
-    public static final Marker INFO_MARKER = MarkerManager.getMarker("INFO_MARKER");
-    public static final Marker DEBUG_MARKER = MarkerManager.getMarker("DEBUG_MARKER");
-    public static final Marker ERROR_MARKER = MarkerManager.getMarker("ERROR_MARKER");
 
     @MethodLog
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
@@ -58,9 +55,10 @@ public class PostService {
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
 
-        logger.info(INFO_MARKER, "info");
-        logger.debug(DEBUG_MARKER, "debug");
-        logger.error(ERROR_MARKER, "error");
+        logger.info("some text {}", postDTOs);
+        logger.debug("some text {} and anather object {}", posts, postDTOs);
+        Exception exception = new Exception("exeption message");
+        logger.error("error message {}", exception.getMessage());
 
         return new GeneralListResponse<>(postDTOs, postPage);
     }

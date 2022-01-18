@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -7,13 +8,11 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,20 +34,16 @@ public class StorageLoggingService {
 
     private static final String BUCKET_NAME = "social-net-20-group";
     private static final String LOG_DIR = "logs";
-    private static final String ARCHIVE_DIR = "logs/archive";
     private static final long EXPIRATION_PERIOD = 30L*24*60*60*1000;
 
     private AmazonS3 s3Client;
 
-    public void proba() {
-        deleteArchive(new File(ARCHIVE_DIR));
-    }
-
     @Scheduled(cron = "${log.files.scheduling.cron.expression}")
     public void updateLogFilesToCloud() {
         this.s3Client = getAmazonS3();
-        saveArchiveFilesToCloud();
-        deleteArchive(new File(ARCHIVE_DIR));
+        List<Path> paths = saveLogFilesToCloud();
+        deleteUploadedLocalFiles(paths);
+        deleteEmptyLogDirs();
         deleteOldFilesFromCloud();
     }
 
@@ -61,16 +56,17 @@ public class StorageLoggingService {
                 .build();
     }
 
-    private void saveArchiveFilesToCloud() {
-        List<Path> paths = getArchiveFilePaths(Paths.get(ARCHIVE_DIR));
+    private List<Path> saveLogFilesToCloud() {
+        List<Path> paths = getLogFilePaths(Paths.get(LOG_DIR));
         if(paths != null && paths.size() > 0) {
             for(Path path : paths) {
-                saveArchiveFileToCloud(path);
+                saveLogFileToCloud(path);
             }
         }
+        return paths;
     }
 
-    private List<Path> getArchiveFilePaths(Path path) {
+    private List<Path> getLogFilePaths(Path path) {
         try (Stream<Path> paths = Files.walk(path)) {
             return paths.filter(Files::isRegularFile).collect(Collectors.toList());
         } catch (IOException e) {
@@ -78,22 +74,35 @@ public class StorageLoggingService {
         }
     }
 
-    private void saveArchiveFileToCloud(Path path) {
+    private void saveLogFileToCloud(Path path) {
         String fileName = path.toString();
         File file = path.toFile();
         s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, file));
     }
 
-    private void deleteArchive(File archive) {
-        File[] files = archive.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (!Files.isSymbolicLink(file.toPath())) {
-                    deleteArchive(file);
-                }
+    private void deleteUploadedLocalFiles(List<Path> paths) {
+        for(Path path : paths) {
+            path.toFile().delete();
+        }
+    }
+
+    private void deleteEmptyLogDirs() {
+        File logDir = new File(LOG_DIR);
+        File[] logDirs = logDir.listFiles();
+        if(logDirs != null) {
+            for (File nextDir : logDirs) {
+                try(Stream<Path> paths = Files.walk(nextDir.toPath())) {
+                    paths.map(Path::toFile)
+                            .filter(File::isDirectory)
+                            .filter(this::isEmptyDir)
+                            .forEach(File::delete);
+                } catch (IOException ignored) {}
             }
         }
-        archive.delete();
+    }
+
+    private boolean isEmptyDir(File dir) {
+        return Objects.requireNonNull(dir.listFiles()).length == 0;
     }
 
     private void deleteOldFilesFromCloud() {
@@ -114,41 +123,76 @@ public class StorageLoggingService {
                 .collect(Collectors.toList());
     }
 
-//    public void deleteBucket() {
-//        this.s3Client = getAmazonS3();
-//        String bucketName = "social-net-20-group-log-files";
-//        try {
-//            s3Client.deleteBucket("social-net-20-group-log-files");
-//        } catch (AmazonServiceException e) {
-//            System.err.println(e.getErrorMessage());
-//        }
-//
-//        List<Bucket> buckets = s3Client.listBuckets();
-//
-//        for(Bucket bucket : buckets) {
-//            System.out.println(bucket.getName());
-//        }
-//    }
-//
-//    public void createBucket(){
-//        String bucketName = "social-net-20-group";
-//
-//        this.s3Client = getAmazonS3();
-//
-//        if(s3Client.doesBucketExistV2(bucketName)) {
-//            System.out.println("Bucket name is not available."
-//                    + " Try again with a different Bucket name.");
-//            return;
-//        } else {
-//            System.out.println("Bucket name is available");
-//        }
-//
-//        s3Client.createBucket(bucketName);
-//
-//        List<Bucket> buckets = s3Client.listBuckets();
-//
-//        for(Bucket bucket : buckets) {
-//            System.out.println(bucket.getName());
-//        }
-//    }
+    private void readFilesFromBucket(){
+        System.out.println("files in bucket");
+        ObjectListing listing = s3Client.listObjects(BUCKET_NAME);
+        listing.getObjectSummaries().stream()
+                .map(S3ObjectSummary::getKey)
+                .forEach(System.out::println);
+    }
+
+    private void deleteAllFilesFromCloud() {
+        List<String> fileNames = s3Client.listObjects(BUCKET_NAME)
+                .getObjectSummaries().stream()
+                .map(S3ObjectSummary::getKey)
+                .collect(Collectors.toList());
+        if(fileNames != null & fileNames.size() > 0) {
+            for (String fileName : fileNames) {
+                s3Client.deleteObject(BUCKET_NAME, fileName);
+            }
+        }
+    }
+
+    private void deleteLogDirs() {
+        File logDir = new File(LOG_DIR);
+        File[] logDirs = logDir.listFiles();
+        if(logDirs != null) {
+            for (File nextDir : logDirs) {
+                deleteDirWithFilesRecursive(nextDir);
+            }
+        }
+    }
+
+    private void deleteDirWithFilesRecursive(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (!Files.isSymbolicLink(file.toPath())) {
+                    deleteDirWithFilesRecursive(file);
+                }
+            }
+        }
+        dir.delete();
+    }
+
+    public void deleteBucket() {
+        this.s3Client = getAmazonS3();
+        String bucketName = "social-net-20-group-log-files";
+        try {
+            s3Client.deleteBucket("social-net-20-group-log-files");
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+        }
+        List<Bucket> buckets = s3Client.listBuckets();
+        for(Bucket bucket : buckets) {
+            System.out.println(bucket.getName());
+        }
+    }
+
+    public void createBucket(){
+        String bucketName = "social-net-20-group";
+        this.s3Client = getAmazonS3();
+        if(s3Client.doesBucketExistV2(bucketName)) {
+            System.out.println("Bucket name is not available."
+                    + " Try again with a different Bucket name.");
+            return;
+        } else {
+            System.out.println("Bucket name is available");
+        }
+        s3Client.createBucket(bucketName);
+        List<Bucket> buckets = s3Client.listBuckets();
+        for(Bucket bucket : buckets) {
+            System.out.println(bucket.getName());
+        }
+    }
 }
