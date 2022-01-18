@@ -14,9 +14,15 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class StorageLoggingService {
@@ -29,56 +35,21 @@ public class StorageLoggingService {
 
     private static final String BUCKET_NAME = "social-net-20-group";
     private static final String LOG_DIR = "logs";
+    private static final String ARCHIVE_DIR = "logs/archive";
+    private static final long EXPIRATION_PERIOD = 30L*24*60*60*1000;
 
     private AmazonS3 s3Client;
 
+    public void proba() {
+        deleteArchive(new File(ARCHIVE_DIR));
+    }
+
     @Scheduled(cron = "${log.files.scheduling.cron.expression}")
-    public void updateLogFilesToCloud() throws FileNotFoundException {
+    public void updateLogFilesToCloud() {
         this.s3Client = getAmazonS3();
-        deleteFilesFromCloud();
-        saveLogFilesToCloud();
-    }
-
-    private File[] getLogFiles() {
-        File logDir = new File(LOG_DIR);
-        return logDir.listFiles();
-    }
-
-    private void saveLogFilesToCloud() throws FileNotFoundException {
-        File[] files = getLogFiles();
-        if(files != null & files.length > 0) {
-            for(File file : files) {
-                saveFileToCloud(file);
-                emptyFile(file);
-            }
-        }
-    }
-
-    private void emptyFile(File file) throws FileNotFoundException {
-        PrintWriter writer = new PrintWriter(file);
-        writer.print("");
-        writer.close();
-    }
-
-    private void saveFileToCloud(File file) {
-        String fileName = LOG_DIR + "/" + file.getName();
-        s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, file));
-    }
-
-    private void deleteFilesFromCloud() {
-        List<String> fileNames = getAllFileNamesFromCloud();
-        if(fileNames != null & fileNames.size() > 0) {
-            for (String fileName : fileNames) {
-                s3Client.deleteObject(BUCKET_NAME, fileName);
-            }
-        }
-    }
-
-    private List<String> getAllFileNamesFromCloud() {
-        ObjectListing listing = s3Client.listObjects(BUCKET_NAME);
-        return listing.getObjectSummaries().stream()
-                .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
+        saveArchiveFilesToCloud();
+        deleteArchive(new File(ARCHIVE_DIR));
+        deleteOldFilesFromCloud();
     }
 
     private AmazonS3 getAmazonS3() {
@@ -88,6 +59,59 @@ public class StorageLoggingService {
                 .withRegion(Regions.EU_CENTRAL_1)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
+    }
+
+    private void saveArchiveFilesToCloud() {
+        List<Path> paths = getArchiveFilePaths(Paths.get(ARCHIVE_DIR));
+        if(paths != null && paths.size() > 0) {
+            for(Path path : paths) {
+                saveArchiveFileToCloud(path);
+            }
+        }
+    }
+
+    private List<Path> getArchiveFilePaths(Path path) {
+        try (Stream<Path> paths = Files.walk(path)) {
+            return paths.filter(Files::isRegularFile).collect(Collectors.toList());
+        } catch (IOException e) {
+            return List.of();
+        }
+    }
+
+    private void saveArchiveFileToCloud(Path path) {
+        String fileName = path.toString();
+        File file = path.toFile();
+        s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, file));
+    }
+
+    private void deleteArchive(File archive) {
+        File[] files = archive.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (!Files.isSymbolicLink(file.toPath())) {
+                    deleteArchive(file);
+                }
+            }
+        }
+        archive.delete();
+    }
+
+    private void deleteOldFilesFromCloud() {
+        long expirationTime = new Date().getTime() - EXPIRATION_PERIOD;
+        List<String> fileNames = getOldFilesFromCloud(expirationTime);
+        if(fileNames != null & fileNames.size() > 0) {
+            for (String fileName : fileNames) {
+                s3Client.deleteObject(BUCKET_NAME, fileName);
+            }
+        }
+    }
+
+    private List<String> getOldFilesFromCloud(long expirationTime) {
+        ObjectListing listing = s3Client.listObjects(BUCKET_NAME);
+        return listing.getObjectSummaries().stream()
+                .filter(o -> o.getLastModified().getTime() < expirationTime)
+                .map(S3ObjectSummary::getKey)
+                .collect(Collectors.toList());
     }
 
 //    public void deleteBucket() {
