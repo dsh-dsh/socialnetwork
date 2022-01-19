@@ -2,6 +2,7 @@ package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Post findById(int id);
 
 //    Optional<Page<Post>> findByAuthorIn(List<Person> persons, Pageable pageable);
+    @MethodLog
     Page<Post> findByAuthorIn(List<Person> persons, Pageable pageable);
 
     Optional<List<Post>> findOptionalByAuthorIn(List<Person> friends);

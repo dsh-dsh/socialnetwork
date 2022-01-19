@@ -10,6 +10,7 @@ import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -158,6 +159,7 @@ public class FriendsService {
         return personsToExclude;
     }
 
+    @MethodLog
     public List<Person> getMyFriends() {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND);
