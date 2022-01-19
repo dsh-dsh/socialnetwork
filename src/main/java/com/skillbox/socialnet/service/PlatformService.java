@@ -1,42 +1,86 @@
 package com.skillbox.socialnet.service;
 
-
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.model.entity.City;
+import com.skillbox.socialnet.model.entity.Country;
+import com.skillbox.socialnet.model.entity.Language;
+import com.skillbox.socialnet.repository.CityRepository;
+import com.skillbox.socialnet.repository.CountryRepository;
+import com.skillbox.socialnet.repository.LanguageRepository;
+import com.skillbox.socialnet.util.anotation.MethodLog;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PlatformService {
 
+    private final LanguageRepository languageRepository;
+    private final CountryRepository countryRepository;
+    private final CityRepository cityRepository;
 
+    @MethodLog
     public GeneralListResponse<?> getLanguage(String language, Pageable pageable) {
+        Page<Language> languagePage = languageRepository.findAll(pageable);
+        List<LocationDTO> languages = languagePage.stream()
+                .map(LocationDTO::getLocationDTO)
+                .collect(Collectors.toList());
 
-        List<LocationDTO> languages = List.of(new LocationDTO(1, "Русский"));
-
-        return new GeneralListResponse<>(languages, pageable);
+        return new GeneralListResponse<>(languages, languagePage);
     }
 
-    public GeneralListResponse<?> getCity(String city, Pageable pageable) {
+    @MethodLog
+    public GeneralListResponse<?> getCity(Pageable pageable) {
+        Page<City> cityPage = cityRepository.findAll(pageable);
+        List<LocationDTO> cities = cityPage.stream()
+                .map(LocationDTO::getLocationDTO)
+                .collect(Collectors.toList());
 
-        List<LocationDTO> cities = List.of(
-                new LocationDTO(1, "Москва"),
-                new LocationDTO(1, "Краснодар"),
-                new LocationDTO(1, "Тель-Авив"),
-                new LocationDTO(1, "Серов"));
-
-        return new GeneralListResponse<>(cities, pageable);
+        return new GeneralListResponse<>(cities, cityPage);
     }
 
-    public GeneralListResponse<?> getCountry(String country, Pageable pageable) {
-
-        List<LocationDTO> countries = List.of(
-                new LocationDTO(1, "Россия"),
-                new LocationDTO(1, "Израиль"));
+    @MethodLog
+    public GeneralListResponse<?> getCountry(Pageable pageable) {
+        Page<Country> cityPage = countryRepository.findAll(pageable);
+        List<LocationDTO> countries = cityPage.stream()
+                .map(LocationDTO::getLocationDTO)
+                .collect(Collectors.toList());
 
         return new GeneralListResponse<>(countries, pageable);
     }
 
+    @MethodLog
+    public MessageOkDTO setCity(LocationDTO cityDTO) {
+        City city = cityRepository.findByTitle(cityDTO.getTitle())
+                .orElseGet(() -> createNewCity(cityDTO));
+
+        return new MessageOkDTO();
+    }
+
+    @MethodLog
+    public MessageOkDTO setCountry(LocationDTO locationDTO) {
+        Country country = countryRepository.findByTitle(locationDTO.getTitle())
+                .orElseGet(() -> createNewCountry(locationDTO));
+
+        return new MessageOkDTO();
+    }
+
+    private City createNewCity(LocationDTO locationDTO) {
+        City newCity = new City();
+        newCity.setTitle(locationDTO.getTitle());
+        return cityRepository.save(newCity);
+    }
+
+    private Country createNewCountry(LocationDTO locationDTO) {
+        Country newCountry = new Country();
+        newCountry.setTitle(locationDTO.getTitle());
+        return countryRepository.save(newCountry);
+    }
 }
