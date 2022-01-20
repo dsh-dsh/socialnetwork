@@ -45,7 +45,7 @@ public class FriendsService {
         return new GeneralListResponse<>(friends, friendshipPage);
     }
 
-    public GeneralListResponse<?> getRequests(String name, Pageable pageable) {
+    public GeneralListResponse<UserDTO> getRequests(String name, Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Page<Friendship> requestsPage = friendshipRepository
                 .findAllRequestPageable(currentPerson, FriendshipStatusCode.REQUEST, pageable);
@@ -121,7 +121,7 @@ public class FriendsService {
         return friendship;
     }
 
-    public GeneralListResponse<?> getRecommendations(Pageable pageable) {
+    public GeneralListResponse<UserDTO> getRecommendations(Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Set<Person> myFriends = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND)
                 .stream().map(f -> getFriendFromFriendship(f, currentPerson))

@@ -1,8 +1,9 @@
 package com.skillbox.socialnet.controller;
 
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
-import com.skillbox.socialnet.model.entity.City;
-import com.skillbox.socialnet.model.entity.Country;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.service.PlatformService;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.anotation.MethodLog;
@@ -20,7 +21,7 @@ public class PlatformController {
 
     @MethodLog
     @GetMapping("/languages")
-    public ResponseEntity<?> getLanguages(
+    public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
             @RequestParam(defaultValue = "") String language,
             ElementPageable pageable){
         return ResponseEntity.ok(platformService.getLanguage(language, pageable));
@@ -28,26 +29,26 @@ public class PlatformController {
 
     @MethodLog
     @GetMapping("/countries")
-    public ResponseEntity<?> getCountry(ElementPageable pageable){
+    public ResponseEntity<GeneralListResponse<LocationDTO>> getCountry(ElementPageable pageable){
         return ResponseEntity.ok(platformService.getCountry(pageable));
     }
 
     @MethodLog
     @PostMapping("/countries")
-    public ResponseEntity<?> setCountry(@RequestBody LocationDTO locationDTO){
-        return ResponseEntity.ok(platformService.setCountry(locationDTO));
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(@RequestBody LocationDTO locationDTO){
+        return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
     @MethodLog
     @GetMapping("/cities")
-    public ResponseEntity<?> getCity(ElementPageable pageable){
+    public ResponseEntity<GeneralListResponse<LocationDTO>> getCity(ElementPageable pageable){
         return ResponseEntity.ok(platformService.getCity(pageable));
     }
 
     @MethodLog
     @PostMapping("/cities")
-    public ResponseEntity<?> setCity(@RequestBody LocationDTO locationDTO){
-        return ResponseEntity.ok(platformService.setCity(locationDTO));
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(@RequestBody LocationDTO locationDTO){
+        return ResponseEntity.ok(new GeneralResponse<>(platformService.addCity(locationDTO)));
     }
 
 }

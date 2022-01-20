@@ -51,10 +51,10 @@ public class PersonService {
         String city = userChangeRQ.getCity();
         String country = userChangeRQ.getCountry();
         if(!city.equals("")) {
-            platformService.setCity(new LocationDTO(0, city));
+            platformService.addCity(new LocationDTO(0, city));
         }
         if(!country.equals("")) {
-            platformService.setCountry(new LocationDTO(0, country));
+            platformService.addCountry(new LocationDTO(0, country));
         }
     }
 

@@ -27,7 +27,7 @@ public class PlatformService {
     private final CityRepository cityRepository;
 
     @MethodLog
-    public GeneralListResponse<?> getLanguage(String language, Pageable pageable) {
+    public GeneralListResponse<LocationDTO> getLanguage(String language, Pageable pageable) {
         Page<Language> languagePage = languageRepository.findAll(pageable);
         List<LocationDTO> languages = languagePage.stream()
                 .map(LocationDTO::getLocationDTO)
@@ -37,7 +37,7 @@ public class PlatformService {
     }
 
     @MethodLog
-    public GeneralListResponse<?> getCity(Pageable pageable) {
+    public GeneralListResponse<LocationDTO> getCity(Pageable pageable) {
         Page<City> cityPage = cityRepository.findAll(pageable);
         List<LocationDTO> cities = cityPage.stream()
                 .map(LocationDTO::getLocationDTO)
@@ -47,7 +47,7 @@ public class PlatformService {
     }
 
     @MethodLog
-    public GeneralListResponse<?> getCountry(Pageable pageable) {
+    public GeneralListResponse<LocationDTO> getCountry(Pageable pageable) {
         Page<Country> cityPage = countryRepository.findAll(pageable);
         List<LocationDTO> countries = cityPage.stream()
                 .map(LocationDTO::getLocationDTO)
@@ -57,7 +57,7 @@ public class PlatformService {
     }
 
     @MethodLog
-    public MessageOkDTO setCity(LocationDTO cityDTO) {
+    public MessageOkDTO addCity(LocationDTO cityDTO) {
         City city = cityRepository.findByTitle(cityDTO.getTitle())
                 .orElseGet(() -> createNewCity(cityDTO));
 
@@ -65,7 +65,7 @@ public class PlatformService {
     }
 
     @MethodLog
-    public MessageOkDTO setCountry(LocationDTO locationDTO) {
+    public MessageOkDTO addCountry(LocationDTO locationDTO) {
         Country country = countryRepository.findByTitle(locationDTO.getTitle())
                 .orElseGet(() -> createNewCountry(locationDTO));
 
