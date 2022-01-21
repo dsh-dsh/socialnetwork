@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
 import com.skillbox.socialnet.service.UserService;
+import com.skillbox.socialnet.util.Constants;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,14 +36,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 "spring.datasource.password=1488228"})
 @SpringBootTest
 @AutoConfigureMockMvc
-
 public class ProfileControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private UserService userService;
+
 
     private static final String URL_PREFIX = "/api/v1/users/";
     private static final String ME = "me";
@@ -65,6 +64,14 @@ public class ProfileControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.email").value(EXISTING_EMAIL));
+    }
+
+    @Test
+    public void gettingWrongPerson() throws Exception {
+        mockMvc.perform(get(URL_PREFIX + ME)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -121,6 +128,17 @@ public class ProfileControllerTest {
     @Sql(value = "/sql/person/unblockP1.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void blockPerson() throws Exception {
         mockMvc.perform(put(URL_PREFIX + BLOCK + "/" + ID_1))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.message").value("ok"));
+    }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
+    @Sql(value = "/sql/person/blockP1.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/person/unblockP1.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void unblockPerson() throws Exception {
+        mockMvc.perform(delete(URL_PREFIX + BLOCK + "/" + ID_1))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
