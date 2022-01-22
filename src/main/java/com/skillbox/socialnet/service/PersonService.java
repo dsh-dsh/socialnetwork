@@ -66,4 +66,8 @@ public class PersonService {
         return personRepository.findByIdIn(ids);
     }
 
+    public boolean isEmailExists(String email) {
+        return personRepository.existsByeMail(email);
+    }
+
 }

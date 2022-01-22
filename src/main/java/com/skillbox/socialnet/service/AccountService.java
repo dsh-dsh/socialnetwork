@@ -47,9 +47,6 @@ public class AccountService {
     private long expirationTime;
 
    public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
-        if (isEmailExist(accountRegisterRQ.getEmail())) {
-            throw new BadRequestException(Constants.EMAIL_EXISTS_MESSAGE);
-        }
         Person person = new Person();
         person.setEMail(accountRegisterRQ.getEmail());
         person.setFirstName(accountRegisterRQ.getFirstName());
@@ -82,6 +79,9 @@ public class AccountService {
             AccountEmailRQ accountEmailRQ,
             HttpServletRequest servletRequest) throws MailException {
         String email = accountEmailRQ.getEmail();
+        if(!isEmailExist(email)) {
+            throw new BadRequestException(Constants.NO_SUCH_USER_MESSAGE);
+        }
         String recoveryLink = servletRequest.getRequestURL().toString()
                 .replace(servletRequest.getServletPath(), "") +
                 "/change-password?code=" + getConfirmationCode(email);
@@ -134,9 +134,6 @@ public class AccountService {
 
     public MessageOkDTO setEmail(AccountEmailRQ accountEmailRQ) {
         String email = accountEmailRQ.getEmail();
-        if(isEmailExist(email)) {
-            throw new BadRequestException(Constants.EMAIL_EXISTS_MESSAGE);
-        }
         Person person = authService.getPersonFromSecurityContext();
         person.setEMail(email);
         personRepository.save(person);

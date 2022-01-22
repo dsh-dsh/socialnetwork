@@ -39,6 +39,12 @@ public class Constants {
 
     public static final String RECOVERING_CODE_EXPIRED = "Recovering code expired";
 
-    public static final String DELETED_USER = "User deleted successfully";
+    public static final String USER_DELETE_SUCCESS = "User deleted successfully";
 
+    public static final String PASSWORD_TOO_SHORT_MESSAGE = "Length of password has to be 8";
+    public static final String WRONG_FIRST_NAME_MESSAGE = "Wrong first name string";
+    public static final String WRONG_LAST_NAME_MESSAGE = "Wrong last name string";
+    public static final String NOT_VALID_EMAIL_MESSAGE = "not a well-formed email";
+    public static final String NOT_VALID_PHONE_NUMBER_MESSAGE = "not a well-formed phone number";
+    public static final String NOT_VALID_BIRTHDAY_MESSAGE = "birthday must be a past date";
 }

@@ -14,12 +14,14 @@ import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Calendar;
 import java.util.List;
 
@@ -37,8 +39,11 @@ public class ProfileController {
         return ResponseEntity.ok(new GeneralResponse<>(userService.getUser()));
     }
 
+    @MethodLog
     @PutMapping("/me")
-    public ResponseEntity<GeneralResponse<UserDTO>> editUser(@RequestBody UserChangeRQ userChangeRQ, HttpServletRequest request) {
+    public ResponseEntity<GeneralResponse<UserDTO>> editUser(
+            @RequestBody @Valid UserChangeRQ userChangeRQ,
+            HttpServletRequest request) {
         return ResponseEntity.ok(new GeneralResponse<>(userService.editUser(userChangeRQ)));
     }
 
