@@ -44,7 +44,7 @@ public class AccountController {
 
     @PutMapping("/password/set")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setPassword(
-            @RequestBody AccountPasswordSetRQ accountPasswordSetRQ) {
+            @RequestBody @Valid AccountPasswordSetRQ accountPasswordSetRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.setPassword(accountPasswordSetRQ));
         return ResponseEntity.ok(response);

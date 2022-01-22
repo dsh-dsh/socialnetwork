@@ -35,7 +35,6 @@ import static com.skillbox.socialnet.config.Config.bcrypt;
 @RequiredArgsConstructor
 public class AccountService {
 
-    public static final String EXPIRATION_PREFIX = "E";
     private final PersonRepository personRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
@@ -103,18 +102,9 @@ public class AccountService {
         return confirmationCode;
     }
 
-    private void validateExpirationConfirmationCode(String token) {
-        String expirationString = token.substring(token.lastIndexOf(EXPIRATION_PREFIX) + 1);
-        long expiration = Long.parseLong(expirationString);
-        if(expiration < System.currentTimeMillis()) {
-            throw new BadRequestException(Constants.RECOVERING_CODE_EXPIRED);
-        }
-    }
-
     public MessageOkDTO setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {
-        validateExpirationConfirmationCode(accountPasswordSetRQ.getToken());
         Person person = personRepository.findByConfirmationCode(accountPasswordSetRQ.getToken())
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.WRONG_RECOVERING_CODE));
         person.setPassword(passwordEncoder.encode(accountPasswordSetRQ.getPassword()));
         personRepository.save(person);
 

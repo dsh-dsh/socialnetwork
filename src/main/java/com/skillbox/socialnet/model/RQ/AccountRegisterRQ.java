@@ -26,7 +26,7 @@ public class AccountRegisterRQ {
     private String email;
 
     @Size(min = 8,
-            message = Constants.PASSWORD_TOO_SHORT_MESSAGE)
+            message = Constants.PASSWORD_NOT_VALID_MESSAGE)
     private String passwd1;
 
     private String passwd2;

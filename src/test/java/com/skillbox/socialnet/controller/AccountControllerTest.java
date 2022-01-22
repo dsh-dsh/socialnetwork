@@ -123,7 +123,7 @@ public class AccountControllerTest {
                                 .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.PASSWORD_TOO_SHORT_MESSAGE));
+                .andExpect(jsonPath("$.error").value(Constants.PASSWORD_NOT_VALID_MESSAGE));
     }
 
     @Test
@@ -220,7 +220,7 @@ public class AccountControllerTest {
                                 .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.BAD_REQUEST_MESSAGE));
+                .andExpect(jsonPath("$.error").value(Constants.WRONG_RECOVERING_CODE));
     }
 
     @Test
