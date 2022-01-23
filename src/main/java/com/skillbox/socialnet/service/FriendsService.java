@@ -121,7 +121,7 @@ public class FriendsService {
         friendship.setSrcPerson(currentPerson);
         friendship.setDstPerson(dstPerson);
         friendship.setStatus(createRequestFriendshipStatus());
-
+        notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_REQUEST.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), dstPerson.getId(), String.valueOf(currentPerson.getId()), dstPerson.getEMail(), false);
         return friendship;
     }
 

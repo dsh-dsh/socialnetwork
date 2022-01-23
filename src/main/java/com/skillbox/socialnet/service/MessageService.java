@@ -50,7 +50,7 @@ public class MessageService {
         message.setRecipient(recipient);
         message.setTime(LocalDateTime.now());
         messageRepository.save(message);
-        notificationRepository.createNewNotification(NotificationTypeCode.MESSAGE.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), recipient.getId(), String.valueOf(NotificationTypeCode.POST_COMMENT.ordinal()), recipient.getEMail(), false);
+        notificationRepository.createNewNotification(NotificationTypeCode.MESSAGE.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), recipient.getId(), String.valueOf(author.getId()), recipient.getEMail(), false);
         return message;
     }
 
