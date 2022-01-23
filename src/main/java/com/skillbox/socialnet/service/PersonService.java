@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.exception.NoSuchUserException;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
@@ -16,6 +17,7 @@ import java.util.Set;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final PlatformService platformService;
 
     public Person getPersonById(int id) {
         Person person = personRepository.findPersonById(id);
@@ -30,6 +32,7 @@ public class PersonService {
     }
 
     public Person editPerson(String email, UserChangeRQ userChangeRQ) {
+        createLocations(userChangeRQ);
         Person person = getPersonByEmail(email);
         person.setFirstName(userChangeRQ.getFirstName());
         person.setLastName(userChangeRQ.getLastName());
@@ -44,12 +47,27 @@ public class PersonService {
         return person;
     }
 
+    private void createLocations(UserChangeRQ userChangeRQ) {
+        String city = userChangeRQ.getCity();
+        String country = userChangeRQ.getCountry();
+        if(!city.equals("")) {
+            platformService.addCity(new LocationDTO(0, city));
+        }
+        if(!country.equals("")) {
+            platformService.addCountry(new LocationDTO(0, country));
+        }
+    }
+
     public List<Person> getAllPersons() {
         return personRepository.findAll();
     }
 
     public Set<Person> getPersonsByIdList(List<Integer> ids) {
         return personRepository.findByIdIn(ids);
+    }
+
+    public boolean isEmailExists(String email) {
+        return personRepository.existsByeMail(email);
     }
 
 }

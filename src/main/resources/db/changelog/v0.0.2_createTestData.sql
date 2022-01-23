@@ -43,7 +43,7 @@ VALUES('2021-11-13T14:55:56', 2, null, 2, 'Stop this sh#t man', false);
 
 INSERT INTO post_comment
 (time, post_id, parent_id, author_id, comment_text, is_blocked)
-VALUES('2021-11-14T14:55:56', 2, 3, 3, 'Agreed', false);
+VALUES('2021-11-14T14:55:56', 2, null, 3, 'Agreed', false);
 
 INSERT INTO post_comment
 (time, post_id, parent_id, author_id, comment_text, is_blocked)
@@ -51,7 +51,7 @@ VALUES('2021-11-15T14:55:56', 3, null, 3, 'Bla-bla-bla', false);
 
 INSERT INTO post_comment
 (time, post_id, parent_id, author_id, comment_text, is_blocked)
-VALUES('2021-11-16T14:55:56', 2, 5, 1, 'qwljkqjwnpnqgiknqokngl', false);
+VALUES('2021-11-16T14:55:56', 3, 5, 1, 'qwljkqjwnpnqgiknqokngl', false);
 
 
 --likes

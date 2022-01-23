@@ -53,9 +53,10 @@ public class AccountControllerTest {
 
     private static final String URL_PREFIX = "/api/v1/account";
     private static final String EXISTING_EMAIL = "dan.shipilov@gmail.com";
+    private static final String NOT_VALID_EMAIL = "not_valid_email";
     private static final String TYPE_CODE = "FRIEND_REQUEST";
     private static final String NEW_EMAIL = "newuser@mail.ru";
-    private static final String FIRST_NAME = "John";
+    private static final String FIRST_NAME = "12345";
     private static final String LAST_NAME = "Smith";
     private static final String PASSWORD = "12345678";
     private static final String NEW_PASSWORD = "newPassword";
@@ -89,6 +90,18 @@ public class AccountControllerTest {
     }
 
     @Test
+    public void registerWithNotValidEmailTest() throws Exception {
+        AccountRegisterRQ request = getRegisterRequest(NOT_VALID_EMAIL);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_EMAIL_MESSAGE));
+    }
+
+    @Test
     public void registerWithExistingEmailTest() throws Exception {
         AccountRegisterRQ request = getRegisterRequest(EXISTING_EMAIL);
         this.mockMvc.perform(
@@ -101,7 +114,46 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void recoveryPasswordTest() throws Exception{
+    public void registerWithNotValidPasswordTest() throws Exception {
+        AccountRegisterRQ request = getRegisterRequest(NEW_EMAIL);
+        request.setPasswd1("short");
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.PASSWORD_NOT_VALID_MESSAGE));
+    }
+
+    @Test
+    public void registerWithBlankFirstNameTest() throws Exception {
+        AccountRegisterRQ request = getRegisterRequest(NEW_EMAIL);
+        request.setFirstName("");
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.WRONG_FIRST_NAME_MESSAGE));
+    }
+
+    @Test
+    public void registerWithBlankLastNameTest() throws Exception {
+        AccountRegisterRQ request = getRegisterRequest(NEW_EMAIL);
+        request.setLastName("");
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.WRONG_LAST_NAME_MESSAGE));
+    }
+
+    @Test
+    public void recoveryPasswordWithNotExistingEmailTest() throws Exception{
         AccountEmailRQ request = new AccountEmailRQ(NEW_EMAIL);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/password/recovery")
@@ -109,11 +161,11 @@ public class AccountControllerTest {
                                 .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.BAD_REQUEST_MESSAGE));
+                .andExpect(jsonPath("$.error").value(Constants.NO_SUCH_USER_MESSAGE));
     }
 
     @Test
-    public void recoveryPasswordWithWrongEmailTest() throws Exception{
+    public void recoveryPasswordTest() throws Exception{
         AccountEmailRQ request = new AccountEmailRQ(EXISTING_EMAIL);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/password/recovery")
@@ -168,7 +220,7 @@ public class AccountControllerTest {
                                 .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.BAD_REQUEST_MESSAGE));
+                .andExpect(jsonPath("$.error").value(Constants.WRONG_RECOVERING_CODE));
     }
 
     @Test
@@ -201,6 +253,19 @@ public class AccountControllerTest {
                 .andExpect(jsonPath("$.data.message").value("ok"));
 
         assertEquals(NEW_EMAIL, personService.getPersonById(EXISTING_PERSON_ID).getEMail());
+    }
+
+    @Test
+    @WithUserDetails(EXISTING_EMAIL)
+    public void setNotValidEmailTest() throws Exception{
+        AccountEmailRQ request = new AccountEmailRQ(NOT_VALID_EMAIL);
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/email")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_EMAIL_MESSAGE));
     }
 
     @Test

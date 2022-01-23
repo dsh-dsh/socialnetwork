@@ -1,5 +1,7 @@
 package com.skillbox.socialnet.repository;
 
+
+import com.skillbox.socialnet.model.dto.NotificationInterfaceProjectile;
 import com.skillbox.socialnet.model.entity.Friendship;
 import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
@@ -21,6 +23,12 @@ import java.util.Optional;
  */
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Integer> {
+
+    @Query(value = "select dst_person_id as dst, src_person_id as src from friendship f " +
+            "LEFT JOIN friendship_status fs ON fs.id = f.status_id " +
+            "where (src_person_id = :id or dst_person_id = :id)  and fs.code like 'FRIEND'",
+    nativeQuery = true)
+    List<NotificationInterfaceProjectile> getIdsForNotification(int id);
 
     @Query("FROM Friendship " +
             "WHERE (srcPerson = :person or dstPerson = :person) " +

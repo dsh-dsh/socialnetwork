@@ -1,54 +1,81 @@
 package com.skillbox.socialnet.exception;
 
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
+import com.skillbox.socialnet.model.RS.ErrorResponse;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @ControllerAdvice
 public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
-    // TODO прописать правильные сообщения об ошибках в Константах и возвращать правильные HttpStatus
-
+    @MethodLog
     @ExceptionHandler(BadRequestException.class)
-    protected ResponseEntity<?> handleBadRequestException(BadRequestException ex) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<ErrorResponse> handleBadRequestException(
+            BadRequestException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @MethodLog
     @ExceptionHandler(MailException.class)
-    protected ResponseEntity<?> handleMailException(MailException ex) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<ErrorResponse> handleMailException(
+            MailException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @MethodLog
     @ExceptionHandler(NoSuchUserException.class)
-    protected ResponseEntity<?> handleNoSuchUserException(NoSuchUserException ex) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<ErrorResponse> handleNoSuchUserException(
+            NoSuchUserException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @MethodLog
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-    protected ResponseEntity<?> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    protected ResponseEntity<ErrorResponse> handleAuthenticationCredentialsNotFoundException(
+            AuthenticationCredentialsNotFoundException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
+    @MethodLog
     @ExceptionHandler(NoAnyPostsFoundException.class)
-    protected ResponseEntity<?> handleNoAnyPostsFoundException(NoAnyPostsFoundException ex) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.NOT_FOUND);
+    protected ResponseEntity<ErrorResponse> handleNoAnyPostsFoundException(
+            NoAnyPostsFoundException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+    @MethodLog
     @ExceptionHandler(NoSuchPostException.class)
-    protected ResponseEntity<?> handleNoSuchPostException(NoSuchPostException ex) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<ErrorResponse> handleNoSuchPostException(
+            NoSuchPostException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @MethodLog
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return new ResponseEntity<>(DefaultRSMapper.error(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request) {
+
+        List<String> errors = ex.getBindingResult()
+                .getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(new ErrorResponse(errors.get(0)), HttpStatus.BAD_REQUEST);
     }
 }

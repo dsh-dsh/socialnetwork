@@ -3,6 +3,7 @@ package com.skillbox.socialnet.model.entity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -14,6 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"author", "time"})
+@ToString(of = {"id", "title"})
 @Entity
 @Table(name = "post")
 public class Post {

@@ -2,7 +2,7 @@ package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
-import org.springframework.beans.factory.annotation.Value;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,6 +36,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Post findById(int id);
 
 //    Optional<Page<Post>> findByAuthorIn(List<Person> persons, Pageable pageable);
+    @MethodLog
     Page<Post> findByAuthorIn(List<Person> persons, Pageable pageable);
 
     Optional<List<Post>> findOptionalByAuthorIn(List<Person> friends);
@@ -54,4 +55,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "ORDER BY post.author.regDate DESC")
     List<Post> findOrderByNewAuthorsExclude(List<Post> posts, Pageable pageable);
 
+    @Query(value = "select distinct(author_id) from post_comment " +
+            " where post_id = :postId and author_id != :authorId",
+    nativeQuery = true)
+    List<Integer> getIdsForPostNotifications(int postId, int authorId);
 }

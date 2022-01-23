@@ -7,15 +7,19 @@ import com.skillbox.socialnet.model.entity.Friendship;
 import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
+import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
+import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +37,7 @@ public class FriendsService {
     private final FriendshipRepository friendshipRepository;
     private final PersonRepository personRepository;
     private final AuthService authService;
+    private final NotificationRepository notificationRepository;
 
     public GeneralListResponse<UserDTO> getAllFriends(String name, Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
@@ -44,7 +49,7 @@ public class FriendsService {
         return new GeneralListResponse<>(friends, friendshipPage);
     }
 
-    public GeneralListResponse<?> getRequests(String name, Pageable pageable) {
+    public GeneralListResponse<UserDTO> getRequests(String name, Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Page<Friendship> requestsPage = friendshipRepository
                 .findAllRequestPageable(currentPerson, FriendshipStatusCode.REQUEST, pageable);
@@ -84,7 +89,7 @@ public class FriendsService {
                     .orElseGet(() -> createFriendshipRequest(currentPerson, dstPerson));
             friendshipRepository.save(friendship);
         }
-
+        notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_REQUEST.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), dstPerson.getId(), String.valueOf(NotificationTypeCode.FRIEND_REQUEST.ordinal()), dstPerson.getEMail(), false);
         return new MessageOkDTO();
     }
 
@@ -116,11 +121,11 @@ public class FriendsService {
         friendship.setSrcPerson(currentPerson);
         friendship.setDstPerson(dstPerson);
         friendship.setStatus(createRequestFriendshipStatus());
-
+        notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_REQUEST.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), dstPerson.getId(), String.valueOf(currentPerson.getId()), dstPerson.getEMail(), false);
         return friendship;
     }
 
-    public GeneralListResponse<?> getRecommendations(Pageable pageable) {
+    public GeneralListResponse<UserDTO> getRecommendations(Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Set<Person> myFriends = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND)
                 .stream().map(f -> getFriendFromFriendship(f, currentPerson))
@@ -158,6 +163,7 @@ public class FriendsService {
         return personsToExclude;
     }
 
+    @MethodLog
     public List<Person> getMyFriends() {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND);

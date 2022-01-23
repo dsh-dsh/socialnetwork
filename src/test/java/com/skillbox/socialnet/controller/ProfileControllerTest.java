@@ -33,10 +33,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties =
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
                 "spring.datasource.username=postgres",
-                "spring.datasource.password=1488228"})
+                "spring.datasource.password=123456"})
+//@TestPropertySource(properties =
+//        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
+//                "spring.datasource.username=postgres",
+//                "spring.datasource.password=1488228"})
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ProfileControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -52,6 +57,12 @@ public class ProfileControllerTest {
     private static final String P2_MAIL = "p2@mail.ru";
     private static final String FIRST_NAME = "Nick";
     private static final String LAST_NAME = "Jevai";
+    private static final String CITY = "City";
+    private static final String COUNTRY = "Country";
+    private static final String VALID_PHONE_NUMBER = "79001001010";
+    private static final String NOT_VALID_PHONE_NUMBER = "notValidPhoneNumber";
+    private static final Timestamp VALID_BIRTHDAY = Timestamp.valueOf("2010-10-10 00:00:00");
+    private static final Timestamp BIRTHDAY_IN_FUTURE = Timestamp.valueOf("2030-01-01 00:00:00");
     private static final String ABOUT = "Some test info";
 
     @Test
@@ -86,6 +97,66 @@ public class ProfileControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.first_name").value(FIRST_NAME));
+    }
+
+    @Test
+    @WithUserDetails(EXISTING_EMAIL)
+    @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void editingPersonWithOutFirstNameTest() throws Exception {
+        UserChangeRQ userChangeRQ = getUserChangeRQ();
+        userChangeRQ.setFirstName("");
+        mockMvc.perform(put(URL_PREFIX + ME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userChangeRQ)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.WRONG_FIRST_NAME_MESSAGE));
+    }
+
+    @Test
+    @WithUserDetails(EXISTING_EMAIL)
+    @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void editingPersonWithOutLastNameTest() throws Exception {
+        UserChangeRQ userChangeRQ = getUserChangeRQ();
+        userChangeRQ.setLastName("");
+        mockMvc.perform(put(URL_PREFIX + ME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userChangeRQ)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.WRONG_LAST_NAME_MESSAGE));
+    }
+
+    @Test
+    @WithUserDetails(EXISTING_EMAIL)
+    @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void editingPersonWithNotValidPhoneNumberTest() throws Exception {
+        UserChangeRQ userChangeRQ = getUserChangeRQ();
+        userChangeRQ.setPhone(NOT_VALID_PHONE_NUMBER);
+        mockMvc.perform(put(URL_PREFIX + ME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userChangeRQ)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_PHONE_NUMBER_MESSAGE));
+    }
+
+    @Test
+    @WithUserDetails(EXISTING_EMAIL)
+    @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void editingPersonWithNotValidBirthDateTest() throws Exception {
+        UserChangeRQ userChangeRQ = getUserChangeRQ();
+        userChangeRQ.setBirthDate(BIRTHDAY_IN_FUTURE);
+        mockMvc.perform(put(URL_PREFIX + ME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userChangeRQ)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_BIRTHDAY_MESSAGE));
     }
 
     @Test
@@ -150,7 +221,10 @@ public class ProfileControllerTest {
         userChangeRQ.setAbout(ABOUT);
         userChangeRQ.setFirstName(FIRST_NAME);
         userChangeRQ.setLastName(LAST_NAME);
-        userChangeRQ.setBirthDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        userChangeRQ.setPhone(VALID_PHONE_NUMBER);
+        userChangeRQ.setBirthDate(VALID_BIRTHDAY);
+        userChangeRQ.setCity(CITY);
+        userChangeRQ.setCountry(COUNTRY);
         return userChangeRQ;
     }
 
