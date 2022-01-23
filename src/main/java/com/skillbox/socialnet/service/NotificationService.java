@@ -56,9 +56,8 @@ public class NotificationService {
 
     private NotificationDataRS createDataRS(Notification notification) {
         NotificationDataRS ndr = new NotificationDataRS();
-        String[] whoIs = notification.getEntity().split(",");
 
-        ndr.setEntityAuthor(CommentAuthorDTO.getCommentAuthorDTO(personRepository.findPersonById(Integer.parseInt(whoIs[0]))));
+        ndr.setEntityAuthor(CommentAuthorDTO.getCommentAuthorDTO(personRepository.findPersonById(Integer.parseInt(notification.getEntity()))));
         ndr.setEventType(notification.getType().getName());
         ndr.setId(notification.getId());
         ndr.setSentTime(notification.getSentTime());

@@ -7,7 +7,9 @@ import com.skillbox.socialnet.model.entity.Friendship;
 import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
+import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
+import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.anotation.MethodLog;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,6 +37,7 @@ public class FriendsService {
     private final FriendshipRepository friendshipRepository;
     private final PersonRepository personRepository;
     private final AuthService authService;
+    private final NotificationRepository notificationRepository;
 
     public GeneralListResponse<UserDTO> getAllFriends(String name, Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
@@ -85,7 +89,7 @@ public class FriendsService {
                     .orElseGet(() -> createFriendshipRequest(currentPerson, dstPerson));
             friendshipRepository.save(friendship);
         }
-
+        notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_REQUEST.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), dstPerson.getId(), String.valueOf(NotificationTypeCode.FRIEND_REQUEST.ordinal()), dstPerson.getEMail(), false);
         return new MessageOkDTO();
     }
 

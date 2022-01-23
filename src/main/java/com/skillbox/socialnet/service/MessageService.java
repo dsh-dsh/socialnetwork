@@ -5,13 +5,17 @@ import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
+import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.MessageRepository;
+import com.skillbox.socialnet.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +24,7 @@ import java.util.Set;
 public class MessageService {
 
     private final MessageRepository messageRepository;
+    private final NotificationRepository notificationRepository;
 
     public Page<Message> getMessagePageByDialog(Dialog dialog, Pageable pageable) {
         return  messageRepository.findByDialog(dialog, pageable);
@@ -45,6 +50,7 @@ public class MessageService {
         message.setRecipient(recipient);
         message.setTime(LocalDateTime.now());
         messageRepository.save(message);
+        notificationRepository.createNewNotification(NotificationTypeCode.MESSAGE.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), recipient.getId(), String.valueOf(NotificationTypeCode.POST_COMMENT.ordinal()), recipient.getEMail(), false);
         return message;
     }
 
