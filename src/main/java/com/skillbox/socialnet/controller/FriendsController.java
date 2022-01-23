@@ -35,13 +35,13 @@ public class FriendsController {
     }
 
     @GetMapping("/friends/request")
-    public ResponseEntity<?> getRequests(
+    public ResponseEntity<GeneralListResponse<UserDTO>> getRequests(
             @RequestParam(defaultValue = "") String name, Pageable pageable) {
         return ResponseEntity.ok(friendsService.getRequests(name, pageable));
     }
 
     @GetMapping("/friends/recommendations")
-    public ResponseEntity<?> getRecommendations(Pageable pageable) {
+    public ResponseEntity<GeneralListResponse<UserDTO>> getRecommendations(Pageable pageable) {
         return ResponseEntity.ok(friendsService.getRecommendations(pageable));
     }
 

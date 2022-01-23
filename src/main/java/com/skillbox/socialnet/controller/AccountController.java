@@ -6,6 +6,7 @@ import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.NotificationSettingsDto;
 import com.skillbox.socialnet.service.AccountService;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class AccountController {
 
     @PostMapping("/register")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> register(
-            @RequestBody AccountRegisterRQ accountRegisterRQ) {
+            @RequestBody @Valid AccountRegisterRQ accountRegisterRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.register(accountRegisterRQ));
 
@@ -33,7 +34,7 @@ public class AccountController {
 
     @PutMapping("/password/recovery")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> passwordRecovery(
-            @RequestBody @Valid AccountEmailRQ accountEmailRQ,
+            @RequestBody AccountEmailRQ accountEmailRQ,
             HttpServletRequest servletRequest) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.recoveryPassword(accountEmailRQ, servletRequest));
@@ -43,7 +44,7 @@ public class AccountController {
 
     @PutMapping("/password/set")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setPassword(
-            @RequestBody AccountPasswordSetRQ accountPasswordSetRQ) {
+            @RequestBody @Valid AccountPasswordSetRQ accountPasswordSetRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.setPassword(accountPasswordSetRQ));
         return ResponseEntity.ok(response);
@@ -57,9 +58,10 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
+    @MethodLog
     @PutMapping("/email")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setEmail(
-            @RequestBody AccountEmailRQ accountEmailRQ) {
+            @RequestBody @Valid AccountEmailRQ accountEmailRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.setEmail(accountEmailRQ));
 

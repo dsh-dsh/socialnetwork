@@ -6,6 +6,7 @@ import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.util.ElementPageable;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ public class PostController {
 
     private final PostService postService;
 
+    @MethodLog
     @GetMapping
     public ResponseEntity<?> searchPosts(
             PostSearchRQ postSearchRQ,

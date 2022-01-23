@@ -10,6 +10,7 @@ import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,7 +45,7 @@ public class FriendsService {
         return new GeneralListResponse<>(friends, friendshipPage);
     }
 
-    public GeneralListResponse<?> getRequests(String name, Pageable pageable) {
+    public GeneralListResponse<UserDTO> getRequests(String name, Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Page<Friendship> requestsPage = friendshipRepository
                 .findAllRequestPageable(currentPerson, FriendshipStatusCode.REQUEST, pageable);
@@ -120,7 +121,7 @@ public class FriendsService {
         return friendship;
     }
 
-    public GeneralListResponse<?> getRecommendations(Pageable pageable) {
+    public GeneralListResponse<UserDTO> getRecommendations(Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Set<Person> myFriends = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND)
                 .stream().map(f -> getFriendFromFriendship(f, currentPerson))
@@ -158,6 +159,7 @@ public class FriendsService {
         return personsToExclude;
     }
 
+    @MethodLog
     public List<Person> getMyFriends() {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND);

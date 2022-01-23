@@ -37,5 +37,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "WHERE person NOT IN (:myFriends) " +
             "ORDER BY regDate DESC")
     List<Person> findNewFriendsLimit(Collection<Person> myFriends, Pageable pageable);
+
+    boolean existsByeMail(String email);
 }
 
