@@ -1,13 +1,11 @@
 package com.skillbox.socialnet.model.RQ;
 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnet.model.enums.NotificationTypeCode;
+import com.skillbox.socialnet.validation.anotation.ValidNotificationType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Semen V
@@ -19,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @NoArgsConstructor
 public class AccountNotificationRQ {
 
+    @ValidNotificationType()
     @JsonProperty("notification_type")
     private String notificationType;
+
     private boolean enable;
 }

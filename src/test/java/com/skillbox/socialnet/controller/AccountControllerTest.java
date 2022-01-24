@@ -10,7 +10,6 @@ import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.service.AccountService;
 import com.skillbox.socialnet.service.PersonService;
 import com.skillbox.socialnet.util.Constants;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -296,6 +295,32 @@ public class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
+    }
+
+    @Test
+    @WithUserDetails(EXISTING_EMAIL)
+    public void setBlankNotificationSettingTest() throws Exception{
+        String notificationRequest = "{\"notification_type\": \"\",\"enable\": true}";
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/notifications")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(notificationRequest))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_SETTING_TYPE_MESSAGE));
+    }
+
+    @Test
+    @WithUserDetails(EXISTING_EMAIL)
+    public void setNotValidNotificationSettingTest() throws Exception{
+        String notificationRequest = "{\"notification_type\": \"not_valid_type\",\"enable\": true}";
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/notifications")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(notificationRequest))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_SETTING_TYPE_MESSAGE));
     }
 
     private String getExpiredConfirmationCode() {
