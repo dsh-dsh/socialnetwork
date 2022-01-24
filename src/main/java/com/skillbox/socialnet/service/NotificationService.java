@@ -23,10 +23,10 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Value("${socialnet.item-per-page}")
-    private int itemPerPage;
+    private int itemPerPage = 20;
 
     @Value("${socialnet.offset}")
-    private int offset;
+    private int offset = 0;
 
     public NotificationRS getNotification(int itemPerPage, int offset) {
         List<Notification> notifications = notificationRepository.getAllNotSeenNotificationsForUser(authService.getPersonFromSecurityContext().getId());
