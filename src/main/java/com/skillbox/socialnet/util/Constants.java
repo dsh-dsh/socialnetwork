@@ -51,4 +51,6 @@ public class Constants {
     public static final String NOT_VALID_BIRTHDAY_MESSAGE = "birthday must be a past date";
     public static final String NOT_VALID_SETTING_TYPE_MESSAGE = "Notification setting type must be valid";
     public static final String BLANK_COMMENT_MESSAGE = "Comment text must not be blank";
+    public static final String NOT_VALID_TITLE_MESSAGE = "Title must more then 3 length";
+    public static final String NOT_VALID_TEXT_MESSAGE = "Text must more then 15 length";
 }

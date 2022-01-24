@@ -67,7 +67,7 @@ public class ProfileController {
     public ResponseEntity<GeneralResponse<PostDTO>> addPostToUserWall(
             @PathVariable int id,
             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
-            @RequestBody PostChangeRQ postChangeRQ) {
+            @RequestBody @Valid PostChangeRQ postChangeRQ) {
         return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(id, publishDate, postChangeRQ)));
     }
 

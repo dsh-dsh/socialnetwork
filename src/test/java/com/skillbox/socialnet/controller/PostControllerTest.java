@@ -80,6 +80,32 @@ public class PostControllerTest {
 
     @Test
     @WithUserDetails(P1_MAIL)
+    public void editPostWithNotValidTitleTest() throws Exception {
+        PostChangeRQ postChangeRQ = createPost("te", "changed text");
+        mockMvc.perform(put(URL_PREFIX + 10)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postChangeRQ)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_TITLE_MESSAGE));
+
+    }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
+    public void editPostWithNotValidTextTest() throws Exception {
+        PostChangeRQ postChangeRQ = createPost("title", "short text");
+        mockMvc.perform(put(URL_PREFIX + 10)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postChangeRQ)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_TEXT_MESSAGE));
+
+    }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void deletePost() throws Exception {

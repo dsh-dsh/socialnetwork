@@ -39,7 +39,7 @@ public class    PostController {
     public ResponseEntity<?> editPost(
             @PathVariable int id,
             @RequestParam (defaultValue = "0")  long publish_date,
-            @RequestBody PostChangeRQ postChangeRQ) {
+            @RequestBody @Valid PostChangeRQ postChangeRQ) {
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.changePostById(id, publish_date, postChangeRQ)));
     }
