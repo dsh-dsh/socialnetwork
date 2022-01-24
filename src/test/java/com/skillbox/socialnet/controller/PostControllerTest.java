@@ -27,9 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
-                "spring.datasource.username=postgres",
-                "spring.datasource.password=1488228"})
+        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public"})
 @SpringBootTest
 @AutoConfigureMockMvc
 public class PostControllerTest {
