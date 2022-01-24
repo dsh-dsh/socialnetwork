@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -58,7 +60,7 @@ public class    PostController {
     @PostMapping("/{id}/comments")
     public ResponseEntity<?> postComment(
             @PathVariable int id,
-            @RequestBody CommentRQ commentRQ) {
+            @RequestBody @Valid CommentRQ commentRQ) {
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.makeCommentToPost(id, commentRQ)));
     }
@@ -67,7 +69,7 @@ public class    PostController {
     public ResponseEntity<?> editComment(
             @PathVariable int id,
             @PathVariable int comment_id,
-            @RequestBody CommentRQ commentRQ) {
+            @RequestBody @Valid CommentRQ commentRQ) {
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.rewriteCommentToThePost(id, comment_id, commentRQ)));
     }

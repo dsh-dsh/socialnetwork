@@ -3,6 +3,7 @@ package com.skillbox.socialnet.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
+import com.skillbox.socialnet.util.Constants;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -110,6 +111,19 @@ public class PostControllerTest {
                         .content(objectMapper.writeValueAsString(new CommentRQ(null, "test comment new"))))
                 .andDo(print())
                 .andExpect(jsonPath("$.data.post_id").value(10));
+    }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
+    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void addBlankComment() throws Exception {
+        mockMvc.perform(post(URL_PREFIX + 10 + COMMENT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new CommentRQ(null, ""))))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.BLANK_COMMENT_MESSAGE));
     }
 
     @Test
