@@ -33,9 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
-                "spring.datasource.username=postgres",
-                "spring.datasource.password=123456"})
+        "spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public")
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -133,7 +131,7 @@ public class DialogControllerTest {
 
     @Test
     @Order(8)
-    @WithUserDetails(EXISTING_EMAIL)
+    @WithUserDetails(RECIPIENT_EMAIL)
     public void getMessagesTest() throws Exception {
         setTestingDialogId();
         mockMvc.perform(get(URL_PREFIX + "/" + newDialogId + "/messages"))

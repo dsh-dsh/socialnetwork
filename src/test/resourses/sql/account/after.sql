@@ -1,0 +1,1 @@
+DELETE FROM person where e_mail = 'dan.shipilov@gmail.com';

@@ -6,6 +6,7 @@ import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.service.DialogService;
 import com.skillbox.socialnet.util.ElementPageable;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,7 @@ public class DialogController {
         return ResponseEntity.ok(response);
     }
 
+    @MethodLog
     @GetMapping("/{dialog_id}/messages")
     public ResponseEntity<GeneralListResponse<MessageDTO>>
     getMessages(
@@ -56,6 +58,7 @@ public class DialogController {
         return ResponseEntity.ok(dialogService.getMessagesInDialog(dialogId, pageable));
     }
 
+    @MethodLog
     @GetMapping("/unreaded")
     public ResponseEntity<GeneralResponse<UnreadCountDTO>>
     unread() {

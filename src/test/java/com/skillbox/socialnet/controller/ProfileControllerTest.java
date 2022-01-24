@@ -3,7 +3,6 @@ package com.skillbox.socialnet.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.Constants;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,8 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public"})
-
+        "spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ProfileControllerTest {
@@ -177,14 +174,40 @@ public class ProfileControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/person/deleteTestPost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void addPost() throws Exception {
-        PostChangeRQ postChangeRQ = createPost("testTitle", "testText 1");
+        PostChangeRQ postChangeRQ = createPost("testTitle", "valid testText 1");
         mockMvc.perform(post(URL_PREFIX + ID_1 + "/wall")
                         .content(objectMapper.writeValueAsString(postChangeRQ))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").value("testTitle"))
-                .andExpect(jsonPath("$.data.post_text").value("testText 1"));
+                .andExpect(jsonPath("$.data.post_text").value("valid testText 1"));
+
+    }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
+    public void addPostWithNotValidTitleTest() throws Exception {
+        PostChangeRQ postChangeRQ = createPost("te", "valid testText 1");
+        mockMvc.perform(post(URL_PREFIX + ID_1 + "/wall")
+                        .content(objectMapper.writeValueAsString(postChangeRQ))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_TITLE_MESSAGE));
+
+    }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
+    public void addPostWithNotValidTextTest() throws Exception {
+        PostChangeRQ postChangeRQ = createPost("title", "short text");
+        mockMvc.perform(post(URL_PREFIX + ID_1 + "/wall")
+                        .content(objectMapper.writeValueAsString(postChangeRQ))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_TEXT_MESSAGE));
 
     }
 

@@ -5,6 +5,7 @@ import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.FriendsService;
+import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

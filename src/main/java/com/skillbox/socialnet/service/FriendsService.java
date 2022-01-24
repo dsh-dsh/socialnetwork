@@ -125,6 +125,7 @@ public class FriendsService {
         return friendship;
     }
 
+    @MethodLog
     public GeneralListResponse<UserDTO> getRecommendations(Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Set<Person> myFriends = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND)

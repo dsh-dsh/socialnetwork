@@ -68,9 +68,10 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
+    @MethodLog
     @PutMapping("/notifications")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setNotifications(
-            @RequestBody AccountNotificationRQ accountNotificationRQ) {
+            @RequestBody @Valid AccountNotificationRQ accountNotificationRQ) {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(accountService.setNotifications(accountNotificationRQ));
 
