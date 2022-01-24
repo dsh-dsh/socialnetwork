@@ -3,7 +3,6 @@ package com.skillbox.socialnet.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
-                "spring.datasource.username=postgres",
-                "spring.datasource.password=1488228"})
+        "spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class PostControllerTest {

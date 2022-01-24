@@ -3,7 +3,6 @@ package com.skillbox.socialnet.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.Constants;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,13 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
-                "spring.datasource.username=postgres",
-                "spring.datasource.password=123456"})
-//@TestPropertySource(properties =
-//        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
-//                "spring.datasource.username=postgres",
-//                "spring.datasource.password=1488228"})
+        "spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ProfileControllerTest {

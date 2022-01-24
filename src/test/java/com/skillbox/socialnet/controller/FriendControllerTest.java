@@ -32,9 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
-                "spring.datasource.username=postgres",
-                "spring.datasource.password=123456"})
+        "spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public")
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -61,7 +59,6 @@ public class FriendControllerTest {
 
     @Order(1)
     @Test
-
     @Sql(value = "/sql/friend/before.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void setTestingData() throws Exception {
@@ -170,8 +167,7 @@ public class FriendControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.[0]").exists())
-                .andExpect(jsonPath("$.data.[1]").exists())
-                .andExpect(jsonPath("$.data.[2]").doesNotExist());
+                .andExpect(jsonPath("$.data.[1]").doesNotExist());
     }
 
 

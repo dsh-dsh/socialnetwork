@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PostChangeRQ {
 
+
     private String title;
     @JsonProperty("post_text")
     private String postText;

@@ -1,11 +1,11 @@
 package com.skillbox.socialnet.model.RQ;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.List;
 

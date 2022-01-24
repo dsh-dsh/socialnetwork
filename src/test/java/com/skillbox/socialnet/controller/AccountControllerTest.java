@@ -10,6 +10,7 @@ import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.service.AccountService;
 import com.skillbox.socialnet.service.PersonService;
 import com.skillbox.socialnet.util.Constants;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public",
-                "spring.datasource.username=postgres",
-                "spring.datasource.password=123456"})
+        "spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AccountControllerTest {
@@ -52,7 +51,7 @@ public class AccountControllerTest {
     private PasswordEncoder passwordEncoder;
 
     private static final String URL_PREFIX = "/api/v1/account";
-    private static final String EXISTING_EMAIL = "dan.shipilov@gmail.com";
+    private static final String EXISTING_EMAIL = "p1@mail.ru";
     private static final String NOT_VALID_EMAIL = "not_valid_email";
     private static final String TYPE_CODE = "FRIEND_REQUEST";
     private static final String NEW_EMAIL = "newuser@mail.ru";
@@ -61,7 +60,7 @@ public class AccountControllerTest {
     private static final String PASSWORD = "12345678";
     private static final String NEW_PASSWORD = "newPassword";
     private static final String ENCODED_PASSWORD = "$2y$12$NKArmf9agtEQw7rPDN4zb.rE90zeewGAUWNRkSrYW662FwL77NyCS";
-    private static final int EXISTING_PERSON_ID = 6;
+    private static final int EXISTING_PERSON_ID = 1;
 
     private AccountRegisterRQ getRegisterRequest(String email) {
         AccountRegisterRQ request = new AccountRegisterRQ();
