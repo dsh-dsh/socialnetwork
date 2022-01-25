@@ -1,0 +1,72 @@
+24.01.2022 16:54:41.121 INFO CommentDTO com.skillbox.socialnet.service.PostService.rewriteCommentToThePost(int,int,CommentRQ)
+[10, 10, CommentRQ(parentId=null, commentText=test comment edited)]
+CommentDTO(id=10, time=1639140956000, postId=10, parentId=0, commentText=test comment edited, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[])
+
+24.01.2022 16:54:41.579 INFO CommentDTO com.skillbox.socialnet.service.PostService.makeCommentToPost(int,CommentRQ)
+[10, CommentRQ(parentId=null, commentText=test comment new)]
+CommentDTO(id=12, time=1643036081344, postId=10, parentId=0, commentText=test comment new, author=CommentAuthorDTO(id=1, firstName=Василий, lastName=Пупкин, photo=null), blocked=false, likes=0, myLike=0, subComments=[])
+
+24.01.2022 16:54:41.860 INFO GeneralListResponse com.skillbox.socialnet.service.PostService.searchPosts(PostSearchRQ,Pageable)
+[PostSearchRQ(author=null, text=test title, dateFrom=0, dateTo=0, tags=[]), ElementPageable(itemPerPage=20, offset=0, sort=id: ASC)]
+GeneralListResponse(error=string, errorDesc=null, timestamp=1643036081829, total=0, offset=0, perPage=20, data=[])
+
+24.01.2022 16:54:41.875 INFO ResponseEntity com.skillbox.socialnet.controller.PostController.searchPosts(PostSearchRQ,ElementPageable)
+[PostSearchRQ(author=null, text=test title, dateFrom=0, dateTo=0, tags=[]), ElementPageable(itemPerPage=20, offset=0, sort=id: ASC)]
+<200 OK OK,GeneralListResponse(error=string, errorDesc=null, timestamp=1643036081829, total=0, offset=0, perPage=20, data=[]),[]>
+
+24.01.2022 16:54:42.016 INFO PostDTO com.skillbox.socialnet.service.PostService.getPostById(int)
+[10]
+PostDTO(id=10, time=1636548956000, author=UserDTO(id=1, firstName=Василий, lastName=Пупкин, registrationDate=1636548956000, birthDate=658760156000, email=p1@mail.ru, phone=89991234567, photo=null, about=Родился в небольшой, но честной семье, city=Серов, country=Россия, permission=ALL, lastOnlineTime=1637067356000, isBlocked=false, isFriend=null, isYouBlocked=false, me=false, token=null), title=test title, postText=test post text, isBlocked=false, likes=0, myLike=0, comments=[CommentDTO(id=10, time=1639140956000, postId=10, parentId=0, commentText=test comment 1, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[]), CommentDTO(id=11, time=1639140956000, postId=10, parentId=0, commentText=test comment 2, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[])], tags=[], type=POSTED)
+
+24.01.2022 16:54:42.141 INFO DeleteDTO com.skillbox.socialnet.service.PostService.deleteCommentToThePost(int,int)
+[10, 11]
+DeleteDTO(id=10)
+
+24.01.2022 16:54:42.297 INFO GeneralListResponse com.skillbox.socialnet.service.PostService.getCommentsToPost(int,Pageable)
+[10, ElementPageable(itemPerPage=20, offset=0, sort=id: ASC)]
+GeneralListResponse(error=string, errorDesc=null, timestamp=1643036082297, total=2, offset=0, perPage=20, data=[CommentDTO(id=10, time=1639140956000, postId=10, parentId=0, commentText=test comment 1, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[]), CommentDTO(id=11, time=1639140956000, postId=10, parentId=0, commentText=test comment 2, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[])])
+
+24.01.2022 16:54:42.438 INFO PostDTO com.skillbox.socialnet.service.PostService.changePostById(int,long,PostChangeRQ)
+[10, 0, PostChangeRQ(title=test title changed, postText=changed text, tags=[])]
+PostDTO(id=10, time=1636548956000, author=UserDTO(id=1, firstName=Василий, lastName=Пупкин, registrationDate=1636548956000, birthDate=658760156000, email=p1@mail.ru, phone=89991234567, photo=null, about=Родился в небольшой, но честной семье, city=Серов, country=Россия, permission=ALL, lastOnlineTime=1637067356000, isBlocked=false, isFriend=null, isYouBlocked=false, me=false, token=null), title=test title changed, postText=changed text, isBlocked=false, likes=0, myLike=0, comments=[CommentDTO(id=10, time=1639140956000, postId=10, parentId=0, commentText=test comment 1, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[]), CommentDTO(id=11, time=1639140956000, postId=10, parentId=0, commentText=test comment 2, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[])], tags=[], type=POSTED)
+
+24.01.2022 16:54:42.516 INFO DeleteDTO com.skillbox.socialnet.service.PostService.deletePostById(int)
+[10]
+DeleteDTO(id=10)
+
+24.01.2022 16:56:52.465 INFO CommentDTO com.skillbox.socialnet.service.PostService.rewriteCommentToThePost(int,int,CommentRQ)
+[10, 10, CommentRQ(parentId=null, commentText=test comment edited)]
+CommentDTO(id=10, time=1639140956000, postId=10, parentId=0, commentText=test comment edited, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[])
+
+24.01.2022 16:56:52.730 INFO CommentDTO com.skillbox.socialnet.service.PostService.makeCommentToPost(int,CommentRQ)
+[10, CommentRQ(parentId=null, commentText=test comment new)]
+CommentDTO(id=12, time=1643036212637, postId=10, parentId=0, commentText=test comment new, author=CommentAuthorDTO(id=1, firstName=Василий, lastName=Пупкин, photo=null), blocked=false, likes=0, myLike=0, subComments=[])
+
+24.01.2022 16:56:52.840 INFO GeneralListResponse com.skillbox.socialnet.service.PostService.searchPosts(PostSearchRQ,Pageable)
+[PostSearchRQ(author=null, text=test title, dateFrom=0, dateTo=0, tags=[]), ElementPageable(itemPerPage=20, offset=0, sort=id: ASC)]
+GeneralListResponse(error=string, errorDesc=null, timestamp=1643036212824, total=0, offset=0, perPage=20, data=[])
+
+24.01.2022 16:56:52.855 INFO ResponseEntity com.skillbox.socialnet.controller.PostController.searchPosts(PostSearchRQ,ElementPageable)
+[PostSearchRQ(author=null, text=test title, dateFrom=0, dateTo=0, tags=[]), ElementPageable(itemPerPage=20, offset=0, sort=id: ASC)]
+<200 OK OK,GeneralListResponse(error=string, errorDesc=null, timestamp=1643036212824, total=0, offset=0, perPage=20, data=[]),[]>
+
+24.01.2022 16:56:53.027 INFO PostDTO com.skillbox.socialnet.service.PostService.getPostById(int)
+[10]
+PostDTO(id=10, time=1636548956000, author=UserDTO(id=1, firstName=Василий, lastName=Пупкин, registrationDate=1636548956000, birthDate=658760156000, email=p1@mail.ru, phone=89991234567, photo=null, about=Родился в небольшой, но честной семье, city=Серов, country=Россия, permission=ALL, lastOnlineTime=1637067356000, isBlocked=false, isFriend=null, isYouBlocked=false, me=false, token=null), title=test title, postText=test post text, isBlocked=false, likes=0, myLike=0, comments=[CommentDTO(id=10, time=1639140956000, postId=10, parentId=0, commentText=test comment 1, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[]), CommentDTO(id=11, time=1639140956000, postId=10, parentId=0, commentText=test comment 2, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[])], tags=[], type=POSTED)
+
+24.01.2022 16:56:53.168 INFO DeleteDTO com.skillbox.socialnet.service.PostService.deleteCommentToThePost(int,int)
+[10, 11]
+DeleteDTO(id=10)
+
+24.01.2022 16:56:53.246 INFO GeneralListResponse com.skillbox.socialnet.service.PostService.getCommentsToPost(int,Pageable)
+[10, ElementPageable(itemPerPage=20, offset=0, sort=id: ASC)]
+GeneralListResponse(error=string, errorDesc=null, timestamp=1643036213246, total=2, offset=0, perPage=20, data=[CommentDTO(id=10, time=1639140956000, postId=10, parentId=0, commentText=test comment 1, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[]), CommentDTO(id=11, time=1639140956000, postId=10, parentId=0, commentText=test comment 2, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[])])
+
+24.01.2022 16:56:53.340 INFO PostDTO com.skillbox.socialnet.service.PostService.changePostById(int,long,PostChangeRQ)
+[10, 0, PostChangeRQ(title=test title changed, postText=changed text, tags=[])]
+PostDTO(id=10, time=1636548956000, author=UserDTO(id=1, firstName=Василий, lastName=Пупкин, registrationDate=1636548956000, birthDate=658760156000, email=p1@mail.ru, phone=89991234567, photo=null, about=Родился в небольшой, но честной семье, city=Серов, country=Россия, permission=ALL, lastOnlineTime=1637067356000, isBlocked=false, isFriend=null, isYouBlocked=false, me=false, token=null), title=test title changed, postText=changed text, isBlocked=false, likes=0, myLike=0, comments=[CommentDTO(id=10, time=1639140956000, postId=10, parentId=0, commentText=test comment 1, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[]), CommentDTO(id=11, time=1639140956000, postId=10, parentId=0, commentText=test comment 2, author=CommentAuthorDTO(id=2, firstName=Иван, lastName=Иванов, photo=null), blocked=false, likes=0, myLike=0, subComments=[])], tags=[], type=POSTED)
+
+24.01.2022 16:56:53.465 INFO DeleteDTO com.skillbox.socialnet.service.PostService.deletePostById(int)
+[10]
+DeleteDTO(id=10)
+
