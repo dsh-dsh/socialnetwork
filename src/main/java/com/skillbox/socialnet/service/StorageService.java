@@ -30,7 +30,7 @@ public class StorageService {
     private final AuthService authService;
     private final PersonRepository personRepository;
 
-    public DefaultRS<?> saveImageToProfile(String type, MultipartFile multipartFile) throws IOException {
+    public FileDTO saveImageToProfile(String type, MultipartFile multipartFile) throws IOException {
         Person activePerson = authService.getPersonFromSecurityContext();
         File file = new File("src/main/resources/targetFile.jpg");
 
@@ -55,7 +55,7 @@ public class StorageService {
             fileDTO.setBytes(multipartFile.getBytes().length);
             fileDTO.setFileType(type);
         }
-        return DefaultRSMapper.of(fileDTO);
+        return fileDTO;
     }
 
     private String savePhotoInCloud(File file, String prevImg) {

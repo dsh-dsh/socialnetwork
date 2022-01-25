@@ -1,24 +1,27 @@
 package com.skillbox.socialnet.model.RS;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skillbox.socialnet.model.dto.CommentAuthorDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class NotificationDataRS {
+    @JsonProperty("entity_author")
+    private CommentAuthorDTO entityAuthor;
+
+    @JsonProperty("event_type")
+    private String eventType;
+
     private int id;
 
-    @JsonProperty("type_id")
-    private int typeId;
+    private String info;
 
     @JsonProperty("sent_time")
-    private long sentTime;
-
-    @JsonProperty("entity_id")
-    private int entityId;
-
-    private String info;
+    private Timestamp sentTime;
 }

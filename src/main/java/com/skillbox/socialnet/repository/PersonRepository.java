@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Integer> {
@@ -20,9 +17,9 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     @Query("SELECT person " +
             "FROM Person AS person " +
-            "WHERE ((:firstName is null OR person.firstName = :firstName) " +
-            "OR (:lastName is null OR person.lastName = :lastName)) " +
-            "AND person.birthDate BETWEEN :from AND :to " + //OR person.birthDate >= :from OR person.birthDate <= :to) " +
+            "WHERE (:firstName is null OR lower(person.firstName) like %:firstName%) " +
+            "AND (:lastName is null OR lower(person.lastName) like %:lastName%) " +
+            "AND person.birthDate BETWEEN :from AND :to " +
             "AND (:country is null OR person.country = :country) " +
             "AND (:city is null OR person.city = :city) " +
             "AND person.isBlocked = false " +
@@ -30,8 +27,17 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "ORDER BY person.firstName, person.lastName")
     Page<Person> findBySearchRequest(String firstName, String lastName, String country, String city, Date from, Date to, Pageable pageable);
 
-    List<Person> findByIdIn(List<Integer> idList);
+    Set<Person> findByIdIn(List<Integer> idList);
 
-    Optional<Person> getPersonById(int id);;
+    Optional<Person> getPersonById(int id);
+
+    Page<Person> findByFirstNameContainingOrLastNameContainingIgnoreCase(String fistName, String lastName, Pageable pageable);
+
+    @Query("SELECT person FROM Person AS person " +
+            "WHERE person NOT IN (:myFriends) " +
+            "ORDER BY regDate DESC")
+    List<Person> findNewFriendsLimit(Collection<Person> myFriends, Pageable pageable);
+
+    boolean existsByeMail(String email);
 }
 

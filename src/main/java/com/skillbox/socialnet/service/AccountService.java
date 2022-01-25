@@ -6,34 +6,30 @@ import com.skillbox.socialnet.model.RQ.AccountEmailRQ;
 import com.skillbox.socialnet.model.RQ.AccountNotificationRQ;
 import com.skillbox.socialnet.model.RQ.AccountPasswordSetRQ;
 import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
-import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.dto.MessageDTO;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.model.dto.NotificationSettingsDto;
 import com.skillbox.socialnet.model.entity.NotificationSetting;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.enums.MessagesPermission;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.repository.SettingsRepository;
 import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.ArrayList;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
-
-
-/**
- * @author Semen V
- * @created 18|11|2021
- */
 
 @Service
 @RequiredArgsConstructor
@@ -46,92 +42,117 @@ public class AccountService {
     private final AuthService authService;
     private final SettingsRepository settingsRepository;
 
-    public DefaultRS<?> register(AccountRegisterRQ accountRegisterRQ) {
-        if (!isEmailExist(accountRegisterRQ.getEmail())) {
-            Person person = new Person();
-            person.setEMail(accountRegisterRQ.getEmail());
-            person.setFirstName(accountRegisterRQ.getFirstName());
-            person.setLastName(accountRegisterRQ.getLastName());
-            person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
-            personRepository.save(person);
-            return DefaultRSMapper.of(new MessageDTO());
+    @Value("${expired.confirmation.code.milliseconds}")
+    private long expirationTime;
+
+   public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
+        Person person = new Person();
+        person.setEMail(accountRegisterRQ.getEmail());
+        person.setFirstName(accountRegisterRQ.getFirstName());
+        person.setLastName(accountRegisterRQ.getLastName());
+        person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
+        person.setLastOnlineTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        person.setRegDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        personRepository.save(person);
+
+        setNotificationSettingsOnRegistering(person);
+
+        return new MessageOkDTO();
+    }
+
+    private void setNotificationSettingsOnRegistering(Person person) {
+        NotificationTypeCode[] typeCodes = NotificationTypeCode.values();
+        for (NotificationTypeCode typeCode : typeCodes) {
+            NotificationSetting setting = getNotificationSetting(person, typeCode);
+            setting.setPermission(true);
+            settingsRepository.save(setting);
         }
-        return DefaultRSMapper.error(Constants.BAD_REQUEST_MESSAGE);
     }
 
     private boolean isEmailExist(String email) {
         Person person = personRepository.findByeMail(email).orElse(null);
-        return (person != null)? true : false;
+        return person != null;
     }
 
-    public DefaultRS<?> recoveryPassword(
+    public MessageOkDTO recoveryPassword(
             AccountEmailRQ accountEmailRQ,
             HttpServletRequest servletRequest) throws MailException {
-
         String email = accountEmailRQ.getEmail();
+        if(!isEmailExist(email)) {
+            throw new BadRequestException(Constants.NO_SUCH_USER_MESSAGE);
+        }
         String recoveryLink = servletRequest.getRequestURL().toString()
                 .replace(servletRequest.getServletPath(), "") +
                 "/change-password?code=" + getConfirmationCode(email);
         emailService.send(email, Constants.PASSWWORD_RECOVERY_SUBJECT,
                     String.format(Constants.PASSWWORD_RECOVERY_TEXT, recoveryLink));
-        return DefaultRSMapper.of(new MessageDTO());
+
+        return new MessageOkDTO();
     }
 
-    private String getConfirmationCode(String email) {
+    public String getConfirmationCode(String email) {
         Person person = personRepository.findByeMail(email)
                 .orElseThrow(NoSuchUserException::new);
-        String confirmationCode = jwtProvider.generateConfirmationCode(person);
+        long expiration = System.currentTimeMillis() + expirationTime;
+        String confirmationCode = UUID.randomUUID()
+                .toString().replaceAll("-", "") + "E" + expiration;
         person.setConfirmationCode(confirmationCode);
         personRepository.save(person);
+
         return confirmationCode;
     }
 
-    public DefaultRS<?> setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {
-        if(!jwtProvider.validateConfirmationCode(accountPasswordSetRQ.getToken())){
-            throw new BadRequestException();
-        }
+    public MessageOkDTO setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {
         Person person = personRepository.findByConfirmationCode(accountPasswordSetRQ.getToken())
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.WRONG_RECOVERING_CODE));
         person.setPassword(passwordEncoder.encode(accountPasswordSetRQ.getPassword()));
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+
+        return new MessageOkDTO();
     }
 
-    public DefaultRS<?> shiftEmail(HttpServletRequest servletRequest) throws MailException{
+    public MessageOkDTO shiftEmail(HttpServletRequest servletRequest) throws MailException{
         String email = authService.getPersonFromSecurityContext().getEMail();
         String recoveryLink = servletRequest.getRequestURL().toString()
                 .replace(servletRequest.getServletPath(), "") +
                 "/shift-email";
         emailService.send(email, Constants.EMAIL_RECOVERY_SUBJECT,
                 String.format(Constants.EMAIL_RECOVERY_TEXT, recoveryLink));
-        return DefaultRSMapper.of(new MessageDTO());
+
+        return new MessageOkDTO();
     }
 
-    public DefaultRS<?> setEmail(AccountEmailRQ accountEmailRQ) {
+    public MessageOkDTO setEmail(AccountEmailRQ accountEmailRQ) {
         String email = accountEmailRQ.getEmail();
-        if(isEmailExist(email)) {
-            throw new BadRequestException();
-        }
         Person person = authService.getPersonFromSecurityContext();
         person.setEMail(email);
         personRepository.save(person);
-        return DefaultRSMapper.of(new MessageDTO());
+
+        return new MessageOkDTO();
     }
 
-    public DefaultRS<?> setNotifications(AccountNotificationRQ accountNotificationRQ) {
+    public MessageOkDTO setNotifications(AccountNotificationRQ accountNotificationRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         NotificationTypeCode notificationTypeCode = NotificationTypeCode.valueOf(accountNotificationRQ.getNotificationType());
-
         NotificationSetting notificationSetting = getNotificationSetting(currentPerson, notificationTypeCode);
         notificationSetting.setPermission(!notificationSetting.isPermission());
         settingsRepository.save(notificationSetting);
 
-        return DefaultRSMapper.of(new MessageDTO());
+        return new MessageOkDTO();
     }
 
     private NotificationSetting getNotificationSetting(Person person, NotificationTypeCode notificationTypeCode) {
         return settingsRepository
                 .findByPersonAndNotificationTypeCode(person, notificationTypeCode)
                 .orElse(new NotificationSetting(person, notificationTypeCode, false));
+    }
+
+    public List<NotificationSettingsDto> getNotifications() {
+        Person currentPerson = authService.getPersonFromSecurityContext();
+        List<NotificationSetting> settings = settingsRepository.findByPerson(currentPerson);
+        List<NotificationSettingsDto> settingsDtoList = settings.stream()
+                .map(NotificationSettingsDto::new)
+                .collect(Collectors.toList());
+        return settingsDtoList;
     }
 }

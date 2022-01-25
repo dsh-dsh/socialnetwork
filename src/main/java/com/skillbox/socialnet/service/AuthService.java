@@ -1,16 +1,13 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.model.RQ.AuthUserRQ;
-import com.skillbox.socialnet.model.dto.MessageDTO;
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.security.CustomUserDetails;
 import com.skillbox.socialnet.security.JwtProvider;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,29 +20,24 @@ public class AuthService {
 
     private final PersonRepository personRepository;
     private final PersonService personService;
-    private final PersonMapper personMapper;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public DefaultRS<UserDTO> login(AuthUserRQ authUserRQ) {
+    public UserDTO login(AuthUserRQ authUserRQ) {
         Person person = personService.getPersonByEmail(authUserRQ.getEmail());
         if(!passwordEncoder.matches(authUserRQ.getPassword(), person.getPassword())) {
             throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
         }
-        UserDTO userDTO = personMapper.mapToUserDTO(person);
-        String token = jwtProvider.generateToken(person);
-        userDTO.setToken(token);
-        return DefaultRSMapper.of(userDTO);
+        UserDTO userDTO = UserDTO.getUserDTO(person);
+        userDTO.setToken(jwtProvider.generateToken(person));
+
+        return userDTO;
     }
 
 
-    public DefaultRS<MessageDTO> logout() {
-        return DefaultRSMapper.of(new MessageDTO());
+    public MessageOkDTO logout() {
+        return new MessageOkDTO();
     }
-
-//    private UserDTO getUserDTO() {
-//        return new UserDTO();
-//    }
 
     public Person getPersonFromSecurityContext() {
         try{
