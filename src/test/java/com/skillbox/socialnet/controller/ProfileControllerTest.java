@@ -95,6 +95,24 @@ public class ProfileControllerTest {
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void editingPersonWithOutCityAndCountryTest() throws Exception {
+        UserChangeRQ userChangeRQ = getUserChangeRQ();
+        userChangeRQ.setCity(null);
+        userChangeRQ.setCountry(null);
+        mockMvc.perform(put(URL_PREFIX + ME)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userChangeRQ)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.first_name").value(FIRST_NAME))
+                .andExpect(jsonPath("$.data.city").doesNotExist())
+                .andExpect(jsonPath("$.data.country").doesNotExist());
+    }
+
+    @Test
+    @WithUserDetails(EXISTING_EMAIL)
+    @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void editingPersonWithOutFirstNameTest() throws Exception {
         UserChangeRQ userChangeRQ = getUserChangeRQ();
         userChangeRQ.setFirstName("");

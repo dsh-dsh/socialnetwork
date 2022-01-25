@@ -38,7 +38,7 @@ public class PersonService {
         person.setLastName(userChangeRQ.getLastName());
         person.setBirthDate(new Timestamp(userChangeRQ.getBirthDate().getTime()));
         person.setBirthDate(userChangeRQ.getBirthDate());
-        person.setPhone(userChangeRQ.getPhone());
+        person.setPhone(addPhoneNumber(userChangeRQ));
         person.setAbout(userChangeRQ.getAbout());
         person.setMessagesPermission(userChangeRQ.getMessagesPermission());
         person.setCity(userChangeRQ.getCity());
@@ -47,9 +47,18 @@ public class PersonService {
         return person;
     }
 
+    private String addPhoneNumber(UserChangeRQ userChangeRQ) {
+        String phoneNumber = userChangeRQ.getPhone();
+        if(phoneNumber.length() == 10) {
+            phoneNumber = "7" + phoneNumber;
+        }
+        return phoneNumber;
+    }
+
     private void createLocations(UserChangeRQ userChangeRQ) {
-        String city = userChangeRQ.getCity();
-        String country = userChangeRQ.getCountry();
+        String city = userChangeRQ.getCity() != null ? userChangeRQ.getCity() : "";
+        String country = userChangeRQ.getCountry() != null ? userChangeRQ.getCountry() : "";
+
         if(!city.equals("")) {
             platformService.addCity(new LocationDTO(0, city));
         }
