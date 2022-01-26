@@ -6,11 +6,8 @@ import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PostRepository;
@@ -58,11 +55,6 @@ public class PostService {
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
-
-        logger.info("some text {}", postDTOs);
-        logger.debug("some text {} and another object {}", posts, postDTOs);
-        Exception exception = new Exception("exception message");
-        logger.error("error message {}", exception.getMessage());
 
         return new GeneralListResponse<>(postDTOs, postPage);
     }
