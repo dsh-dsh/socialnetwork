@@ -7,6 +7,7 @@ public class Constants {
     public static final String EMAIL_EXISTS_MESSAGE = "email exists";
     public static final String NO_SUCH_USER_MESSAGE = "no such user";
     public static final String NO_SUCH_POST_MESSAGE = "no such post";
+    public static final String NO_SUCH_COMMENT_MESSAGE = "no such comment";
     public static final String NO_ANY_POST_MESSAGE = "no any post";
     public static final String WRONG_CREDENTIALS_MESSAGE = "wrong credentials";
     public static final String TOKEN_EXPIRED_MESSAGE = "Token expired";

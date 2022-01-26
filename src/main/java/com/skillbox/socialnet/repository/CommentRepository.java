@@ -13,10 +13,11 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<PostComment, Integer> {
 
-    List<PostComment> findByPostAndIsBlocked(Post post, boolean isBlocked);
+    List<PostComment> findByPostAndParentAndIsBlocked(Post post, PostComment parent, boolean isBlocked);
 
     Page<PostComment> findByPostAndIsBlocked(Post post, boolean isBlocked, Pageable pageable);
 
     Optional<PostComment> findById(int id);
 
+    List<PostComment> findByParent(PostComment parent);
 }
