@@ -67,13 +67,13 @@ public class PostControllerTest {
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void editPost() throws Exception {
-        PostChangeRQ postChangeRQ = createPost("test title changed", "changed text");
+        PostChangeRQ postChangeRQ = createPost("test title changed", "valid changed text");
         mockMvc.perform(put(URL_PREFIX + 10)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postChangeRQ)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.post_text").value("changed text"))
+                .andExpect(jsonPath("$.data.post_text").value("valid changed text"))
                 .andExpect(jsonPath("$.data.title").value("test title changed"));
 
     }

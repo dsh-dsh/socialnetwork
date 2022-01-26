@@ -19,7 +19,6 @@ import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.jni.Time;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,17 +54,26 @@ public class PostService {
 
     @MethodLog
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
-        List<Person> friends = friendsService.getMyFriends();
+        List<Person> friends = getFriendList();
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
 
         logger.info("some text {}", postDTOs);
-        logger.debug("some text {} and anather object {}", posts, postDTOs);
-        Exception exception = new Exception("exeption message");
+        logger.debug("some text {} and another object {}", posts, postDTOs);
+        Exception exception = new Exception("exception message");
         logger.error("error message {}", exception.getMessage());
 
         return new GeneralListResponse<>(postDTOs, postPage);
+    }
+
+    private List<Person> getFriendList() {
+        List<Person> friends = friendsService.getMyFriends();
+        if(friends.size() == 0) {
+            Person me = authService.getPersonFromSecurityContext();
+            friends = List.copyOf(friendsService.getRecommendedFriends(me, Set.of()));
+        }
+        return friends;
     }
 
     @MethodLog

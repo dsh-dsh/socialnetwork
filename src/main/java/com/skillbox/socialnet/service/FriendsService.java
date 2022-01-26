@@ -137,7 +137,7 @@ public class FriendsService {
         return new GeneralListResponse<>(recommendedFriendsList, pageable);
     }
 
-    private Set<Person> getRecommendedFriends(Person currentPerson, Set<Person> myFriends) {
+    public Set<Person> getRecommendedFriends(Person currentPerson, Set<Person> myFriends) {
         Set<Person> recommendedFriends = new HashSet<>();
         if(myFriends.size() > 0) {
             recommendedFriends = friendshipRepository
