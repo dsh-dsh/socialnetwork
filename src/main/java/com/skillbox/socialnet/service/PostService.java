@@ -221,6 +221,7 @@ public class PostService {
     private PostDTO getPostDTO(Post post) {
         PostDTO postDTO = PostDTO.getPostDTO(post);
         postDTO.setMyLike(getMyLike(post.getLikes()));
+        postDTO.getAuthor().setMe(postDTO.getAuthor().getEmail().equals(authService.getPersonFromSecurityContext().getEMail()));
         return postDTO;
     }
 
