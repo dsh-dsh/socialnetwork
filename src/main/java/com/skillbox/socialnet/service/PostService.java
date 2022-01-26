@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
     private final FriendsService friendsService;
     private final AuthService authService;
     private final PersonService personService;
@@ -130,57 +130,18 @@ public class PostService {
     public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
-        Page<PostComment> commentPage = commentRepository.findByPostAndIsBlocked(post, false, pageable);
-        List<CommentDTO> commentsDTO = commentPage.stream()
-                .map(CommentDTO::getCommentDTO)
-                .collect(Collectors.toList());
+        List<CommentDTO> commentsDTO = commentService.getCommentsDTOList(post);
 
-        return new GeneralListResponse<>(commentsDTO, commentPage);
+        return new GeneralListResponse<>(commentsDTO, pageable);
     }
 
     @MethodLog
     public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Post post = postRepository.findPostById(postId)
-                .orElseThrow(BadRequestException::new);
-        PostComment postComment = createPostComment(commentRQ, currentPerson, post);
+        Post post = postRepository.findPostById(postId).orElseThrow(BadRequestException::new);
+        PostComment postComment = commentService.createPostComment(commentRQ, currentPerson, post);
         createNotificationForComment(postId, commentRQ.getParentId()==null, currentPerson);
         return CommentDTO.getCommentDTO(postComment);
-    }
-
-    @MethodLog
-    public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
-        PostComment postComment = commentRepository.findById(commentId)
-                .orElseThrow(BadRequestException::new);
-        postComment.setCommentText(commentRQ.getCommentText());
-        commentRepository.save(postComment);
-
-        return CommentDTO.getCommentDTO(postComment);
-    }
-
-    @MethodLog
-    public DeleteDTO deleteCommentToThePost(int id, int commentId) {
-        PostComment postComment = commentRepository.findById(commentId)
-                .orElseThrow(BadRequestException::new);
-        commentRepository.delete(postComment);
-
-        return new DeleteDTO(id);
-    }
-
-    public PostDTO recoverPostById(int id) {
-        return new PostDTO();
-    }
-
-    public CommentDTO recoverCommentToPost(int id, int commentId) {
-        return new CommentDTO();
-    }
-
-    public MessageOkDTO reportPostById(int id) {
-        return new MessageOkDTO();
-    }
-
-    public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
-        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     private List<Post> addPostsToLimit(List<Post> posts) {
@@ -229,6 +190,7 @@ public class PostService {
     private PostDTO getPostDTO(Post post) {
         PostDTO postDTO = PostDTO.getPostDTO(post);
         postDTO.setMyLike(getMyLike(post.getLikes()));
+        postDTO.setComments(commentService.getCommentsDTOList(post));
         postDTO.getAuthor().setMe(postDTO.getAuthor().getEmail().equals(authService.getPersonFromSecurityContext().getEMail()));
         return postDTO;
     }
@@ -258,22 +220,6 @@ public class PostService {
         }
 
         return dateTo;
-    }
-
-    private PostComment createPostComment(CommentRQ commentRQ, Person currentPerson, Post post) {
-        PostComment postComment = new PostComment();
-        postComment.setCommentText(commentRQ.getCommentText());
-        if (commentRQ.getParentId() != null) {
-            PostComment parentComment = commentRepository.findById(commentRQ.getParentId())
-                    .orElseThrow(BadRequestException::new);
-            postComment.setParent(parentComment);
-        }
-        postComment.setPost(post);
-        postComment.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-        postComment.setAuthor(currentPerson);
-        commentRepository.save(postComment);
-
-        return postComment;
     }
 
     private void createNotificationForComment(int id, boolean isPost, Person person) {

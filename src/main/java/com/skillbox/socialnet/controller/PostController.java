@@ -4,6 +4,7 @@ import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.service.CommentService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.anotation.MethodLog;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 public class    PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
     @MethodLog
     @GetMapping
@@ -71,7 +73,7 @@ public class    PostController {
             @PathVariable int comment_id,
             @RequestBody @Valid CommentRQ commentRQ) {
         return ResponseEntity.ok(
-                new GeneralResponse<>(postService.rewriteCommentToThePost(id, comment_id, commentRQ)));
+                new GeneralResponse<>(commentService.rewriteCommentToThePost(id, comment_id, commentRQ)));
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
@@ -79,34 +81,7 @@ public class    PostController {
             @PathVariable int id,
             @PathVariable int comment_id){
         return ResponseEntity.ok(
-                new GeneralResponse<>(postService.deleteCommentToThePost(id, comment_id)));
-    }
-
-    @PutMapping("/{id}/recover")
-    public ResponseEntity<?> recoverPostById(@PathVariable int id) {
-        return ResponseEntity.ok(
-                new GeneralResponse<>(postService.recoverPostById(id)));
-    }
-
-    @PutMapping("/{id}/comments/{comment_id}/recover}")
-    public ResponseEntity<?> recoverCommentToPost(
-            @PathVariable int id,
-            @PathVariable int comment_id){
-        return ResponseEntity.ok(
-                new GeneralResponse<>(postService.recoverCommentToPost(id, comment_id)));
-    }
-
-    @PostMapping("/{id}/report")
-    public ResponseEntity<?> reportPostById(@PathVariable int id){
-        return ResponseEntity.ok(
-                new GeneralResponse<>(postService.reportPostById(id)));
-    }
-
-    @PostMapping("/{id}/comments/{comment_id}/report")
-    public ResponseEntity<?> reportCommentToPost(@PathVariable int id,
-                                     @PathVariable int
-                                             comment_id){
-        return ResponseEntity.ok(postService.reportCommentToThePost(id, comment_id));
+                new GeneralResponse<>(commentService.deleteCommentToThePost(id, comment_id)));
     }
 
 }

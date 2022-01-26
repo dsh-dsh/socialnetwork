@@ -2,13 +2,10 @@ package com.skillbox.socialnet.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.skillbox.socialnet.service.CommentService;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +39,7 @@ public class CommentDTO {
     private int myLike;
 
     @JsonProperty("sub_comments")
-    private List<String> subComments = new ArrayList<>();
+    private List<CommentDTO> subComments = new ArrayList<>();
 
 
     public static CommentDTO getCommentDTO(PostComment postComment) {
