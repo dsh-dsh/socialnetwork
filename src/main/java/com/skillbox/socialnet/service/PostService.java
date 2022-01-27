@@ -6,11 +6,8 @@ import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PostRepository;
@@ -19,7 +16,6 @@ import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.jni.Time;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +30,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
     private final FriendsService friendsService;
     private final AuthService authService;
     private final PersonService personService;
@@ -55,17 +51,21 @@ public class PostService {
 
     @MethodLog
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
-        List<Person> friends = friendsService.getMyFriends();
+        List<Person> friends = getFriendList();
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
 
-        logger.info("some text {}", postDTOs);
-        logger.debug("some text {} and anather object {}", posts, postDTOs);
-        Exception exception = new Exception("exeption message");
-        logger.error("error message {}", exception.getMessage());
-
         return new GeneralListResponse<>(postDTOs, postPage);
+    }
+
+    private List<Person> getFriendList() {
+        List<Person> friends = friendsService.getMyFriends();
+        if(friends.size() == 0) {
+            Person me = authService.getPersonFromSecurityContext();
+            friends = List.copyOf(friendsService.getRecommendedFriends(me, Set.of()));
+        }
+        return friends;
     }
 
     @MethodLog
@@ -122,57 +122,18 @@ public class PostService {
     public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
-        Page<PostComment> commentPage = commentRepository.findByPostAndIsBlocked(post, false, pageable);
-        List<CommentDTO> commentsDTO = commentPage.stream()
-                .map(CommentDTO::getCommentDTO)
-                .collect(Collectors.toList());
+        List<CommentDTO> commentsDTO = commentService.getCommentsDTOList(post);
 
-        return new GeneralListResponse<>(commentsDTO, commentPage);
+        return new GeneralListResponse<>(commentsDTO, pageable);
     }
 
     @MethodLog
     public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Post post = postRepository.findPostById(postId)
-                .orElseThrow(BadRequestException::new);
-        PostComment postComment = createPostComment(commentRQ, currentPerson, post);
+        Post post = postRepository.findPostById(postId).orElseThrow(BadRequestException::new);
+        PostComment postComment = commentService.createPostComment(commentRQ, currentPerson, post);
         createNotificationForComment(postId, commentRQ.getParentId()==null, currentPerson);
         return CommentDTO.getCommentDTO(postComment);
-    }
-
-    @MethodLog
-    public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
-        PostComment postComment = commentRepository.findById(commentId)
-                .orElseThrow(BadRequestException::new);
-        postComment.setCommentText(commentRQ.getCommentText());
-        commentRepository.save(postComment);
-
-        return CommentDTO.getCommentDTO(postComment);
-    }
-
-    @MethodLog
-    public DeleteDTO deleteCommentToThePost(int id, int commentId) {
-        PostComment postComment = commentRepository.findById(commentId)
-                .orElseThrow(BadRequestException::new);
-        commentRepository.delete(postComment);
-
-        return new DeleteDTO(id);
-    }
-
-    public PostDTO recoverPostById(int id) {
-        return new PostDTO();
-    }
-
-    public CommentDTO recoverCommentToPost(int id, int commentId) {
-        return new CommentDTO();
-    }
-
-    public MessageOkDTO reportPostById(int id) {
-        return new MessageOkDTO();
-    }
-
-    public DefaultRS<?> reportCommentToThePost(int id, int commentId) {
-        return DefaultRSMapper.of(new MessageOkDTO());
     }
 
     private List<Post> addPostsToLimit(List<Post> posts) {
@@ -221,6 +182,8 @@ public class PostService {
     private PostDTO getPostDTO(Post post) {
         PostDTO postDTO = PostDTO.getPostDTO(post);
         postDTO.setMyLike(getMyLike(post.getLikes()));
+        postDTO.setComments(commentService.getCommentsDTOList(post));
+        postDTO.getAuthor().setMe(postDTO.getAuthor().getEmail().equals(authService.getPersonFromSecurityContext().getEMail()));
         return postDTO;
     }
 
@@ -249,22 +212,6 @@ public class PostService {
         }
 
         return dateTo;
-    }
-
-    private PostComment createPostComment(CommentRQ commentRQ, Person currentPerson, Post post) {
-        PostComment postComment = new PostComment();
-        postComment.setCommentText(commentRQ.getCommentText());
-        if (commentRQ.getParentId() != null) {
-            PostComment parentComment = commentRepository.findById(commentRQ.getParentId())
-                    .orElseThrow(BadRequestException::new);
-            postComment.setParent(parentComment);
-        }
-        postComment.setPost(post);
-        postComment.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-        postComment.setAuthor(currentPerson);
-        commentRepository.save(postComment);
-
-        return postComment;
     }
 
     private void createNotificationForComment(int id, boolean isPost, Person person) {

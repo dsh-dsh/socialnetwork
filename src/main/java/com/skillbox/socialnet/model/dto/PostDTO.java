@@ -45,16 +45,9 @@ public class PostDTO {
         postDTO.setBlocked(post.isBlocked());
         postDTO.setLikes(post.getLikes().size());
         postDTO.setTags(getTagNames(post.getTags()));
-        postDTO.setComments(getComments(post));
         postDTO.setType(getPostType(post));
 
         return postDTO;
-    }
-
-    private static List<CommentDTO> getComments(Post post) {
-        return post.getComments().stream()
-                .map(CommentDTO::getCommentDTO)
-                .collect(Collectors.toList());
     }
 
     private static String[] getTagNames(Set<Post2tag> tags) {
