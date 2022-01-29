@@ -24,7 +24,7 @@ public class NotificationController {
     }
 
     @PutMapping("/notifications")
-    public ResponseEntity<?> setNotification(
+    public ResponseEntity<NotificationRS> setNotification(
             @RequestParam(name = "all", required = false, defaultValue = "false") boolean all,
             @RequestParam(name = "id", required = false, defaultValue = "0") int id
     ) {

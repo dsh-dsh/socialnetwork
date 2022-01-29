@@ -17,8 +17,10 @@ public class NotificationType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private int id;
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "code")
     @Enumerated(EnumType.STRING)
     private NotificationTypeCode code;

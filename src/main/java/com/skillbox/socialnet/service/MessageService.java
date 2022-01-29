@@ -24,7 +24,7 @@ import java.util.Set;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     public Page<Message> getMessagePageByDialog(Dialog dialog, Pageable pageable) {
         return  messageRepository.findByDialog(dialog, pageable);
@@ -50,7 +50,11 @@ public class MessageService {
         message.setRecipient(recipient);
         message.setTime(LocalDateTime.now());
         messageRepository.save(message);
-        notificationRepository.createNewNotification(NotificationTypeCode.MESSAGE.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), recipient.getId(), String.valueOf(author.getId()), recipient.getEMail(), false);
+        notificationService.createAndSendNewNotification(
+                NotificationTypeCode.MESSAGE,
+                recipient.getId(),
+                author.getId(),
+                recipient.getEMail());
         return message;
     }
 

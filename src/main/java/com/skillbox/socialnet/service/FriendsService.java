@@ -37,7 +37,7 @@ public class FriendsService {
     private final FriendshipRepository friendshipRepository;
     private final PersonRepository personRepository;
     private final AuthService authService;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     public GeneralListResponse<UserDTO> getAllFriends(String name, Pageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
@@ -89,7 +89,11 @@ public class FriendsService {
                     .orElseGet(() -> createFriendshipRequest(currentPerson, dstPerson));
             friendshipRepository.save(friendship);
         }
-        notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_REQUEST.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), dstPerson.getId(), String.valueOf(NotificationTypeCode.FRIEND_REQUEST.ordinal()), dstPerson.getEMail(), false);
+        notificationService.createAndSendNewNotification(
+                NotificationTypeCode.FRIEND_REQUEST,
+                dstPerson.getId(),
+                NotificationTypeCode.FRIEND_REQUEST.ordinal(),
+                dstPerson.getEMail());
         return new MessageOkDTO();
     }
 
@@ -121,7 +125,11 @@ public class FriendsService {
         friendship.setSrcPerson(currentPerson);
         friendship.setDstPerson(dstPerson);
         friendship.setStatus(createRequestFriendshipStatus());
-        notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_REQUEST.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), dstPerson.getId(), String.valueOf(currentPerson.getId()), dstPerson.getEMail(), false);
+        notificationService.createAndSendNewNotification(
+                NotificationTypeCode.FRIEND_REQUEST,
+                dstPerson.getId(),
+                currentPerson.getId(),
+                dstPerson.getEMail());
         return friendship;
     }
 

@@ -61,10 +61,10 @@ public class    PostController {
 
     @PostMapping("/{id}/comments")
     public ResponseEntity<?> postComment(
-            @PathVariable int id,
+            @PathVariable(name = "id") int postId,
             @RequestBody @Valid CommentRQ commentRQ) {
         return ResponseEntity.ok(
-                new GeneralResponse<>(postService.makeCommentToPost(id, commentRQ)));
+                new GeneralResponse<>(postService.makeCommentToPost(postId, commentRQ)));
     }
 
     @PutMapping("/{id}/comments/{comment_id}")

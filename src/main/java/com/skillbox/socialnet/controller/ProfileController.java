@@ -66,10 +66,10 @@ public class ProfileController {
 
     @PostMapping("/{id}/wall")
     public ResponseEntity<GeneralResponse<PostDTO>> addPostToUserWall(
-            @PathVariable int id,
+            @PathVariable(name = "id") int personId,
             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
-        return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(id, publishDate, postChangeRQ)));
+        return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(personId, publishDate, postChangeRQ)));
     }
 
     @GetMapping("/search")

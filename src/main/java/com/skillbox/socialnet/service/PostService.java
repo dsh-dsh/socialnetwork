@@ -35,7 +35,7 @@ public class PostService {
     private final AuthService authService;
     private final PersonService personService;
     private final TagService tagService;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
     private final FriendshipRepository friendshipRepository;
 
     public static final Logger logger = LogManager.getLogger(PostService.class);
@@ -76,8 +76,8 @@ public class PostService {
     }
 
     @MethodLog
-    public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
-        Person person = personService.getPersonById(id);
+    public PostDTO addPostToUserWall(int personId, long publishDate, PostChangeRQ postChangeRQ) {
+        Person person = personService.getPersonById(personId);
         Post post = new Post();
         post.setAuthor(person);
         post.setTitle(postChangeRQ.getTitle());
@@ -85,7 +85,7 @@ public class PostService {
         post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
         post = postRepository.save(post);
         addTags2Post(post, postChangeRQ.getTags());
-        createNotificationsForWall(id);
+        createNotificationsForWall(personId);
         return getPostDTO(post);
     }
 
@@ -214,29 +214,39 @@ public class PostService {
         return dateTo;
     }
 
-    private void createNotificationForComment(int id, boolean isPost, Person person) {
-        List<Integer> dstPersons = postRepository.getIdsForPostNotifications(id, person.getId());
-        int type;
+    private void createNotificationForComment(int postId, boolean isPost, Person person) {
+        List<Integer> dstPersonIds = postRepository.getIdsForPostNotifications(postId, person.getId());
+        NotificationTypeCode type;
         if(isPost){
-            type = NotificationTypeCode.POST_COMMENT.ordinal();
+            type = NotificationTypeCode.POST_COMMENT;
         } else {
-            type = NotificationTypeCode.COMMENT_COMMENT.ordinal();
+            type = NotificationTypeCode.COMMENT_COMMENT;
         }
-        for (Integer dstPerson : dstPersons) {
-            notificationRepository.createNewNotification(type, new Timestamp(Calendar.getInstance().getTimeInMillis()), dstPerson, String.valueOf(person.getId()), personService.getPersonById(dstPerson).getEMail(), false);
+        for (Integer dstPersonId : dstPersonIds) {
+            notificationService.createAndSendNewNotification(
+                    type,
+                    dstPersonId,
+                    person.getId(),
+                    personService.getPersonById(dstPersonId).getEMail());
+
         }
     }
 
-    private void createNotificationsForWall(int id) {
-        List<NotificationInterfaceProjectile> ids = friendshipRepository.getIdsForNotification(id);
+    private void createNotificationsForWall(int personId) {
+        List<NotificationInterfaceProjectile> ids = friendshipRepository.getIdsForNotification(personId);
+        int currentPersonId = authService.getPersonFromSecurityContext().getId();
         for (NotificationInterfaceProjectile nip : ids) {
-            int dstId;
-            if(nip.getSrc() != id){
-                dstId = nip.getSrc();
+            int dstPersonId;
+            if(nip.getSrc() != personId){
+                dstPersonId = nip.getSrc();
             } else {
-                dstId = nip.getDst();
+                dstPersonId = nip.getDst();
             }
-            notificationRepository.createNewNotification(NotificationTypeCode.POST.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), dstId, String.valueOf(authService.getPersonFromSecurityContext().getId()), personService.getPersonById(dstId).getEMail(), false);
+            notificationService.createAndSendNewNotification(
+                    NotificationTypeCode.POST,
+                    dstPersonId,
+                    currentPersonId,
+                    personService.getPersonById(dstPersonId).getEMail());
         }
     }
 }
