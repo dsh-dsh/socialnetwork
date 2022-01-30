@@ -21,9 +21,6 @@ public class WebSocketController {
     @MethodLog
     @MessageMapping("/ws/message/{receiverId}")
     public void getMessage(@DestinationVariable int receiverId, @Payload MessageSendDtoRequest message) {
-        System.out.println("WebSocketController getMessage()");
-        System.out.println(message);
-
         notificationService.createAndSendNewNotification(
                 NotificationTypeCode.FRIEND_REQUEST,
                 receiverId,
@@ -33,8 +30,6 @@ public class WebSocketController {
 
     @GetMapping("/message/{receiverId}")
     public void checkNotification(@PathVariable int receiverId) {
-        System.out.println("WebSocketController checkNotification()");
-
         notificationService.createAndSendNewNotification(
                 NotificationTypeCode.FRIEND_REQUEST,
                 receiverId,

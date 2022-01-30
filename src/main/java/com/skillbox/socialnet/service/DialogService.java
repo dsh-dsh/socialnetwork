@@ -72,7 +72,7 @@ public class DialogService {
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
         Person recipient = getRecipient(dialog, author);
-        Message message = messageService.addMessage(dialog, author,
+        Message message = messageService.addAndSendMessage(dialog, author,
                 recipient, messageSendDtoRequest.getMessageText());
         dialog.getMessages().add(message);
         dialogRepository.save(dialog);

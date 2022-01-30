@@ -7,15 +7,12 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.MessageRepository;
-import com.skillbox.socialnet.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +22,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final NotificationService notificationService;
+    private final WebSocketService webSocketService;
 
     public Page<Message> getMessagePageByDialog(Dialog dialog, Pageable pageable) {
         return  messageRepository.findByDialog(dialog, pageable);
@@ -41,20 +39,10 @@ public class MessageService {
                 .count();
     }
 
-    public Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
-        Message message = new Message();
-        message.setDialog(dialog);
-        message.setAuthor(author);
-        message.setMessageText(text);
-        message.setReadStatus(MessageReadStatus.SENT);
-        message.setRecipient(recipient);
-        message.setTime(LocalDateTime.now());
-        messageRepository.save(message);
-        notificationService.createAndSendNewNotification(
-                NotificationTypeCode.MESSAGE,
-                recipient.getId(),
-                author.getId(),
-                recipient.getEMail());
+    public Message addAndSendMessage(Dialog dialog, Person author, Person recipient, String text) {
+        Message message = addMessage(dialog, author, recipient, text);
+        sendMessage(author, recipient, message);
+
         return message;
     }
 
@@ -69,6 +57,27 @@ public class MessageService {
 
     public void setMessagesStatusRead(List<Message> messages, Person author) {
         messageRepository.setMessagesReadStatus(messages, author, MessageReadStatus.READ);
+    }
+
+    private void sendMessage(Person author, Person recipient, Message message) {
+        webSocketService.sendMessage(author, message);
+        notificationService.createAndSendNewNotification(
+                NotificationTypeCode.MESSAGE,
+                recipient.getId(),
+                author.getId(),
+                recipient.getEMail());
+    }
+
+    private Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
+        Message message = new Message();
+        message.setDialog(dialog);
+        message.setAuthor(author);
+        message.setMessageText(text);
+        message.setReadStatus(MessageReadStatus.SENT);
+        message.setRecipient(recipient);
+        message.setTime(LocalDateTime.now());
+        messageRepository.save(message);
+        return message;
     }
 
     //покаНеИспользуется
