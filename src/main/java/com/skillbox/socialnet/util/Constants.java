@@ -43,6 +43,7 @@ public class Constants {
     public static final String WRONG_RECOVERING_CODE = "Wrong recovering code";
 
     public static final String USER_DELETE_SUCCESS = "User deleted successfully";
+    public static final String USER_RECOVER_SUCCESS = "User recovered successfully";
 
     public static final String PASSWORD_NOT_VALID_MESSAGE = "Length of password has to be 8";
     public static final String WRONG_FIRST_NAME_MESSAGE = "Wrong first name string";

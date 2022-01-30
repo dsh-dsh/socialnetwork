@@ -54,6 +54,12 @@ public class UserService {
         personRepository.save(person);
         return USER_DELETE_SUCCESS;
     }
+    public String recoverUser() {
+        Person person = authService.getPersonFromSecurityContext();
+        person.setDeleted(false);
+        personRepository.save(person);
+        return USER_RECOVER_SUCCESS;
+    }
 
     public GeneralListResponse<?> searchUsers(String firstOrLastName, Pageable pageable) {
         Page<Person> personPage = personRepository
