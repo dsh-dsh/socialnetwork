@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Repository
@@ -39,7 +40,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     List<Person> findNewFriendsLimit(Collection<Person> myFriends, Pageable pageable);
 
     boolean existsByeMail(String email);
-    @Query("select person from Person as person where person.isDeleted = :is_deleted")
-    List<Person> findAllByDeleted(boolean is_deleted);
+    @Query("select person from Person as person where person.isDeleted = :is_deleted and person.lastOnlineTime < :timestamp")
+    List<Person> findAllByDeleted(boolean is_deleted, Timestamp timestamp);
 }
 

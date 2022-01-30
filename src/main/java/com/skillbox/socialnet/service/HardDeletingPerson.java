@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,10 +23,10 @@ public class HardDeletingPerson {
     private final NotificationRepository notificationRepository;
     private final FriendshipRepository friendshipRepository;
 
-    //    @Scheduled(cron = "${log.files.scheduling.cron.expression}")
-    @Scheduled(fixedRate = 5000L)
+    @Scheduled(cron = "${log.files.scheduling.cron.expression}")
     public void deletePerson() {
-        List<Person> deletedPersons = personRepository.findAllByDeleted(true);
+        Timestamp timestamp = Timestamp.valueOf(LocalDate.now().minusMonths(1).atStartOfDay());
+        List<Person> deletedPersons = personRepository.findAllByDeleted(true, timestamp);
         for (Person p :
                 deletedPersons) {
             friendshipRepository.deleteForDeletedPerson(p.getId());
@@ -39,7 +41,9 @@ public class HardDeletingPerson {
             }
             postRepository.deleteForDeletedPerson(p.getId());
             commentRepository.deleteForDeletedPerson(p.getId());
-            Cloud.deletePhotoFromCloud(p.getPhoto());
+            if (p.getPhoto() != null) {
+                Cloud.deletePhotoFromCloud(p.getPhoto());
+            }
         }
         personRepository.deleteAll(deletedPersons);
         System.out.println("Scheduled successful");
