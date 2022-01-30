@@ -20,7 +20,7 @@ public class Notification {
     private NotificationType type;
     @Column(name = "sent_time")
     private Timestamp sentTime;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "person_id")
     private Person person;
     @Column(name = "entity_id")

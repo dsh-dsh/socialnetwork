@@ -49,7 +49,9 @@ public class UserService {
     }
 
     public String deleteUser() {
-        personRepository.delete(authService.getPersonFromSecurityContext());
+        Person person = authService.getPersonFromSecurityContext();
+        person.setDeleted(true);
+        personRepository.save(person);
         return USER_DELETE_SUCCESS;
     }
 
@@ -90,8 +92,10 @@ public class UserService {
 
     public MessageOkDTO checkOnline() {
         Person me = authService.getPersonFromSecurityContext();
-        me.setLastOnlineTime(new Timestamp(new Date().getTime()));
-        personRepository.save(me);
+        if (!me.isDeleted()) {
+            me.setLastOnlineTime(new Timestamp(new Date().getTime()));
+            personRepository.save(me);
+        }
         return new MessageOkDTO();
     }
 

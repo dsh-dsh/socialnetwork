@@ -74,6 +74,9 @@ public class Person {
     @Column(name = "is_blocked")
     private boolean isBlocked;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
     @ManyToMany(mappedBy = "persons")
     private Set<Dialog> dialogs = new HashSet<>();
 

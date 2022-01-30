@@ -35,9 +35,11 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     @Query("SELECT person FROM Person AS person " +
             "WHERE person NOT IN (:myFriends) " +
-            "ORDER BY regDate DESC")
+            "ORDER BY person.regDate DESC")
     List<Person> findNewFriendsLimit(Collection<Person> myFriends, Pageable pageable);
 
     boolean existsByeMail(String email);
+    @Query("select person from Person as person where person.isDeleted = :is_deleted")
+    List<Person> findAllByDeleted(boolean is_deleted);
 }
 

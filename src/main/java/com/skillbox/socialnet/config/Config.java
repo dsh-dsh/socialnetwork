@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableScheduling
+@ConditionalOnProperty(name = "scheduling.enable", matchIfMissing = true)
 public class Config {
 
     public static String bcrypt(String password) {

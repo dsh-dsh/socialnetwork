@@ -27,7 +27,7 @@ public class Post {
     @Column(name = "time")
     private Timestamp time;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "author_id")
     private Person author;
 
