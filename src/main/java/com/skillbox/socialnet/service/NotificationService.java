@@ -13,6 +13,7 @@ import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -103,6 +104,6 @@ public class NotificationService {
     private void sendNotification(Notification notification) {
         NotificationDataRS notificationDataRS = createDataRS(notification);
         NotificationRS notificationRS = createNotificationRS(List.of(notificationDataRS));
-        webSocketService.sendNotification(notificationRS);
+        webSocketService.sendNotification(notificationRS, notification.getPerson().getId());
     }
 }

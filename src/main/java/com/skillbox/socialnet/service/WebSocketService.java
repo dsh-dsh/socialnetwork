@@ -5,17 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
 @Service
 @RequiredArgsConstructor
 public class WebSocketService {
 
-    private final AuthService authService;
     private final SimpMessageSendingOperations messagingTemplate;
+    private static final String NOTIFICATION_TOPIC = "/ws/topic/notification/";
 
-    int currentPersonId = authService.getPersonFromSecurityContext().getId();
-    private final String notificationTopic = "/topic/notification/" + currentPersonId;
-
-    public NotificationRS sendNotification(NotificationRS notificationRS) {
+    public NotificationRS sendNotification(NotificationRS notificationRS, int receiverId) {
+        String notificationTopic = NOTIFICATION_TOPIC + receiverId;
         messagingTemplate.convertAndSend(notificationTopic, notificationRS);
         return notificationRS;
     }

@@ -21,8 +21,7 @@ public class DialogController {
     private final DialogService dialogService;
 
     @GetMapping
-    public ResponseEntity<GeneralListResponse<DialogDTO>>
-    getDialogs(
+    public ResponseEntity<GeneralListResponse<DialogDTO>> getDialogs(
             @RequestParam(required = false) String query,
             @RequestParam(required = false) ElementPageable pageable) {
 
@@ -30,8 +29,8 @@ public class DialogController {
     }
 
     @PostMapping
-    public ResponseEntity<GeneralResponse<DialogIdDTO>>
-    createDialog(@RequestBody DialogCreateDTORequest dialogCreateDTORequest) {
+    public ResponseEntity<GeneralResponse<DialogIdDTO>> createDialog(
+            @RequestBody DialogCreateDTORequest dialogCreateDTORequest) {
         GeneralResponse<DialogIdDTO> response =
             new GeneralResponse<>(dialogService.createDialog(dialogCreateDTORequest));
 
@@ -50,8 +49,7 @@ public class DialogController {
 
     @MethodLog
     @GetMapping("/{dialog_id}/messages")
-    public ResponseEntity<GeneralListResponse<MessageDTO>>
-    getMessages(
+    public ResponseEntity<GeneralListResponse<MessageDTO>> getMessages(
             @PathVariable(name = "dialog_id") long dialogId,
             @RequestParam(required = false) ElementPageable pageable) {
 
@@ -60,8 +58,7 @@ public class DialogController {
 
     @MethodLog
     @GetMapping("/unreaded")
-    public ResponseEntity<GeneralResponse<UnreadCountDTO>>
-    unread() {
+    public ResponseEntity<GeneralResponse<UnreadCountDTO>> unread() {
         GeneralResponse<UnreadCountDTO> response =
                 new GeneralResponse<>(dialogService.getUnreadCount());
 
@@ -70,8 +67,7 @@ public class DialogController {
 
     //покаНеИспользуется
     @PutMapping("/{dialog_id}/messages/{message_id}/read")
-    public ResponseEntity<GeneralResponse<MessageResponseDTO>>
-    readMessage(
+    public ResponseEntity<GeneralResponse<MessageResponseDTO>> readMessage(
             @PathVariable(name = "dialog_id") long dialogId,
             @PathVariable(name = "message_id") int messageId) {
         GeneralResponse<MessageResponseDTO> response =
@@ -82,8 +78,8 @@ public class DialogController {
 
     //покаНеИспользуется
     @DeleteMapping("{dialog_id}")
-    public ResponseEntity<GeneralResponse<DialogIdDTO>>
-    deleteDialog(@PathVariable(name = "dialog_id") long dialogId) {
+    public ResponseEntity<GeneralResponse<DialogIdDTO>> deleteDialog(
+            @PathVariable(name = "dialog_id") long dialogId) {
         GeneralResponse<DialogIdDTO> response =
             new GeneralResponse<>(dialogService.deleteDialog(dialogId));
 
@@ -92,8 +88,7 @@ public class DialogController {
 
     //покаНеИспользуется
     @PutMapping("/{id}/users")
-    public ResponseEntity<GeneralResponse<DialogCreateDTORequest>>
-    addUsersToDialog(
+    public ResponseEntity<GeneralResponse<DialogCreateDTORequest>> addUsersToDialog(
             @PathVariable long id,
             @RequestBody DialogCreateDTORequest dialogCreateDTORequest) {
         GeneralResponse<DialogCreateDTORequest> response =
@@ -104,8 +99,7 @@ public class DialogController {
 
     //покаНеИспользуется
     @DeleteMapping("/{id}/users/{ids}")
-    public ResponseEntity<GeneralResponse<DialogCreateDTORequest>>
-    deleteUsersFromDialog(
+    public ResponseEntity<GeneralResponse<DialogCreateDTORequest>> deleteUsersFromDialog(
             @PathVariable long id,
             @PathVariable String ids) {
         GeneralResponse<DialogCreateDTORequest> response =
@@ -116,8 +110,8 @@ public class DialogController {
 
     //покаНеИспользуется
     @GetMapping("/{id}/users/invite")
-    public ResponseEntity<GeneralResponse<InviteLinkDTO>>
-    getLinkToJoinDialog(@PathVariable long id) {
+    public ResponseEntity<GeneralResponse<InviteLinkDTO>> getLinkToJoinDialog(
+            @PathVariable long id) {
         GeneralResponse<InviteLinkDTO> response =
                 new GeneralResponse<>(dialogService.getLinkToJoin(id));
 
@@ -126,8 +120,8 @@ public class DialogController {
 
     //покаНеИспользуется
     @GetMapping("/{id}/users/join")
-    public ResponseEntity<GeneralResponse<DialogCreateDTORequest>>
-    joinDialogByLink(@PathVariable long id) {
+    public ResponseEntity<GeneralResponse<DialogCreateDTORequest>> joinDialogByLink(
+            @PathVariable long id) {
         GeneralResponse<DialogCreateDTORequest> response =
                 new GeneralResponse<>(dialogService.joinByLink(id));
 
