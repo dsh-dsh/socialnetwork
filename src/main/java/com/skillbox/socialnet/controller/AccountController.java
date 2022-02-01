@@ -58,7 +58,6 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
-    @MethodLog
     @PutMapping("/email")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setEmail(
             @RequestBody @Valid AccountEmailRQ accountEmailRQ) {
@@ -68,7 +67,6 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
-    @MethodLog
     @PutMapping("/notifications")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setNotifications(
             @RequestBody @Valid AccountNotificationRQ accountNotificationRQ) {

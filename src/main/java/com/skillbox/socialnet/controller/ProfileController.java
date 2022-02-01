@@ -34,13 +34,11 @@ public class ProfileController {
     private final UserService userService;
     private final PostService postService;
 
-    @MethodLog
     @GetMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
         return ResponseEntity.ok(new GeneralResponse<>(userService.getUser()));
     }
 
-    @MethodLog
     @PutMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> editUser(
             @RequestBody @Valid UserChangeRQ userChangeRQ,

@@ -23,7 +23,6 @@ public class    PostController {
     private final PostService postService;
     private final CommentService commentService;
 
-    @MethodLog
     @GetMapping
     public ResponseEntity<?> searchPosts(
             PostSearchRQ postSearchRQ,

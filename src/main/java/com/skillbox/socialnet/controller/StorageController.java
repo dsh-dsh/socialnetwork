@@ -18,6 +18,7 @@ import java.io.IOException;
 public class StorageController {
 
     private final StorageService storageService;
+
     @PostMapping("/storage")
     public ResponseEntity<GeneralResponse<FileDTO>> storage(@RequestParam("type") String type,
                                                             @RequestPart("file") MultipartFile file) throws IOException {

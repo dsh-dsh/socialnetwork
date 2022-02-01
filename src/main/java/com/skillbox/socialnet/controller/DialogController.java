@@ -47,7 +47,6 @@ public class DialogController {
         return ResponseEntity.ok(response);
     }
 
-    @MethodLog
     @GetMapping("/{dialog_id}/messages")
     public ResponseEntity<GeneralListResponse<MessageDTO>> getMessages(
             @PathVariable(name = "dialog_id") long dialogId,
@@ -56,7 +55,6 @@ public class DialogController {
         return ResponseEntity.ok(dialogService.getMessagesInDialog(dialogId, pageable));
     }
 
-    @MethodLog
     @GetMapping("/unreaded")
     public ResponseEntity<GeneralResponse<UnreadCountDTO>> unread() {
         GeneralResponse<UnreadCountDTO> response =

@@ -11,7 +11,6 @@ import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,31 +33,30 @@ public class FriendsService {
 
     private final FriendshipRepository friendshipRepository;
     private final PersonRepository personRepository;
+    private final PersonService personService;
     private final AuthService authService;
     private final NotificationService notificationService;
 
-    public GeneralListResponse<UserDTO> getAllFriends(String name, Pageable pageable) {
+    public List<UserDTO> getAllFriends(String name) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Page<Friendship> friendshipPage = friendshipRepository
-                .findAllFriendsPageable(currentPerson, FriendshipStatusCode.FRIEND, pageable);
-        List<Person> personStream = getFriendsFromFriendshipPage(name, currentPerson, friendshipPage);
-        List<UserDTO> friends = getUserDTOList(personStream);
+        List<Friendship> friendships = friendshipRepository
+                .findAllFriends(currentPerson, FriendshipStatusCode.FRIEND);
+        List<Person> persons = getFriendsFromFriendships(name, currentPerson, friendships);
 
-        return new GeneralListResponse<>(friends, friendshipPage);
+        return getUserDTOList(persons);
     }
 
-    public GeneralListResponse<UserDTO> getRequests(String name, Pageable pageable) {
+    public List<UserDTO> getRequests(String name) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Page<Friendship> requestsPage = friendshipRepository
-                .findAllRequestPageable(currentPerson, FriendshipStatusCode.REQUEST, pageable);
-        List<Person> personStream = getFriendsFromRequestPage(name, currentPerson, requestsPage);
-        List<UserDTO> friends = getUserDTOList(personStream);
+        List<Friendship> requests = friendshipRepository
+                .findAllRequests(currentPerson, FriendshipStatusCode.REQUEST);
+        List<Person> persons = getFriendsFromRequests(name, requests);
 
-        return new GeneralListResponse<>(friends, requestsPage);
+        return getUserDTOList(persons);
     }
 
-    private List<Person> getFriendsFromRequestPage(String name, Person currentPerson, Page<Friendship> requestsPage) {
-        Stream<Person> personStream = requestsPage.getContent().stream()
+    private List<Person> getFriendsFromRequests(String name, List<Friendship> requests) {
+        Stream<Person> personStream = requests.stream()
                 .map(Friendship::getSrcPerson);
         if (!name.equals("")) {
             personStream = personStream.filter(person -> person.getFirstName().equals(name));
@@ -119,29 +117,14 @@ public class FriendsService {
         return request;
     }
 
-    private Friendship createFriendshipRequest(Person currentPerson, Person dstPerson) {
-        Friendship friendship = new Friendship();
-        friendship.setSrcPerson(currentPerson);
-        friendship.setDstPerson(dstPerson);
-        friendship.setStatus(createRequestFriendshipStatus());
-        notificationService.createNewNotification(
-                NotificationTypeCode.FRIEND_REQUEST,
-                dstPerson.getId(),
-                currentPerson.getId(),
-                dstPerson.getEMail());
-        return friendship;
-    }
-
-    @MethodLog
-    public GeneralListResponse<UserDTO> getRecommendations(Pageable pageable) {
+    public List<UserDTO> getRecommendations() {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Set<Person> myFriends = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND)
                 .stream().map(f -> getFriendFromFriendship(f, currentPerson))
                 .collect(Collectors.toSet());
         Set<Person> recommendedFriends = getRecommendedFriends(currentPerson, myFriends);
-        List<UserDTO> recommendedFriendsList = getUserDTOList(recommendedFriends);
 
-        return new GeneralListResponse<>(recommendedFriendsList, pageable);
+        return getUserDTOList(recommendedFriends);
     }
 
     public Set<Person> getRecommendedFriends(Person currentPerson, Set<Person> myFriends) {
@@ -171,7 +154,6 @@ public class FriendsService {
         return personsToExclude;
     }
 
-    @MethodLog
     public List<Person> getMyFriends() {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND);
@@ -179,6 +161,20 @@ public class FriendsService {
                 .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson())
                 .collect(Collectors.toList());
     }
+
+    private Friendship createFriendshipRequest(Person currentPerson, Person dstPerson) {
+        Friendship friendship = new Friendship();
+        friendship.setSrcPerson(currentPerson);
+        friendship.setDstPerson(dstPerson);
+        friendship.setStatus(createRequestFriendshipStatus());
+        notificationService.createNewNotification(
+                NotificationTypeCode.FRIEND_REQUEST,
+                dstPerson.getId(),
+                currentPerson.getId(),
+                dstPerson.getEMail());
+        return friendship;
+    }
+
 
     private FriendshipStatus createRequestFriendshipStatus() {
         FriendshipStatus friendshipStatus = new FriendshipStatus();
@@ -193,8 +189,8 @@ public class FriendsService {
         return persons.stream().map(UserDTO::getUserDTO).collect(Collectors.toList());
     }
 
-    private List<Person> getFriendsFromFriendshipPage(String name, Person currentPerson, Page<Friendship> friendshipPage) {
-        Stream<Person> personStream = friendshipPage.getContent().stream()
+    private List<Person> getFriendsFromFriendships(String name, Person currentPerson, List<Friendship> friendships) {
+        Stream<Person> personStream = friendships.stream()
                 .map(friendship -> friendship
                         .getSrcPerson().equals(currentPerson) ?
                         friendship.getDstPerson() :

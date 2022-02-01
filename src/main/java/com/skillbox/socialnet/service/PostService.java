@@ -39,7 +39,6 @@ public class PostService {
 
     public static final Logger logger = LogManager.getLogger(PostService.class);
 
-    @MethodLog
     public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
         Page<Post> postPage = getPostsPage(postSearchRQ, pageable, dateTo);
@@ -48,7 +47,6 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
-    @MethodLog
     public GeneralListResponse<?> getFeeds(Pageable pageable) {
         List<Person> friends = getFriendList();
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
@@ -67,14 +65,12 @@ public class PostService {
         return friends;
     }
 
-    @MethodLog
     public PostDTO getPostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
 
         return getPostDTO(post);
     }
 
-    @MethodLog
     public PostDTO addPostToUserWall(int personId, long publishDate, PostChangeRQ postChangeRQ) {
         Person person = personService.getPersonById(personId);
         Post post = new Post();
@@ -88,7 +84,6 @@ public class PostService {
         return getPostDTO(post);
     }
 
-    @MethodLog
     public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -100,7 +95,6 @@ public class PostService {
         return getPostDTO(post);
     }
 
-    @MethodLog
     public DeleteDTO deletePostById(int id) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -109,7 +103,6 @@ public class PostService {
         return new DeleteDTO(id);
     }
 
-    @MethodLog
     public List<PostDTO> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
@@ -117,7 +110,6 @@ public class PostService {
         return getPostDTOList(postPage.getContent());
     }
 
-    @MethodLog
     public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -126,7 +118,6 @@ public class PostService {
         return new GeneralListResponse<>(commentsDTO, pageable);
     }
 
-    @MethodLog
     public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Post post = postRepository.findPostById(postId).orElseThrow(BadRequestException::new);

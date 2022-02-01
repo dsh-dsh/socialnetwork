@@ -24,9 +24,12 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
@@ -45,7 +48,8 @@ public class AccountService {
     @Value("${expired.confirmation.code.milliseconds}")
     private long expirationTime;
 
-   public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
+
+    public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
         Person person = new Person();
         person.setEMail(accountRegisterRQ.getEmail());
         person.setFirstName(accountRegisterRQ.getFirstName());
