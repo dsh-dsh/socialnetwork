@@ -1,7 +1,5 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.util.anotation.MethodLog;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

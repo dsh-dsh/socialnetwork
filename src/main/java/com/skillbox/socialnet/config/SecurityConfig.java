@@ -47,7 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/js/**", "/css/**",
             "/change-password",
             "/shift-email",
-            "/**/{path:[^\\\\.]*}"
+            "/**/{path:[^\\\\.]*}",
+            "/webjars/**",
+            "/app.js"
     };
 
     @Bean

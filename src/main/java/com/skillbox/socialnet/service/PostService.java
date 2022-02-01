@@ -9,7 +9,6 @@ import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
-import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.anotation.MethodLog;
@@ -223,7 +222,7 @@ public class PostService {
             type = NotificationTypeCode.COMMENT_COMMENT;
         }
         for (Integer dstPersonId : dstPersonIds) {
-            notificationService.createAndSendNewNotification(
+            notificationService.createNewNotification(
                     type,
                     dstPersonId,
                     person.getId(),
@@ -242,7 +241,7 @@ public class PostService {
             } else {
                 dstPersonId = nip.getDst();
             }
-            notificationService.createAndSendNewNotification(
+            notificationService.createNewNotification(
                     NotificationTypeCode.POST,
                     dstPersonId,
                     currentPersonId,

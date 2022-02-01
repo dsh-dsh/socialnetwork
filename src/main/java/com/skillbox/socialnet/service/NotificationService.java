@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +65,17 @@ public class NotificationService {
         return getNotification(itemPerPage, offset);
     }
 
+    public NotificationRS sendNotifications(int receiverId) {
+        NotificationRS notificationRS = getNotificationRS();
+        webSocketService.sendNotification(notificationRS, receiverId);
+        return notificationRS;
+    }
+
+    public void createNewNotification(NotificationTypeCode typeCode, int dstPersonId, int entityId, String contact) {
+        Timestamp sentTime = new Timestamp(Calendar.getInstance().getTimeInMillis());
+        notificationRepository.createNewNotification(typeCode.ordinal(), sentTime, dstPersonId, String.valueOf(entityId), contact, false);
+    }
+
     private NotificationDataRS createDataRS(Notification notification) {
         NotificationDataRS ndr = new NotificationDataRS();
         ndr.setEntityAuthor(CommentAuthorDTO.getCommentAuthorDTO(personRepository.findPersonById(Integer.parseInt(notification.getEntity()))));
@@ -75,7 +87,8 @@ public class NotificationService {
         return ndr;
     }
 
-    private NotificationRS createNotificationRS(List<NotificationDataRS> dataRSList) {
+    private NotificationRS getNotificationRS() {
+        List<NotificationDataRS> dataRSList = getNotificationDataRSList();
         NotificationRS notificationRS = new NotificationRS();
         notificationRS.setData(dataRSList);
         notificationRS.setError("string");
@@ -87,23 +100,15 @@ public class NotificationService {
         return notificationRS;
     }
 
-    public void createAndSendNewNotification(NotificationTypeCode typeCode, int dstPersonId, int entityId, String contact) {
-        Notification notification = createAndGetNotification(typeCode, dstPersonId, entityId, contact);
-        System.out.println(notification.getId());
-        sendNotification(notification);
-    }
+    private List<NotificationDataRS> getNotificationDataRSList() {
+//        int receiverId = authService.getPersonFromSecurityContext().getId();
 
-    private Notification createAndGetNotification(NotificationTypeCode typeCode, int dstPersonId, int entityId, String contact) {
-        Timestamp sentTime = new Timestamp(Calendar.getInstance().getTimeInMillis());
-        notificationRepository.createNewNotification(typeCode.ordinal(), sentTime, dstPersonId, String.valueOf(entityId), contact, false);
+        int receiverId = personRepository.findPersonById(1).getId();
+
         return notificationRepository
-                .findBySentTimeAndEntityAndContactAndSeen(sentTime, String.valueOf(entityId), contact, false)
-                .orElseThrow(BadRequestException::new);
-    }
-
-    private void sendNotification(Notification notification) {
-        NotificationDataRS notificationDataRS = createDataRS(notification);
-        NotificationRS notificationRS = createNotificationRS(List.of(notificationDataRS));
-        webSocketService.sendNotification(notificationRS, notification.getPerson().getId());
+                .getAllNotSeenNotificationsForUser(receiverId)
+                .stream()
+                .map(this::createDataRS)
+                .collect(Collectors.toList());
     }
 }
