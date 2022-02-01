@@ -79,9 +79,9 @@ public class AccountController {
     }
 
     @GetMapping("/notifications")
-    public ResponseEntity<GeneralListResponse<NotificationSettingsDto>> getNotifications(Pageable pageable) {
+    public ResponseEntity<GeneralListResponse<NotificationSettingsDto>> getNotifications() {
         GeneralListResponse<NotificationSettingsDto> response =
-                new GeneralListResponse<>(accountService.getNotifications(), pageable);
+                new GeneralListResponse<>(accountService.getNotifications());
 
         return ResponseEntity.ok(response);
     }

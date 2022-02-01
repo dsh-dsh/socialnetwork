@@ -150,9 +150,8 @@ public class AccountService {
     public List<NotificationSettingsDto> getNotifications() {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<NotificationSetting> settings = settingsRepository.findByPerson(currentPerson);
-        List<NotificationSettingsDto> settingsDtoList = settings.stream()
-                .map(NotificationSettingsDto::new)
+
+        return settings.stream().map(NotificationSettingsDto::new)
                 .collect(Collectors.toList());
-        return settingsDtoList;
     }
 }
