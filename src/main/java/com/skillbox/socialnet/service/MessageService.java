@@ -60,7 +60,7 @@ public class MessageService {
     }
 
     private void sendMessage(Person author, Person recipient, Message message) {
-        webSocketService.sendMessage(author, message);
+        webSocketService.sendMessages(author, message);
         notificationService.createNewNotification(
                 NotificationTypeCode.MESSAGE,
                 recipient.getId(),

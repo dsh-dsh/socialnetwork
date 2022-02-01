@@ -1,19 +1,15 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.RS.NotificationDataRS;
 import com.skillbox.socialnet.model.RS.NotificationRS;
 import com.skillbox.socialnet.model.dto.CommentAuthorDTO;
 import com.skillbox.socialnet.model.entity.Notification;
-import com.skillbox.socialnet.model.entity.NotificationType;
-import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -65,15 +61,27 @@ public class NotificationService {
         return getNotification(itemPerPage, offset);
     }
 
-    public NotificationRS sendNotifications(int receiverId) {
-        NotificationRS notificationRS = getNotificationRS();
-        webSocketService.sendNotification(notificationRS, receiverId);
-        return notificationRS;
+    public void sendNotifications(int receiverId) {
+        NotificationRS notificationRS = getNotificationRS(receiverId);
+        webSocketService.sendNotifications(notificationRS, receiverId);
     }
 
     public void createNewNotification(NotificationTypeCode typeCode, int dstPersonId, int entityId, String contact) {
         Timestamp sentTime = new Timestamp(Calendar.getInstance().getTimeInMillis());
         notificationRepository.createNewNotification(typeCode.ordinal(), sentTime, dstPersonId, String.valueOf(entityId), contact, false);
+        sendNotifications(dstPersonId);
+    }
+
+    public NotificationRS getNotificationRS(int receiverId) {
+        NotificationRS notificationRS = new NotificationRS();
+        notificationRS.setData(getNotificationDataRSList(receiverId));
+        notificationRS.setError("string");
+        notificationRS.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        notificationRS.setOffset(offset);
+        notificationRS.setPerPage(itemPerPage);
+        notificationRS.setTotal(0);
+
+        return notificationRS;
     }
 
     private NotificationDataRS createDataRS(Notification notification) {
@@ -87,24 +95,7 @@ public class NotificationService {
         return ndr;
     }
 
-    private NotificationRS getNotificationRS() {
-        List<NotificationDataRS> dataRSList = getNotificationDataRSList();
-        NotificationRS notificationRS = new NotificationRS();
-        notificationRS.setData(dataRSList);
-        notificationRS.setError("string");
-        notificationRS.setTimestamp(new Timestamp(System.currentTimeMillis()));
-        notificationRS.setOffset(offset);
-        notificationRS.setPerPage(itemPerPage);
-        notificationRS.setTotal(0);
-
-        return notificationRS;
-    }
-
-    private List<NotificationDataRS> getNotificationDataRSList() {
-//        int receiverId = authService.getPersonFromSecurityContext().getId();
-
-        int receiverId = personRepository.findPersonById(1).getId();
-
+    private List<NotificationDataRS> getNotificationDataRSList(int receiverId) {
         return notificationRepository
                 .getAllNotSeenNotificationsForUser(receiverId)
                 .stream()
