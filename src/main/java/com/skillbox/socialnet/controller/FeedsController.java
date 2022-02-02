@@ -17,7 +17,7 @@ public class FeedsController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<?> getFeeds(
+    public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(
             @RequestParam(defaultValue = "") String name, ElementPageable pageable){
         return ResponseEntity.ok(postService.getFeeds(pageable));
     }

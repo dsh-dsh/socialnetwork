@@ -71,7 +71,7 @@ public class ProfileController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchUsers(
+    public ResponseEntity<GeneralListResponse<UserDTO>> searchUsers(
             @RequestParam(name = "first_or_last_name", required = false) String firstOrLastName,
             @RequestParam(name = "first_name", required = false) String firstName,
             @RequestParam(name = "last_name", required = false) String lastName,
@@ -81,7 +81,7 @@ public class ProfileController {
             @RequestParam(required = false) String city,
             Pageable pageable) {
 
-        GeneralListResponse<?> response;
+        GeneralListResponse<UserDTO> response;
         if(firstOrLastName != null) {
             response = userService.searchUsers(firstOrLastName, pageable);
         } else {

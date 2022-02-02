@@ -53,7 +53,7 @@ public class UserService {
         return USER_DELETE_SUCCESS;
     }
 
-    public GeneralListResponse<?> searchUsers(String firstOrLastName, Pageable pageable) {
+    public GeneralListResponse<UserDTO> searchUsers(String firstOrLastName, Pageable pageable) {
         Page<Person> personPage = personRepository
                 .findByFirstNameContainingOrLastNameContainingIgnoreCase(firstOrLastName, firstOrLastName, pageable);
         List<UserDTO> userDTOList = personPage.stream()
@@ -61,7 +61,7 @@ public class UserService {
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 
-    public GeneralListResponse<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
+    public GeneralListResponse<UserDTO> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
         Date to = getDateTo(userSearchRQ);
         Date from = getDateFrom(userSearchRQ);
         userSearchRQ.firstNameToLower();

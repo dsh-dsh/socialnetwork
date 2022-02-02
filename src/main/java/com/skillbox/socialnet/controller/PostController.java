@@ -3,11 +3,14 @@ package com.skillbox.socialnet.controller;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.PostSearchRQ;
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.CommentDTO;
+import com.skillbox.socialnet.model.dto.DeleteDTO;
+import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.service.CommentService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,20 +27,20 @@ public class    PostController {
     private final CommentService commentService;
 
     @GetMapping
-    public ResponseEntity<?> searchPosts(
+    public ResponseEntity<GeneralListResponse<PostDTO>> searchPosts(
             PostSearchRQ postSearchRQ,
             ElementPageable pageable) {
         return ResponseEntity.ok(postService.searchPosts(postSearchRQ, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPost(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<PostDTO>> getPost(@PathVariable int id) {
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.getPostById(id)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editPost(
+    public ResponseEntity<GeneralResponse<PostDTO>> editPost(
             @PathVariable int id,
             @RequestParam (defaultValue = "0")  long publish_date,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
@@ -46,20 +49,20 @@ public class    PostController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<DeleteDTO>> deletePost(@PathVariable int id) {
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.deletePostById(id)));
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<?> getComments(
+    public ResponseEntity<GeneralListResponse<CommentDTO>> getComments(
             @PathVariable int id,
             ElementPageable pageable){
         return ResponseEntity.ok(postService.getCommentsToPost(id, pageable));
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<?> postComment(
+    public ResponseEntity<GeneralResponse<CommentDTO>> postComment(
             @PathVariable(name = "id") int postId,
             @RequestBody @Valid CommentRQ commentRQ) {
         return ResponseEntity.ok(
@@ -67,7 +70,7 @@ public class    PostController {
     }
 
     @PutMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> editComment(
+    public ResponseEntity<GeneralResponse<CommentDTO>> editComment(
             @PathVariable int id,
             @PathVariable int comment_id,
             @RequestBody @Valid CommentRQ commentRQ) {
@@ -76,7 +79,7 @@ public class    PostController {
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> deleteComment(
+    public ResponseEntity<GeneralResponse<DeleteDTO>> deleteComment(
             @PathVariable int id,
             @PathVariable int comment_id){
         return ResponseEntity.ok(

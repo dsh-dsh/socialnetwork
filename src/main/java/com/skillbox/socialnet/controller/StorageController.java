@@ -1,7 +1,5 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.AccountNotificationRQ;
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.FileDTO;
 import com.skillbox.socialnet.service.StorageService;

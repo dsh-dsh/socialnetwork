@@ -39,7 +39,7 @@ public class PostService {
 
     public static final Logger logger = LogManager.getLogger(PostService.class);
 
-    public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+    public GeneralListResponse<PostDTO> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
         Page<Post> postPage = getPostsPage(postSearchRQ, pageable, dateTo);
         List<PostDTO> postsDTOList = getPostDTOList(postPage.getContent());
@@ -47,7 +47,7 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
-    public GeneralListResponse<?> getFeeds(Pageable pageable) {
+    public GeneralListResponse<PostDTO> getFeeds(Pageable pageable) {
         List<Person> friends = getFriendList();
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
@@ -110,7 +110,7 @@ public class PostService {
         return getPostDTOList(postPage.getContent());
     }
 
-    public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
+    public GeneralListResponse<CommentDTO> getCommentsToPost(int id, Pageable pageable) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
         List<CommentDTO> commentsDTO = commentService.getCommentsDTOList(post);
