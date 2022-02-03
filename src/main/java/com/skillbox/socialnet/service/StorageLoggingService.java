@@ -139,28 +139,6 @@ public class StorageLoggingService {
         }
     }
 
-    private void deleteLogDirs() {
-        File logDir = new File(LOG_DIR);
-        File[] logDirs = logDir.listFiles();
-        if(logDirs != null) {
-            for (File nextDir : logDirs) {
-                deleteDirWithFilesRecursive(nextDir);
-            }
-        }
-    }
-
-    private void deleteDirWithFilesRecursive(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (!Files.isSymbolicLink(file.toPath())) {
-                    deleteDirWithFilesRecursive(file);
-                }
-            }
-        }
-        dir.delete();
-    }
-
     public void deleteBucket() {
         String bucketName = "social-net-20-group-log-files";
         try {
