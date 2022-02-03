@@ -19,30 +19,37 @@ public class PlatformController {
 
     private final PlatformService platformService;
 
+    @MethodLog
     @GetMapping("/languages")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
-            @RequestParam(defaultValue = "") String language,
-            ElementPageable pageable){
-        return ResponseEntity.ok(platformService.getLanguage(language, pageable));
+            @RequestParam(defaultValue = "") String language){
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(platformService.getLanguage(language)));
     }
 
+    @MethodLog
     @GetMapping("/countries")
-    public ResponseEntity<GeneralListResponse<LocationDTO>> getCountry(ElementPageable pageable){
-        return ResponseEntity.ok(platformService.getCountry(pageable));
+    public ResponseEntity<GeneralListResponse<LocationDTO>> getCountry(){
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(platformService.getCountry()));
     }
 
     @PostMapping("/countries")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(@RequestBody LocationDTO locationDTO){
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(
+            @RequestBody LocationDTO locationDTO){
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
+    @MethodLog
     @GetMapping("/cities")
-    public ResponseEntity<GeneralListResponse<LocationDTO>> getCity(ElementPageable pageable){
-        return ResponseEntity.ok(platformService.getCity(pageable));
+    public ResponseEntity<GeneralListResponse<LocationDTO>> getCity(){
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(platformService.getCity()));
     }
 
     @PostMapping("/cities")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(@RequestBody LocationDTO locationDTO){
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(
+            @RequestBody LocationDTO locationDTO){
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCity(locationDTO)));
     }
 
