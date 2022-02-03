@@ -1,4 +1,4 @@
 delete from city;
-insert into city (title) values ('Москва'), ('Питер');
+insert into city (title) values ('Moscow'), ('St. Petersburg');
 delete from country;
-insert into country (title) values ('Россия'), ('Украина');
+insert into country (title) values ('Russia'), ('Ukraine');

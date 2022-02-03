@@ -42,8 +42,7 @@ public class NotificationControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0]").exists())
-                .andExpect(jsonPath("$.data.[1]").exists())
-                .andExpect(jsonPath("$.data.[2]").doesNotExist());
+                .andExpect(jsonPath("$.data.[1]").exists());
     }
     @Test
     @WithUserDetails(P1_MAIL)
@@ -54,7 +53,6 @@ public class NotificationControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0]").exists())
-                .andExpect(jsonPath("$.data.[1]").exists())
-                .andExpect(jsonPath("$.data.[2]").doesNotExist());
+                .andExpect(jsonPath("$.data.[1]").exists());
     }
 }

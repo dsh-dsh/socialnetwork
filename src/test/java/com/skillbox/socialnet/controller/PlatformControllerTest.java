@@ -44,8 +44,8 @@ public class PlatformControllerTest {
         mockMvc.perform(get(URL_PREFIX + CITIES))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.[0].title").value("Москва"))
-                .andExpect(jsonPath("$.data.[1].title").value("Питер"))
+                .andExpect(jsonPath("$.data.[0].title").value("Moscow"))
+                .andExpect(jsonPath("$.data.[1].title").value("St. Petersburg"))
                 .andExpect(jsonPath("$.data.[2]").doesNotExist());
 
     }
@@ -70,8 +70,8 @@ public class PlatformControllerTest {
         mockMvc.perform(get(URL_PREFIX + COUNTRIES))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.[0].title").value("Россия"))
-                .andExpect(jsonPath("$.data.[1].title").value("Украина"))
+                .andExpect(jsonPath("$.data.[0].title").value("Russia"))
+                .andExpect(jsonPath("$.data.[1].title").value("Ukraine"))
                 .andExpect(jsonPath("$.data.[2]").doesNotExist());
 
     }
@@ -97,8 +97,8 @@ public class PlatformControllerTest {
         mockMvc.perform(get(URL_PREFIX + "languages"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.[0].title").value("Русский"))
-                .andExpect(jsonPath("$.data.[1].title").value("Английский"))
+                .andExpect(jsonPath("$.data.[0].title").value("Rus"))
+                .andExpect(jsonPath("$.data.[1].title").value("Eng"))
                 .andExpect(jsonPath("$.data.[2]").doesNotExist());
 
     }

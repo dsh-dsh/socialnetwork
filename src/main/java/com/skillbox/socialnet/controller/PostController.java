@@ -4,11 +4,13 @@ import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.PostSearchRQ;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.CommentService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +20,9 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/post")
-public class    PostController {
+public class PostController {
 
+    private final AuthService authService;
     private final PostService postService;
     private final CommentService commentService;
 
@@ -40,14 +43,20 @@ public class    PostController {
     @PutMapping("/{id}")
     public ResponseEntity<?> editPost(
             @PathVariable int id,
-            @RequestParam (defaultValue = "0")  long publish_date,
+            @RequestParam(defaultValue = "0") long publish_date,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.changePostById(id, publish_date, postChangeRQ)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(@PathVariable int id) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.deletePostById(id)));
     }
@@ -55,7 +64,7 @@ public class    PostController {
     @GetMapping("/{id}/comments")
     public ResponseEntity<?> getComments(
             @PathVariable int id,
-            ElementPageable pageable){
+            ElementPageable pageable) {
         return ResponseEntity.ok(postService.getCommentsToPost(id, pageable));
     }
 
@@ -63,6 +72,9 @@ public class    PostController {
     public ResponseEntity<?> postComment(
             @PathVariable int id,
             @RequestBody @Valid CommentRQ commentRQ) {
+        if (authService.getPersonFromSecurityContext() == null){
+            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.makeCommentToPost(id, commentRQ)));
     }
@@ -72,6 +84,9 @@ public class    PostController {
             @PathVariable int id,
             @PathVariable int comment_id,
             @RequestBody @Valid CommentRQ commentRQ) {
+        if (authService.getPersonFromSecurityContext() == null){
+            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(commentService.rewriteCommentToThePost(id, comment_id, commentRQ)));
     }
@@ -79,7 +94,10 @@ public class    PostController {
     @DeleteMapping("/{id}/comments/{comment_id}")
     public ResponseEntity<?> deleteComment(
             @PathVariable int id,
-            @PathVariable int comment_id){
+            @PathVariable int comment_id) {
+        if (authService.getPersonFromSecurityContext() == null){
+            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(commentService.deleteCommentToThePost(id, comment_id)));
     }

@@ -65,6 +65,18 @@ public class LikeControllerTest {
     }
 
     @Test
+    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void addLikesUnauthorized() throws Exception {
+        LikeRQ likeRQ = new LikeRQ(10, "type");
+        mockMvc.perform(put(URL_PREFIX + LIKES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(likeRQ)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -92,5 +104,27 @@ public class LikeControllerTest {
                 .andExpect(jsonPath("$.data.additionalProp1").value(false));
     }
 
+    @Test
+    @WithUserDetails(P2_MAIL)
+    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void deleteLike() throws Exception {
+        mockMvc.perform(delete(URL_PREFIX + "likes")
+                .param("item_id", "10")
+                .param("type", "type"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void deleteLikeUnauthorized() throws Exception {
+        mockMvc.perform(delete(URL_PREFIX + "likes")
+                .param("item_id", "10")
+                .param("type", "type"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 
 }
