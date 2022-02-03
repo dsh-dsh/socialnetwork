@@ -21,10 +21,9 @@ public class DialogController {
 
     @GetMapping
     public ResponseEntity<GeneralListResponse<DialogDTO>> getDialogs(
-            @RequestParam(required = false) String query,
-            @RequestParam(required = false) ElementPageable pageable) {
-
-        return ResponseEntity.ok(dialogService.getDialogs(pageable));
+            @RequestParam(required = false) String query) {
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(dialogService.getDialogs()));
     }
 
     @PostMapping
@@ -48,8 +47,7 @@ public class DialogController {
 
     @GetMapping("/{dialog_id}/messages")
     public ResponseEntity<GeneralListResponse<MessageDTO>> getMessages(
-            @PathVariable(name = "dialog_id") long dialogId,
-            @RequestParam(required = false) ElementPageable pageable) {
+            @PathVariable(name = "dialog_id") long dialogId,  ElementPageable pageable) {
 
         return ResponseEntity.ok(dialogService.getMessagesInDialog(dialogId, pageable));
     }

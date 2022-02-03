@@ -7,9 +7,10 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.MessageRepository;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,8 @@ public class MessageService {
     private final NotificationService notificationService;
     private final WebSocketService webSocketService;
 
-    public Page<Message> getMessagePageByDialog(Dialog dialog, Pageable pageable) {
+    public Page<Message> getMessagePageByDialog(Dialog dialog, ElementPageable pageable) {
+        pageable.setSort(Sort.by("time"));
         return  messageRepository.findByDialog(dialog, pageable);
     }
     public List<Message> getMessagesByDialog(Dialog dialog) {
@@ -60,7 +62,7 @@ public class MessageService {
     }
 
     private void sendMessage(Person author, Person recipient, Message message) {
-        webSocketService.sendMessages(author, message);
+//        webSocketService.sendMessages(author, message);
         notificationService.createNewNotification(
                 NotificationTypeCode.MESSAGE,
                 recipient.getId(),
