@@ -26,6 +26,12 @@ public class    PostController {
     private final PostService postService;
     private final CommentService commentService;
 
+    @GetMapping("/setTestData")
+    public String addTestData() {
+        postService.add100Posts();
+        return "ok";
+    }
+
     @GetMapping
     public ResponseEntity<GeneralListResponse<PostDTO>> searchPosts(
             PostSearchRQ postSearchRQ,

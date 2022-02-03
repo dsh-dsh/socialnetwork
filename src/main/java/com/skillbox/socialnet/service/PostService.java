@@ -11,13 +11,14 @@ import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -47,8 +48,9 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
-    public GeneralListResponse<PostDTO> getFeeds(Pageable pageable) {
+    public GeneralListResponse<PostDTO> getFeeds(ElementPageable pageable) {
         List<Person> friends = getFriendList();
+        pageable.setSort(Sort.by("time").descending());
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
@@ -69,6 +71,17 @@ public class PostService {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
 
         return getPostDTO(post);
+    }
+
+    public void add100Posts() {
+        for (int i = 0; i < 100; i++) {
+            PostChangeRQ data = new PostChangeRQ();
+            data.setTitle("title " + i);
+            data.setPostText("text text text text text " + i);
+            data.setTags(List.of("tag" + 1, "Spring", "Java"));
+//            long publishDate = Calendar.getInstance().getTimeInMillis();
+            addPostToUserWall(10, 0, data);
+        }
     }
 
     public PostDTO addPostToUserWall(int personId, long publishDate, PostChangeRQ postChangeRQ) {
@@ -133,6 +146,9 @@ public class PostService {
             List<Post> additionalPosts = postRepository
                     .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
             postList.addAll(additionalPosts);
+            postList = postList.stream()
+                    .sorted(Comparator.comparing(Post::getTime).reversed())
+                    .collect(Collectors.toList());
         }
 
         return postList;

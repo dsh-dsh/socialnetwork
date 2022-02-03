@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import com.skillbox.socialnet.config.Config;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 public class StorageLoggingService {
 
     @Value("${aws.access.key}")
@@ -40,8 +42,7 @@ public class StorageLoggingService {
     private static final String LOG_DIR = "logs";
     private static final long EXPIRATION_PERIOD = 30L*24*60*60*1000;
 
-    ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-    private final AmazonS3 s3Client = context.getBean(AmazonS3.class);
+    private final AmazonS3 s3Client;
 
     @Scheduled(cron = "${log.files.scheduling.cron.expression}")
     public void updateLogFilesToCloud() {

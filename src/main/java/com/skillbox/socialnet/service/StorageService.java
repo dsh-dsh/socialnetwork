@@ -21,9 +21,7 @@ public class StorageService {
 
     private final AuthService authService;
     private final PersonRepository personRepository;
-
-    ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-    private final AmazonS3 s3Client = context.getBean(AmazonS3.class);
+    private final AmazonS3 s3Client;
 
     public FileDTO saveImageToProfile(String type, MultipartFile multipartFile) throws IOException {
         Person activePerson = authService.getPersonFromSecurityContext();
