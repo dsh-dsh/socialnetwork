@@ -26,12 +26,6 @@ public class    PostController {
     private final PostService postService;
     private final CommentService commentService;
 
-    @GetMapping("/setTestData")
-    public String addTestData() {
-        postService.add100Posts();
-        return "ok";
-    }
-
     @GetMapping
     public ResponseEntity<GeneralListResponse<PostDTO>> searchPosts(
             PostSearchRQ postSearchRQ,
@@ -61,10 +55,9 @@ public class    PostController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<GeneralListResponse<CommentDTO>> getComments(
-            @PathVariable int id,
-            ElementPageable pageable){
-        return ResponseEntity.ok(postService.getCommentsToPost(id, pageable));
+    public ResponseEntity<GeneralListResponse<CommentDTO>> getComments(@PathVariable int id){
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(postService.getCommentsToPost(id)));
     }
 
     @PostMapping("/{id}/comments")

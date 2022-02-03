@@ -73,17 +73,6 @@ public class PostService {
         return getPostDTO(post);
     }
 
-    public void add100Posts() {
-        for (int i = 0; i < 100; i++) {
-            PostChangeRQ data = new PostChangeRQ();
-            data.setTitle("title " + i);
-            data.setPostText("text text text text text " + i);
-            data.setTags(List.of("tag" + 1, "Spring", "Java"));
-//            long publishDate = Calendar.getInstance().getTimeInMillis();
-            addPostToUserWall(10, 0, data);
-        }
-    }
-
     public PostDTO addPostToUserWall(int personId, long publishDate, PostChangeRQ postChangeRQ) {
         Person person = personService.getPersonById(personId);
         Post post = new Post();
@@ -123,17 +112,17 @@ public class PostService {
         return getPostDTOList(postPage.getContent());
     }
 
-    public GeneralListResponse<CommentDTO> getCommentsToPost(int id, Pageable pageable) {
+    public List<CommentDTO> getCommentsToPost(int id) {
         Post post = postRepository.findPostById(id)
-                .orElseThrow(BadRequestException::new);
-        List<CommentDTO> commentsDTO = commentService.getCommentsDTOList(post);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_POST_MESSAGE));
 
-        return new GeneralListResponse<>(commentsDTO, pageable);
+        return commentService.getCommentsDTOList(post);
     }
 
     public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Post post = postRepository.findPostById(postId).orElseThrow(BadRequestException::new);
+        Post post = postRepository.findPostById(postId)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_POST_MESSAGE));
         PostComment postComment = commentService.createPostComment(commentRQ, currentPerson, post);
         createNotificationForComment(postId, commentRQ.getParentId()==null, currentPerson);
         return CommentDTO.getCommentDTO(postComment);
@@ -255,4 +244,5 @@ public class PostService {
                     personService.getPersonById(dstPersonId).getEMail());
         }
     }
+
 }

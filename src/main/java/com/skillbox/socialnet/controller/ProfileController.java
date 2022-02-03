@@ -3,18 +3,14 @@ package com.skillbox.socialnet.controller;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.UserSearchRQ;
 import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.model.RS.DefaultRS;
 import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.security.JwtProvider;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Calendar;
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -41,8 +35,7 @@ public class ProfileController {
 
     @PutMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> editUser(
-            @RequestBody @Valid UserChangeRQ userChangeRQ,
-            HttpServletRequest request) {
+            @RequestBody @Valid UserChangeRQ userChangeRQ) {
         return ResponseEntity.ok(new GeneralResponse<>(userService.editUser(userChangeRQ)));
     }
 

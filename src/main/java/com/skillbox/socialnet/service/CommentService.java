@@ -8,6 +8,7 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
 import com.skillbox.socialnet.repository.CommentRepository;
+import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class CommentService {
         postComment.setCommentText(commentRQ.getCommentText());
         if (commentRQ.getParentId() != null) {
             PostComment parentComment = commentRepository.findById(commentRQ.getParentId())
-                    .orElseThrow(BadRequestException::new);
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_COMMENT_MESSAGE));
             postComment.setParent(parentComment);
         }
         postComment.setPost(post);
