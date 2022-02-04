@@ -9,7 +9,7 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +32,7 @@ public class UserService {
     private final PersonRepository personRepository;
     private final AuthService authService;
 
-    @MethodLog
+    @Loggable
     public UserDTO getUser() {
         Person person = authService.getPersonFromSecurityContext();
         return UserDTO.getUserDTO(person);

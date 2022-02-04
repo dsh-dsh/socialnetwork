@@ -12,6 +12,8 @@ import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
+import com.skillbox.socialnet.util.annotation.InfoLoggable;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Loggable
 public class PostService {
 
     private final PostRepository postRepository;
@@ -128,7 +131,7 @@ public class PostService {
         return CommentDTO.getCommentDTO(postComment);
     }
 
-    private List<Post> addPostsToLimit(List<Post> posts) {
+    public List<Post> addPostsToLimit(List<Post> posts) {
         List<Post> postList = new ArrayList<>(posts);
         if (posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
             int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();

@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.validation.validator;
 
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.validation.anotation.CodeExpiration;
+import com.skillbox.socialnet.validation.annotation.CodeExpiration;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

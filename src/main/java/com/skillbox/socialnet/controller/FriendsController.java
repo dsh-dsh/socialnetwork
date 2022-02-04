@@ -5,6 +5,7 @@ import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.FriendsService;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ public class FriendsController {
 
     private final FriendsService friendsService;
 
+    @Loggable
     @GetMapping
     public ResponseEntity<GeneralListResponse<UserDTO>> getAllFriends(
             @RequestParam(defaultValue = "") String name) {

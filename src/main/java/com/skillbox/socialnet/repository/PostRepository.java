@@ -2,7 +2,6 @@ package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
-import com.skillbox.socialnet.util.anotation.MethodLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

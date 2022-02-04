@@ -2,7 +2,7 @@ package com.skillbox.socialnet.model.RQ;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.skillbox.socialnet.validation.anotation.ValidNotificationType;
+import com.skillbox.socialnet.validation.annotation.ValidNotificationType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

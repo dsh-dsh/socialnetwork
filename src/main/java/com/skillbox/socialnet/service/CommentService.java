@@ -9,7 +9,7 @@ import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    @MethodLog
+    @Loggable
     public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);
@@ -34,7 +34,7 @@ public class CommentService {
         return CommentDTO.getCommentDTO(postComment);
     }
 
-    @MethodLog
+    @Loggable
     public DeleteDTO deleteCommentToThePost(int id, int commentId) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);

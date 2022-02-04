@@ -5,7 +5,7 @@ import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.service.PlatformService;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class PlatformController {
 
     private final PlatformService platformService;
 
-    @MethodLog
+    @Loggable
     @GetMapping("/languages")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
             @RequestParam(defaultValue = "") String language){
@@ -26,7 +26,7 @@ public class PlatformController {
                 new GeneralListResponse<>(platformService.getLanguage(language)));
     }
 
-    @MethodLog
+    @Loggable
     @GetMapping("/countries")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getCountry(){
         return ResponseEntity.ok(
@@ -39,7 +39,7 @@ public class PlatformController {
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
-    @MethodLog
+    @Loggable
     @GetMapping("/cities")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getCity(){
         return ResponseEntity.ok(
