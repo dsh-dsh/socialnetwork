@@ -49,7 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/shift-email",
             "/**/{path:[^\\\\.]*}",
             "/webjars/**",
-            "/app.js"
+            "/app.js",
+            "/actuator/**"
     };
 
     @Bean
