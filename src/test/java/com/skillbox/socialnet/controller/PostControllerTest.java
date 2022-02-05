@@ -100,7 +100,7 @@ public class PostControllerTest {
                         .content(objectMapper.writeValueAsString(postChangeRQ)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_TEXT_MESSAGE));
+                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_TITLE_MESSAGE));
 
     }
 
