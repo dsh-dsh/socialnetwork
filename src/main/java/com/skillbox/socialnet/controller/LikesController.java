@@ -30,7 +30,7 @@ public class LikesController {
     @PutMapping("/likes")
     public ResponseEntity<GeneralResponse<LikeDTO>> setLike(@RequestBody LikeRQ likeRQ){
         if (authService.getPersonFromSecurityContext() == null){
-            return (ResponseEntity<GeneralResponse<LikeDTO>>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(new GeneralResponse<>(likeService.setLike(likeRQ.getId())));
     }
@@ -46,7 +46,7 @@ public class LikesController {
     public ResponseEntity<GeneralResponse<DeleteLikeDTO>> deleteLike(@RequestParam("item_id") int itemId,
                                                                      @RequestParam String type){
         if (authService.getPersonFromSecurityContext() == null){
-            return (ResponseEntity<GeneralResponse<DeleteLikeDTO>>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(new GeneralResponse<>(likeService.deleteLike(itemId)));
     }

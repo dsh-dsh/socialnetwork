@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 
+import static com.skillbox.socialnet.util.Constants.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -94,13 +95,13 @@ public class PostControllerTest {
     @Test
     @WithUserDetails(P1_MAIL)
     public void editPostWithNotValidTitleTest() throws Exception {
-        PostChangeRQ postChangeRQ = createPost("te", "changed text");
+        PostChangeRQ postChangeRQ = createPost("te", "changed valid text");
         mockMvc.perform(put(URL_PREFIX + 10)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postChangeRQ)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_TITLE_MESSAGE));
+                .andExpect(jsonPath("$.error").value(NOT_VALID_TITLE_MESSAGE));
 
     }
 
@@ -113,7 +114,7 @@ public class PostControllerTest {
                         .content(objectMapper.writeValueAsString(postChangeRQ)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.NOT_VALID_TEXT_MESSAGE));
+                .andExpect(jsonPath("$.error").value(NOT_VALID_TEXT_MESSAGE));
 
     }
 
@@ -182,7 +183,7 @@ public class PostControllerTest {
                         .content(objectMapper.writeValueAsString(new CommentRQ(null, ""))))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.BLANK_COMMENT_MESSAGE));
+                .andExpect(jsonPath("$.error").value(BLANK_COMMENT_MESSAGE));
     }
 
     @Test

@@ -4,10 +4,12 @@ import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PlatformService;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class PlatformController {
 
     private final PlatformService platformService;
+    private final AuthService authService;
 
     @MethodLog
     @GetMapping("/languages")
@@ -36,6 +39,9 @@ public class PlatformController {
     @MethodLog
     @PostMapping("/countries")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(@RequestBody LocationDTO locationDTO){
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
@@ -48,6 +54,9 @@ public class PlatformController {
     @MethodLog
     @PostMapping("/cities")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(@RequestBody LocationDTO locationDTO){
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCity(locationDTO)));
     }
 

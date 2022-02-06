@@ -69,6 +69,7 @@ public class ProfileControllerTest {
                 .andExpect(jsonPath("$.data.email").value(EXISTING_EMAIL));
     }
 
+
     @Test
     public void gettingWrongPerson() throws Exception {
         mockMvc.perform(get(URL_PREFIX + ME)
@@ -204,6 +205,17 @@ public class ProfileControllerTest {
     }
 
     @Test
+    public void addPostUnauthorized() throws Exception {
+        PostChangeRQ postChangeRQ = createPost("testTitle", "valid testText 1");
+        mockMvc.perform(post(URL_PREFIX + ID_1 + "/wall")
+                        .content(objectMapper.writeValueAsString(postChangeRQ))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
     @WithUserDetails(P1_MAIL)
     public void addPostWithNotValidTitleTest() throws Exception {
         PostChangeRQ postChangeRQ = createPost("te", "valid testText 1");
@@ -241,6 +253,13 @@ public class ProfileControllerTest {
     }
 
     @Test
+    public void blockPersonUnauthorized() throws Exception {
+        mockMvc.perform(put(URL_PREFIX + BLOCK + "/" + ID_1))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/person/blockP1.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/unblockP1.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -249,6 +268,20 @@ public class ProfileControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
+    }
+
+    @Test
+    public void unblockPersonUnauthorized() throws Exception {
+        mockMvc.perform(delete(URL_PREFIX + BLOCK + "/" + ID_1))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void deleteUserUnauthorized() throws Exception {
+        mockMvc.perform(delete(URL_PREFIX + ME))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
 

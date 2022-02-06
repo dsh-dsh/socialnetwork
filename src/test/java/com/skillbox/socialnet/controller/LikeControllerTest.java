@@ -65,6 +65,19 @@ public class LikeControllerTest {
     }
 
     @Test
+    @WithUserDetails(P2_MAIL)
+    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void addLikesWrongPost() throws Exception {
+        LikeRQ likeRQ = new LikeRQ(100, "type");
+        mockMvc.perform(put(URL_PREFIX + LIKES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(likeRQ)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void addLikesUnauthorized() throws Exception {
@@ -108,12 +121,37 @@ public class LikeControllerTest {
     @WithUserDetails(P2_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void getUnLikedWrongPost() throws Exception {
+        mockMvc.perform(get(URL_PREFIX + "liked")
+                        .param("item_id", "100")
+                        .param("type", "type")
+                        .param("user_id", "2"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
+    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void deleteLike() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + "likes")
                 .param("item_id", "10")
                 .param("type", "type"))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithUserDetails(P2_MAIL)
+    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void deleteLikeWrongPost() throws Exception {
+        mockMvc.perform(delete(URL_PREFIX + "likes")
+                .param("item_id", "100")
+                .param("type", "type"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Test

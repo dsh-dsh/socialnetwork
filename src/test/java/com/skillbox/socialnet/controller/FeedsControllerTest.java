@@ -43,4 +43,13 @@ public class FeedsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.error").value("string"));
     }
+
+    @Test
+    public void getFeedsUnauthorized() throws Exception {
+        mockMvc.perform(get(URL_PREFIX))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+
 }

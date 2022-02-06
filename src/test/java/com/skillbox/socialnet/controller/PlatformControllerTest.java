@@ -15,6 +15,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.skillbox.socialnet.util.Constants.NOT_VALID_LOCAL_MESSAGE;
+import static com.skillbox.socialnet.util.Constants.NOT_VALID_TITLE_MESSAGE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -63,6 +65,46 @@ public class PlatformControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
     }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
+    @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void setCityEmpty() throws Exception {
+        LocationDTO locationDTO = new LocationDTO();
+        locationDTO.setTitle("T");
+        mockMvc.perform(post(URL_PREFIX + CITIES)
+                        .content(objectMapper.writeValueAsString(locationDTO))
+                        .contentType(MediaType.APPLICATION_JSON ))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(NOT_VALID_LOCAL_MESSAGE));
+    }
+
+    @Test
+    @WithUserDetails(P1_MAIL)
+    @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void setCountryEmpty() throws Exception {
+        LocationDTO locationDTO = new LocationDTO();
+        locationDTO.setTitle("T");
+        mockMvc.perform(post(URL_PREFIX + COUNTRIES)
+                        .content(objectMapper.writeValueAsString(locationDTO))
+                        .contentType(MediaType.APPLICATION_JSON ))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(NOT_VALID_LOCAL_MESSAGE));
+    }
+
+    @Test
+    public void setCityUnauthorized() throws Exception {
+        LocationDTO locationDTO = new LocationDTO();
+        locationDTO.setTitle("Тирасполь");
+        mockMvc.perform(post(URL_PREFIX + CITIES)
+                        .content(objectMapper.writeValueAsString(locationDTO))
+                        .contentType(MediaType.APPLICATION_JSON ))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     @Sql(value = "/sql/platform/addCities.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -88,6 +130,17 @@ public class PlatformControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
+    }
+
+    @Test
+    public void setCountryUnauthorized() throws Exception {
+        LocationDTO locationDTO = new LocationDTO();
+        locationDTO.setTitle("Молдова");
+        mockMvc.perform(post(URL_PREFIX + COUNTRIES)
+                        .content(objectMapper.writeValueAsString(locationDTO))
+                        .contentType(MediaType.APPLICATION_JSON ))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

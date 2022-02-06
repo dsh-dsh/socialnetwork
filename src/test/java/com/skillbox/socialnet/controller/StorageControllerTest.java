@@ -61,4 +61,19 @@ public class StorageControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.fileName").value(name));
     }
+
+    @Test
+    public void saveImgUnauthorized() throws Exception {
+        String name = "file";
+        String originalFileName = "file.txt";
+        String contentType = "text/plain";
+        MockMultipartFile file = new MockMultipartFile(name,
+                originalFileName, contentType, "content".getBytes());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart(URL_PREFIX)
+                        .file(file)
+                        .param("type", "type"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 }
