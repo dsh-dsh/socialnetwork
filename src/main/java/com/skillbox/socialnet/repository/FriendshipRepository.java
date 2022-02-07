@@ -47,6 +47,12 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
             "AND friendship.status.code = :code")
     List<Friendship> findAllRequests(Person person, FriendshipStatusCode code);
 
+    @Query("SELECT friendship " +
+            "FROM Friendship AS friendship " +
+            "WHERE friendship.dstPerson = :person " +
+            "AND friendship.status.code = :code")
+    Page<Friendship> findAllRequestsPageable(Person person, FriendshipStatusCode code, Pageable pageable);
+
     @Query("FROM Friendship " +
             "WHERE (srcPerson = :srcPerson AND dstPerson = :dstPerson) " +
             "OR ( srcPerson = :dstPerson AND dstPerson = :srcPerson) " +
