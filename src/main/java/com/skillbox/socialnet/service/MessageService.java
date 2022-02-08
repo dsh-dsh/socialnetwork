@@ -41,13 +41,6 @@ public class MessageService {
                 .count();
     }
 
-    public Message addAndSendMessage(Dialog dialog, Person author, Person recipient, String text) {
-        Message message = addMessage(dialog, author, recipient, text);
-        sendMessage(author, recipient, message);
-
-        return message;
-    }
-
     public Message getLastMessage(Dialog dialog) {
         return messageRepository.findFirst1ByDialogOrderByTimeDesc(dialog)
                 .orElse(null);
@@ -61,16 +54,7 @@ public class MessageService {
         messageRepository.setMessagesReadStatus(messages, author, MessageReadStatus.READ);
     }
 
-    private void sendMessage(Person author, Person recipient, Message message) {
-//        webSocketService.sendMessages(author, message);
-        notificationService.createNewNotification(
-                NotificationTypeCode.MESSAGE,
-                recipient.getId(),
-                author.getId(),
-                recipient.getEMail());
-    }
-
-    private Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
+    public Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
         Message message = new Message();
         message.setDialog(dialog);
         message.setAuthor(author);
@@ -79,6 +63,11 @@ public class MessageService {
         message.setRecipient(recipient);
         message.setTime(LocalDateTime.now());
         messageRepository.save(message);
+        notificationService.createNewNotification(
+                NotificationTypeCode.MESSAGE,
+                recipient.getId(),
+                author.getId(),
+                recipient.getEMail());
         return message;
     }
 

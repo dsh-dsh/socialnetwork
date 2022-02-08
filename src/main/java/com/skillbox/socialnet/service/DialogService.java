@@ -27,6 +27,7 @@ public class DialogService {
     private final MessageService messageService;
     private final PersonService personService;
     private final AuthService authService;
+    private final WebSocketService webSocketService;
 
     public List<DialogDTO> getDialogs() {
         Person author = authService.getPersonFromSecurityContext();
@@ -73,12 +74,24 @@ public class DialogService {
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
         Person recipient = getRecipient(dialog, author);
-        Message message = messageService.addAndSendMessage(dialog, author,
+        Message message = messageService.addMessage(dialog, author,
                 recipient, messageSendDtoRequest.getMessageText());
         dialog.getMessages().add(message);
         dialogRepository.save(dialog);
 
         return new MessageDTO(author, message);
+    }
+    public void sendMessageByWebSocket(long dialogId, int authorId, MessageSendDtoRequest messageSendDtoRequest) {
+        Dialog dialog = dialogRepository.findById(dialogId)
+                .orElseThrow(BadRequestException::new);
+        Person author = personService.getPersonById(authorId);
+        Person recipient = getRecipient(dialog, author);
+        Message message = messageService.addMessage(dialog, author,
+                recipient, messageSendDtoRequest.getMessageText());
+//        dialog.getMessages().add(message); // эти две строки скорей всего лишние
+//        dialogRepository.save(dialog);
+
+        webSocketService.sendMessage(message.getAuthor().getId(), new MessageDTO(author, message));
     }
 
     private List<DialogDTO> getDialogDTOList(Person author, Collection<Dialog> dialogs) {
