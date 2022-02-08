@@ -24,7 +24,6 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    @Loggable
     public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);
@@ -34,7 +33,6 @@ public class CommentService {
         return CommentDTO.getCommentDTO(postComment);
     }
 
-    @Loggable
     public DeleteDTO deleteCommentToThePost(int id, int commentId) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);

@@ -18,7 +18,6 @@ public class PlatformController {
 
     private final PlatformService platformService;
 
-    @Loggable
     @GetMapping("/languages")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
             @RequestParam(defaultValue = "") String language){
@@ -26,7 +25,6 @@ public class PlatformController {
                 new GeneralListResponse<>(platformService.getLanguage(language)));
     }
 
-    @Loggable
     @GetMapping("/countries")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getCountry(){
         return ResponseEntity.ok(
@@ -39,7 +37,6 @@ public class PlatformController {
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
-    @Loggable
     @GetMapping("/cities")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getCity(){
         return ResponseEntity.ok(

@@ -13,14 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/feeds")
-@Loggable
 public class FeedsController {
 
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(
-            @RequestParam(defaultValue = "") String name, ElementPageable pageable){
+    public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(ElementPageable pageable){
         return ResponseEntity.ok(postService.getFeeds(pageable));
     }
 

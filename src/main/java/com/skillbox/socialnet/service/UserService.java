@@ -32,7 +32,6 @@ public class UserService {
     private final PersonRepository personRepository;
     private final AuthService authService;
 
-    @Loggable
     public UserDTO getUser() {
         Person person = authService.getPersonFromSecurityContext();
         return UserDTO.getUserDTO(person);

@@ -12,7 +12,6 @@ import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.annotation.InfoLoggable;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Loggable
 public class PostService {
 
     private final PostRepository postRepository;
@@ -55,7 +53,7 @@ public class PostService {
         List<Person> friends = getFriendList();
         pageable.setSort(Sort.by("time").descending());
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
-        List<Post> posts = addPostsToLimit(postPage.getContent());
+        List<Post> posts = addPostsToLimit(postPage);
         List<PostDTO> postDTOs = getPostDTOList(posts);
 
         return new GeneralListResponse<>(postDTOs, postPage);
@@ -108,11 +106,12 @@ public class PostService {
         return new DeleteDTO(id);
     }
 
-    public List<PostDTO> getUserWall(int id, Pageable pageable) {
+    public GeneralListResponse<PostDTO> getUserWall(int id, ElementPageable pageable) {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
+        List<PostDTO> postDTOList = getPostDTOList(postPage.getContent());
 
-        return getPostDTOList(postPage.getContent());
+        return new GeneralListResponse<>(postDTOList, postPage);
     }
 
     public List<CommentDTO> getCommentsToPost(int id) {
@@ -131,9 +130,10 @@ public class PostService {
         return CommentDTO.getCommentDTO(postComment);
     }
 
-    public List<Post> addPostsToLimit(List<Post> posts) {
+    public List<Post> addPostsToLimit(Page<Post> postPage) {
+        List<Post> posts = postPage.getContent();
         List<Post> postList = new ArrayList<>(posts);
-        if (posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
+        if (postPage.getPageable().getOffset() == 0 && posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
             int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
             List<Post> additionalPosts = postRepository
                     .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));

@@ -19,7 +19,6 @@ public class FriendsController {
 
     private final FriendsService friendsService;
 
-    @Loggable
     @GetMapping
     public ResponseEntity<GeneralListResponse<UserDTO>> getAllFriends(
             @RequestParam(defaultValue = "") String name, ElementPageable pageable) {
