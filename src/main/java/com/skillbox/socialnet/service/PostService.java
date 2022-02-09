@@ -108,6 +108,7 @@ public class PostService {
 
     public GeneralListResponse<PostDTO> getUserWall(int id, ElementPageable pageable) {
         Person person = personService.getPersonById(id);
+        pageable.setSort(Sort.by("time").descending());
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
         List<PostDTO> postDTOList = getPostDTOList(postPage.getContent());
 
