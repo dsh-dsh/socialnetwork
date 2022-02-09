@@ -3,11 +3,9 @@ package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.dto.NotificationInterfaceProjectile;
 import com.skillbox.socialnet.model.entity.Friendship;
-import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -38,7 +36,8 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     @Query("SELECT friendship " +
             "FROM Friendship AS friendship " +
             "WHERE (friendship.srcPerson = :person or friendship.dstPerson = :person) " +
-            "AND friendship.status.code = :code")
+            "AND friendship.status.code = :code " +
+            "ORDER BY friendship.srcPerson.lastName, friendship.dstPerson.lastName")
     Page<Friendship> findAllFriendsPageable(Person person, FriendshipStatusCode code, Pageable pageable);
 
     @Query("SELECT friendship " +
@@ -50,7 +49,8 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     @Query("SELECT friendship " +
             "FROM Friendship AS friendship " +
             "WHERE friendship.dstPerson = :person " +
-            "AND friendship.status.code = :code")
+            "AND friendship.status.code = :code " +
+            "ORDER BY friendship.srcPerson.lastName, friendship.dstPerson.lastName")
     Page<Friendship> findAllRequestsPageable(Person person, FriendshipStatusCode code, Pageable pageable);
 
     @Query("FROM Friendship " +
