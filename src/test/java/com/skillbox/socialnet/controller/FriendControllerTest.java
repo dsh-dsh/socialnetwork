@@ -62,6 +62,7 @@ class FriendControllerTest {
     @Sql(value = "/sql/friend/before.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void setTestingData() throws Exception {
+        //adding test data
     }
 
     @Order(2)
@@ -193,6 +194,7 @@ class FriendControllerTest {
     @Sql(value = "/sql/friend/after.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void deleteTestingData() throws Exception {
+        //deleting test data
     }
 
     private int getRequestsNumber(String srcPersonEmail, int dstPersonId) {
