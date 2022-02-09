@@ -11,6 +11,7 @@ import com.skillbox.socialnet.repository.LanguageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ public class PlatformService {
     public List<LocationDTO> getCity() {
         List<City> cities = cityRepository.findAll();
         return cities.stream()
+                .sorted(Comparator.comparing(City::getTitle))
                 .map(LocationDTO::getLocationDTO)
                 .collect(Collectors.toList());
     }
@@ -39,19 +41,20 @@ public class PlatformService {
     public List<LocationDTO> getCountry() {
         List<Country> cities = countryRepository.findAll();
         return cities.stream()
+                .sorted(Comparator.comparing(Country::getTitle))
                 .map(LocationDTO::getLocationDTO)
                 .collect(Collectors.toList());
     }
 
     public MessageOkDTO addCity(LocationDTO cityDTO) {
-        City city = cityRepository.findByTitle(cityDTO.getTitle())
+        cityRepository.findByTitle(cityDTO.getTitle())
                 .orElseGet(() -> createNewCity(cityDTO));
 
         return new MessageOkDTO();
     }
 
     public MessageOkDTO addCountry(LocationDTO locationDTO) {
-        Country country = countryRepository.findByTitle(locationDTO.getTitle())
+        countryRepository.findByTitle(locationDTO.getTitle())
                 .orElseGet(() -> createNewCountry(locationDTO));
 
         return new MessageOkDTO();
