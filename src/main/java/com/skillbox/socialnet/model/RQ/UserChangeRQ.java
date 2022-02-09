@@ -3,7 +3,7 @@ package com.skillbox.socialnet.model.RQ;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.validation.anotation.PhoneNumber;
+import com.skillbox.socialnet.validation.annotation.PhoneNumber;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

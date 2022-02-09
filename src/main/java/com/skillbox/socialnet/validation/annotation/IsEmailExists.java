@@ -1,7 +1,7 @@
-package com.skillbox.socialnet.validation.anotation;
+package com.skillbox.socialnet.validation.annotation;
 
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.validation.validator.NotificationTypeValidator;
+import com.skillbox.socialnet.validation.validator.EmailExistsValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,10 +13,10 @@ import static java.lang.annotation.ElementType.FIELD;
 
 @Target({FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = NotificationTypeValidator.class)
-public @interface ValidNotificationType {
+@Constraint(validatedBy = EmailExistsValidator.class)
+public @interface IsEmailExists {
 
-    String message() default Constants.NOT_VALID_SETTING_TYPE_MESSAGE;
+    String message() default Constants.EMAIL_EXISTS_MESSAGE;
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

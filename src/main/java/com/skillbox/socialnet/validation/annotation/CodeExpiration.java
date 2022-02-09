@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.validation.anotation;
+package com.skillbox.socialnet.validation.annotation;
 
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.validation.validator.RecoveringCodeExpirationValidator;

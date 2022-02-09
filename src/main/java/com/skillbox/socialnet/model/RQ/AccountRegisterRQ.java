@@ -2,7 +2,7 @@ package com.skillbox.socialnet.model.RQ;
 
 
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.validation.anotation.IsEmailExists;
+import com.skillbox.socialnet.validation.annotation.IsEmailExists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

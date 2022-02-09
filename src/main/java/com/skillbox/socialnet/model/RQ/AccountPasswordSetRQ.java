@@ -2,7 +2,7 @@ package com.skillbox.socialnet.model.RQ;
 
 
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.validation.anotation.CodeExpiration;
+import com.skillbox.socialnet.validation.annotation.CodeExpiration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
