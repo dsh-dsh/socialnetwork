@@ -1,11 +1,9 @@
 package com.skillbox.socialnet.config;
 
-import com.skillbox.socialnet.security.JwtFilter;
-import lombok.RequiredArgsConstructor;
-import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,23 +12,17 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    private final JwtFilter jwtFilter;
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources",
@@ -55,7 +47,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/js/**", "/css/**",
             "/change-password",
             "/shift-email",
-            "/**/{path:[^\\\\.]*}"
+            "/**/{path:[^\\\\.]*}",
+            "/webjars/**",
+            "/app.js",
+            "/actuator/**"
     };
 
     @Bean

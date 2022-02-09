@@ -12,7 +12,6 @@ import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,6 @@ public class ProfileController {
     private final PostService postService;
     private final AuthService authService;
 
-    @MethodLog
     @GetMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
         if (authService.getPersonFromSecurityContext() == null) {
@@ -41,11 +39,9 @@ public class ProfileController {
         return ResponseEntity.ok(new GeneralResponse<>(userService.getUser()));
     }
 
-    @MethodLog
     @PutMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> editUser(
-            @RequestBody @Valid UserChangeRQ userChangeRQ,
-            HttpServletRequest request) {
+            @RequestBody @Valid UserChangeRQ userChangeRQ) {
         if (authService.getPersonFromSecurityContext() == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -73,17 +69,17 @@ public class ProfileController {
 
     @PostMapping("/{id}/wall")
     public ResponseEntity<GeneralResponse<PostDTO>> addPostToUserWall(
-            @PathVariable int id,
+            @PathVariable(name = "id") int personId,
             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
         if (authService.getPersonFromSecurityContext() == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(id, publishDate, postChangeRQ)));
+        return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(personId, publishDate, postChangeRQ)));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchUsers(
+    public ResponseEntity<GeneralListResponse<UserDTO>> searchUsers(
             @RequestParam(name = "first_or_last_name", required = false) String firstOrLastName,
             @RequestParam(name = "first_name", required = false) String firstName,
             @RequestParam(name = "last_name", required = false) String lastName,
@@ -93,7 +89,7 @@ public class ProfileController {
             @RequestParam(required = false) String city,
             Pageable pageable) {
 
-        GeneralListResponse<?> response;
+        GeneralListResponse<UserDTO> response;
         if(firstOrLastName != null) {
             response = userService.searchUsers(firstOrLastName, pageable);
         } else {

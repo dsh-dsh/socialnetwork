@@ -3,12 +3,15 @@ package com.skillbox.socialnet.controller;
 import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.RQ.PostChangeRQ;
 import com.skillbox.socialnet.model.RQ.PostSearchRQ;
+import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.dto.CommentDTO;
+import com.skillbox.socialnet.model.dto.DeleteDTO;
+import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.CommentService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.anotation.MethodLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,27 +29,26 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
 
-    @MethodLog
     @GetMapping
-    public ResponseEntity<?> searchPosts(
+    public ResponseEntity<GeneralListResponse<PostDTO>> searchPosts(
             PostSearchRQ postSearchRQ,
             ElementPageable pageable) {
         return ResponseEntity.ok(postService.searchPosts(postSearchRQ, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPost(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<PostDTO>> getPost(@PathVariable int id) {
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.getPostById(id)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editPost(
+    public ResponseEntity<GeneralResponse<PostDTO>> editPost(
             @PathVariable int id,
             @RequestParam(defaultValue = "0") long publish_date,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
         if (authService.getPersonFromSecurityContext() == null) {
-            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.changePostById(id, publish_date, postChangeRQ)));
@@ -62,41 +64,40 @@ public class PostController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<?> getComments(
-            @PathVariable int id,
-            ElementPageable pageable) {
-        return ResponseEntity.ok(postService.getCommentsToPost(id, pageable));
+    public ResponseEntity<GeneralListResponse<CommentDTO>> getComments(@PathVariable int id){
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(postService.getCommentsToPost(id)));
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<?> postComment(
-            @PathVariable int id,
+    public ResponseEntity<GeneralResponse<CommentDTO>> postComment(
+            @PathVariable(name = "id") int postId,
             @RequestBody @Valid CommentRQ commentRQ) {
         if (authService.getPersonFromSecurityContext() == null){
-            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
-                new GeneralResponse<>(postService.makeCommentToPost(id, commentRQ)));
+                new GeneralResponse<>(postService.makeCommentToPost(postId, commentRQ)));
     }
 
     @PutMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> editComment(
+    public ResponseEntity<GeneralResponse<CommentDTO>> editComment(
             @PathVariable int id,
             @PathVariable int comment_id,
             @RequestBody @Valid CommentRQ commentRQ) {
         if (authService.getPersonFromSecurityContext() == null){
-            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
                 new GeneralResponse<>(commentService.rewriteCommentToThePost(id, comment_id, commentRQ)));
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> deleteComment(
+    public ResponseEntity<GeneralResponse<DeleteDTO>> deleteComment(
             @PathVariable int id,
             @PathVariable int comment_id) {
         if (authService.getPersonFromSecurityContext() == null){
-            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
                 new GeneralResponse<>(commentService.deleteCommentToThePost(id, comment_id)));

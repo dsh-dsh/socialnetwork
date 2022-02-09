@@ -6,8 +6,7 @@ import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PlatformService;
-import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,21 +21,21 @@ public class PlatformController {
     private final PlatformService platformService;
     private final AuthService authService;
 
-    @MethodLog
+    @Loggable
     @GetMapping("/languages")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
-            @RequestParam(defaultValue = "") String language,
-            ElementPageable pageable){
-        return ResponseEntity.ok(platformService.getLanguage(language, pageable));
+            @RequestParam(defaultValue = "") String language){
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(platformService.getLanguage(language)));
     }
 
-    @MethodLog
+    @Loggable
     @GetMapping("/countries")
-    public ResponseEntity<GeneralListResponse<LocationDTO>> getCountry(ElementPageable pageable){
-        return ResponseEntity.ok(platformService.getCountry(pageable));
+    public ResponseEntity<GeneralListResponse<LocationDTO>> getCountry(){
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(platformService.getCountry()));
     }
 
-    @MethodLog
     @PostMapping("/countries")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(@RequestBody LocationDTO locationDTO){
         if (authService.getPersonFromSecurityContext() == null) {
@@ -45,13 +44,13 @@ public class PlatformController {
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
-    @MethodLog
+    @Loggable
     @GetMapping("/cities")
-    public ResponseEntity<GeneralListResponse<LocationDTO>> getCity(ElementPageable pageable){
-        return ResponseEntity.ok(platformService.getCity(pageable));
+    public ResponseEntity<GeneralListResponse<LocationDTO>> getCity(){
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(platformService.getCity()));
     }
 
-    @MethodLog
     @PostMapping("/cities")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(@RequestBody LocationDTO locationDTO){
         if (authService.getPersonFromSecurityContext() == null) {

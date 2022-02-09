@@ -7,15 +7,13 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.MessageRepository;
-import com.skillbox.socialnet.repository.NotificationRepository;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -24,9 +22,11 @@ import java.util.Set;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
+    private final WebSocketService webSocketService;
 
-    public Page<Message> getMessagePageByDialog(Dialog dialog, Pageable pageable) {
+    public Page<Message> getMessagePageByDialog(Dialog dialog, ElementPageable pageable) {
+        pageable.setSort(Sort.by("time"));
         return  messageRepository.findByDialog(dialog, pageable);
     }
     public List<Message> getMessagesByDialog(Dialog dialog) {
@@ -41,16 +41,10 @@ public class MessageService {
                 .count();
     }
 
-    public Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
-        Message message = new Message();
-        message.setDialog(dialog);
-        message.setAuthor(author);
-        message.setMessageText(text);
-        message.setReadStatus(MessageReadStatus.SENT);
-        message.setRecipient(recipient);
-        message.setTime(LocalDateTime.now());
-        messageRepository.save(message);
-        notificationRepository.createNewNotification(NotificationTypeCode.MESSAGE.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), recipient.getId(), String.valueOf(author.getId()), recipient.getEMail(), false);
+    public Message addAndSendMessage(Dialog dialog, Person author, Person recipient, String text) {
+        Message message = addMessage(dialog, author, recipient, text);
+        sendMessage(author, recipient, message);
+
         return message;
     }
 
@@ -65,6 +59,27 @@ public class MessageService {
 
     public void setMessagesStatusRead(List<Message> messages, Person author) {
         messageRepository.setMessagesReadStatus(messages, author, MessageReadStatus.READ);
+    }
+
+    private void sendMessage(Person author, Person recipient, Message message) {
+//        webSocketService.sendMessages(author, message);
+        notificationService.createNewNotification(
+                NotificationTypeCode.MESSAGE,
+                recipient.getId(),
+                author.getId(),
+                recipient.getEMail());
+    }
+
+    private Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
+        Message message = new Message();
+        message.setDialog(dialog);
+        message.setAuthor(author);
+        message.setMessageText(text);
+        message.setReadStatus(MessageReadStatus.SENT);
+        message.setRecipient(recipient);
+        message.setTime(LocalDateTime.now());
+        messageRepository.save(message);
+        return message;
     }
 
     //покаНеИспользуется

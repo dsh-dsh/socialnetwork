@@ -8,7 +8,12 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import com.skillbox.socialnet.config.Config;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 public class StorageLoggingService {
 
     @Value("${aws.access.key}")
@@ -36,23 +42,13 @@ public class StorageLoggingService {
     private static final String LOG_DIR = "logs";
     private static final long EXPIRATION_PERIOD = 30L*24*60*60*1000;
 
-    private AmazonS3 s3Client;
+    private final AmazonS3 s3Client;
 
     @Scheduled(cron = "${log.files.scheduling.cron.expression}")
     public void updateLogFilesToCloud() {
-        this.s3Client = getAmazonS3();
         List<Path> paths = saveLogFilesToCloud();
         deleteEmptyLogDirs();
         deleteOldFilesFromCloud();
-    }
-
-    private AmazonS3 getAmazonS3() {
-        AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
-        return AmazonS3ClientBuilder
-                .standard()
-                .withRegion(Regions.EU_CENTRAL_1)
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                .build();
     }
 
     private List<Path> saveLogFilesToCloud() {
@@ -141,7 +137,6 @@ public class StorageLoggingService {
 
 
     public void deleteBucket() {
-        this.s3Client = getAmazonS3();
         String bucketName = "social-net-20-group-log-files";
         try {
             s3Client.deleteBucket("social-net-20-group-log-files");
@@ -156,7 +151,6 @@ public class StorageLoggingService {
 
     public void createBucket(){
         String bucketName = "social-net-20-group";
-        this.s3Client = getAmazonS3();
         if(s3Client.doesBucketExistV2(bucketName)) {
             System.out.println("Bucket name is not available."
                     + " Try again with a different Bucket name.");

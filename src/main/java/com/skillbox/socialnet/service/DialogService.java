@@ -8,9 +8,11 @@ import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.repository.DialogRepository;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +28,11 @@ public class DialogService {
     private final PersonService personService;
     private final AuthService authService;
 
-    public GeneralListResponse<DialogDTO> getDialogs(Pageable pageable) {
+    public List<DialogDTO> getDialogs() {
         Person author = authService.getPersonFromSecurityContext();
-        Page<Dialog> dialogPage = dialogRepository.findByPerson(author, pageable);
-        List<DialogDTO> dialogDTOS = getDialogDTOList(author, dialogPage.getContent());
+        List<Dialog> dialogs = dialogRepository.findByPerson(author);
 
-        return new GeneralListResponse<DialogDTO>(dialogDTOS, dialogPage);
+        return getDialogDTOList(author, dialogs);
     }
 
     public List<Dialog> getDialogs(Person author) {
@@ -48,7 +49,7 @@ public class DialogService {
         return new DialogIdDTO(dialog.getId());
     }
 
-    public GeneralListResponse<MessageDTO> getMessagesInDialog(long dialogId, Pageable pageable) {
+    public GeneralListResponse<MessageDTO> getMessagesInDialog(long dialogId, ElementPageable pageable) {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
@@ -72,7 +73,7 @@ public class DialogService {
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
         Person recipient = getRecipient(dialog, author);
-        Message message = messageService.addMessage(dialog, author,
+        Message message = messageService.addAndSendMessage(dialog, author,
                 recipient, messageSendDtoRequest.getMessageText());
         dialog.getMessages().add(message);
         dialogRepository.save(dialog);

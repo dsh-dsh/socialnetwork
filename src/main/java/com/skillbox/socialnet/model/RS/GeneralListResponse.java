@@ -24,16 +24,24 @@ public class GeneralListResponse<T> {
     public GeneralListResponse(List<T> data, Pageable pageable) {
         timestamp = Calendar.getInstance().getTimeInMillis();
         this.data = data;
-        total = Long.valueOf(data.size());
+        total = (long) data.size();
         this.perPage = pageable.getPageSize();
         this.offset = pageable.getPageNumber();
     }
 
-    public GeneralListResponse(List<T> data, Page page) {
+    public GeneralListResponse(List<T> data, Page<?> page) {
         timestamp = Calendar.getInstance().getTimeInMillis();
         this.data = data;
         total = page.getTotalElements();
         this.perPage = page.getSize();
         this.offset = page.getNumber() * page.getSize();
+    }
+
+    public GeneralListResponse(List<T> data) {
+        timestamp = Calendar.getInstance().getTimeInMillis();
+        this.data = data;
+        total = (long)data.size();
+        this.perPage = 0;
+        this.offset = 0;
     }
 }

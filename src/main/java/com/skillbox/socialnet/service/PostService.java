@@ -9,16 +9,18 @@ import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
-import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.ElementPageable;
+import com.skillbox.socialnet.util.annotation.InfoLoggable;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Loggable
 public class PostService {
 
     private final PostRepository postRepository;
@@ -35,13 +38,12 @@ public class PostService {
     private final AuthService authService;
     private final PersonService personService;
     private final TagService tagService;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
     private final FriendshipRepository friendshipRepository;
 
     public static final Logger logger = LogManager.getLogger(PostService.class);
 
-    @MethodLog
-    public GeneralListResponse<?> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
+    public GeneralListResponse<PostDTO> searchPosts(PostSearchRQ postSearchRQ, Pageable pageable) {
         long dateTo = checkDate(postSearchRQ.getDateTo());
         Page<Post> postPage = getPostsPage(postSearchRQ, pageable, dateTo);
         List<PostDTO> postsDTOList = getPostDTOList(postPage.getContent());
@@ -49,9 +51,9 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
-    @MethodLog
-    public GeneralListResponse<?> getFeeds(Pageable pageable) {
+    public GeneralListResponse<PostDTO> getFeeds(ElementPageable pageable) {
         List<Person> friends = getFriendList();
+        pageable.setSort(Sort.by("time").descending());
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage.getContent());
         List<PostDTO> postDTOs = getPostDTOList(posts);
@@ -68,16 +70,14 @@ public class PostService {
         return friends;
     }
 
-    @MethodLog
     public PostDTO getPostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
 
         return getPostDTO(post);
     }
 
-    @MethodLog
-    public PostDTO addPostToUserWall(int id, long publishDate, PostChangeRQ postChangeRQ) {
-        Person person = personService.getPersonById(id);
+    public PostDTO addPostToUserWall(int personId, long publishDate, PostChangeRQ postChangeRQ) {
+        Person person = personService.getPersonById(personId);
         Post post = new Post();
         post.setAuthor(person);
         post.setTitle(postChangeRQ.getTitle());
@@ -85,11 +85,10 @@ public class PostService {
         post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
         post = postRepository.save(post);
         addTags2Post(post, postChangeRQ.getTags());
-        createNotificationsForWall(id);
+        createNotificationsForWall(personId);
         return getPostDTO(post);
     }
 
-    @MethodLog
     public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -101,7 +100,6 @@ public class PostService {
         return getPostDTO(post);
     }
 
-    @MethodLog
     public DeleteDTO deletePostById(int id) {
         Post post = postRepository.findPostById(id)
                 .orElseThrow(BadRequestException::new);
@@ -110,7 +108,6 @@ public class PostService {
         return new DeleteDTO(id);
     }
 
-    @MethodLog
     public List<PostDTO> getUserWall(int id, Pageable pageable) {
         Person person = personService.getPersonById(id);
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
@@ -118,31 +115,32 @@ public class PostService {
         return getPostDTOList(postPage.getContent());
     }
 
-    @MethodLog
-    public GeneralListResponse<?> getCommentsToPost(int id, Pageable pageable) {
+    public List<CommentDTO> getCommentsToPost(int id) {
         Post post = postRepository.findPostById(id)
-                .orElseThrow(BadRequestException::new);
-        List<CommentDTO> commentsDTO = commentService.getCommentsDTOList(post);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_POST_MESSAGE));
 
-        return new GeneralListResponse<>(commentsDTO, pageable);
+        return commentService.getCommentsDTOList(post);
     }
 
-    @MethodLog
     public CommentDTO makeCommentToPost(int postId, CommentRQ commentRQ) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Post post = postRepository.findPostById(postId).orElseThrow(BadRequestException::new);
+        Post post = postRepository.findPostById(postId)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_POST_MESSAGE));
         PostComment postComment = commentService.createPostComment(commentRQ, currentPerson, post);
         createNotificationForComment(postId, commentRQ.getParentId()==null, currentPerson);
         return CommentDTO.getCommentDTO(postComment);
     }
 
-    private List<Post> addPostsToLimit(List<Post> posts) {
+    public List<Post> addPostsToLimit(List<Post> posts) {
         List<Post> postList = new ArrayList<>(posts);
         if (posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
             int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
             List<Post> additionalPosts = postRepository
                     .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
             postList.addAll(additionalPosts);
+            postList = postList.stream()
+                    .sorted(Comparator.comparing(Post::getTime).reversed())
+                    .collect(Collectors.toList());
         }
 
         return postList;
@@ -214,29 +212,40 @@ public class PostService {
         return dateTo;
     }
 
-    private void createNotificationForComment(int id, boolean isPost, Person person) {
-        List<Integer> dstPersons = postRepository.getIdsForPostNotifications(id, person.getId());
-        int type;
+    private void createNotificationForComment(int postId, boolean isPost, Person person) {
+        List<Integer> dstPersonIds = postRepository.getIdsForPostNotifications(postId, person.getId());
+        NotificationTypeCode type;
         if(isPost){
-            type = NotificationTypeCode.POST_COMMENT.ordinal();
+            type = NotificationTypeCode.POST_COMMENT;
         } else {
-            type = NotificationTypeCode.COMMENT_COMMENT.ordinal();
+            type = NotificationTypeCode.COMMENT_COMMENT;
         }
-        for (Integer dstPerson : dstPersons) {
-            notificationRepository.createNewNotification(type, new Timestamp(Calendar.getInstance().getTimeInMillis()), dstPerson, String.valueOf(person.getId()), personService.getPersonById(dstPerson).getEMail(), false);
+        for (Integer dstPersonId : dstPersonIds) {
+            notificationService.createNewNotification(
+                    type,
+                    dstPersonId,
+                    person.getId(),
+                    personService.getPersonById(dstPersonId).getEMail());
+
         }
     }
 
-    private void createNotificationsForWall(int id) {
-        List<NotificationInterfaceProjectile> ids = friendshipRepository.getIdsForNotification(id);
+    private void createNotificationsForWall(int personId) {
+        List<NotificationInterfaceProjectile> ids = friendshipRepository.getIdsForNotification(personId);
+        int currentPersonId = authService.getPersonFromSecurityContext().getId();
         for (NotificationInterfaceProjectile nip : ids) {
-            int dstId;
-            if(nip.getSrc() != id){
-                dstId = nip.getSrc();
+            int dstPersonId;
+            if(nip.getSrc() != personId){
+                dstPersonId = nip.getSrc();
             } else {
-                dstId = nip.getDst();
+                dstPersonId = nip.getDst();
             }
-            notificationRepository.createNewNotification(NotificationTypeCode.POST.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), dstId, String.valueOf(authService.getPersonFromSecurityContext().getId()), personService.getPersonById(dstId).getEMail(), false);
+            notificationService.createNewNotification(
+                    NotificationTypeCode.POST,
+                    dstPersonId,
+                    currentPersonId,
+                    personService.getPersonById(dstPersonId).getEMail());
         }
     }
+
 }

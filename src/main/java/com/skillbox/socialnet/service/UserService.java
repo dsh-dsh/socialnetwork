@@ -9,7 +9,7 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +32,7 @@ public class UserService {
     private final PersonRepository personRepository;
     private final AuthService authService;
 
-    @MethodLog
+    @Loggable
     public UserDTO getUser() {
         Person person = authService.getPersonFromSecurityContext();
         return UserDTO.getUserDTO(person);
@@ -53,7 +53,7 @@ public class UserService {
         return USER_DELETE_SUCCESS;
     }
 
-    public GeneralListResponse<?> searchUsers(String firstOrLastName, Pageable pageable) {
+    public GeneralListResponse<UserDTO> searchUsers(String firstOrLastName, Pageable pageable) {
         Page<Person> personPage = personRepository
                 .findByFirstNameContainingOrLastNameContainingIgnoreCase(firstOrLastName, firstOrLastName, pageable);
         List<UserDTO> userDTOList = personPage.stream()
@@ -61,7 +61,7 @@ public class UserService {
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 
-    public GeneralListResponse<?> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
+    public GeneralListResponse<UserDTO> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
         Date to = getDateTo(userSearchRQ);
         Date from = getDateFrom(userSearchRQ);
         userSearchRQ.firstNameToLower();
