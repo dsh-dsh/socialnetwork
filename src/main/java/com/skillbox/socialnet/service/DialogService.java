@@ -11,12 +11,11 @@ import com.skillbox.socialnet.repository.DialogRepository;
 import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +27,9 @@ public class DialogService {
     private final PersonService personService;
     private final AuthService authService;
     private final WebSocketService webSocketService;
+
+    private final static Comparator<DialogDTO> comparatorByLastMessage =
+            Comparator.comparing(dialogDTO -> dialogDTO.getLastMessage().getTime());
 
     public List<DialogDTO> getDialogs() {
         Person author = authService.getPersonFromSecurityContext();
@@ -100,6 +102,7 @@ public class DialogService {
                         dialog, author,
                         messageService.getLastMessage(dialog),
                         messageService.getUnreadCount(dialog, author)))
+                .sorted(comparatorByLastMessage.reversed())
                 .collect(Collectors.toList());
     }
 
