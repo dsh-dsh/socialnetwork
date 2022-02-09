@@ -11,6 +11,7 @@ import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,7 @@ public class ProfileController {
         return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(personId, publishDate, postChangeRQ)));
     }
 
+    @Loggable
     @GetMapping("/search")
     public ResponseEntity<GeneralListResponse<UserDTO>> searchUsers(
             @RequestParam(name = "first_or_last_name", required = false) String firstOrLastName,
@@ -72,7 +74,7 @@ public class ProfileController {
             @RequestParam(name = "age_to", defaultValue = "0") int ageTo,
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String city,
-            Pageable pageable) {
+            ElementPageable pageable) {
 
         GeneralListResponse<UserDTO> response;
         if(firstOrLastName != null) {

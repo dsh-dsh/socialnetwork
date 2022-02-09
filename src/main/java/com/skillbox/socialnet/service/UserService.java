@@ -9,6 +9,7 @@ import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.repository.*;
 import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -60,7 +61,8 @@ public class UserService {
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 
-    public GeneralListResponse<UserDTO> searchUsers(UserSearchRQ userSearchRQ, Pageable pageable) {
+    @Loggable
+    public GeneralListResponse<UserDTO> searchUsers(UserSearchRQ userSearchRQ, ElementPageable pageable) {
         Date to = getDateTo(userSearchRQ);
         Date from = getDateFrom(userSearchRQ);
         userSearchRQ.firstNameToLower();

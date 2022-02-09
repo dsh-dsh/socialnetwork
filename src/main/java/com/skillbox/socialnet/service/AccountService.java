@@ -57,6 +57,7 @@ public class AccountService {
         person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
         person.setLastOnlineTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         person.setRegDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        person.setApproved(true);
         personRepository.save(person);
 
         setNotificationSettingsOnRegistering(person);

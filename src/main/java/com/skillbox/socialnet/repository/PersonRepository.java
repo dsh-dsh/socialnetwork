@@ -1,6 +1,7 @@
 package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +24,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "AND (:country is null OR person.country = :country) " +
             "AND (:city is null OR person.city = :city) " +
             "AND person.isBlocked = false " +
-            "AND person.isApproved = true " +  // TODO если эта строка нужна?
+            //"AND person.isApproved = true " +  // TODO если эта строка нужна?
             "ORDER BY person.firstName, person.lastName")
     Page<Person> findBySearchRequest(String firstName, String lastName, String country, String city, Date from, Date to, Pageable pageable);
 
