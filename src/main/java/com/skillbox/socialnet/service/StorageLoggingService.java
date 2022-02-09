@@ -42,7 +42,6 @@ public class StorageLoggingService {
     public void updateLogFilesToCloud() {
         this.s3Client = getAmazonS3();
         List<Path> paths = saveLogFilesToCloud();
-        deleteUploadedLocalFiles(paths);
         deleteEmptyLogDirs();
         deleteOldFilesFromCloud();
     }
@@ -80,11 +79,6 @@ public class StorageLoggingService {
         s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, file));
     }
 
-    private void deleteUploadedLocalFiles(List<Path> paths) {
-        for(Path path : paths) {
-            path.toFile().delete();
-        }
-    }
 
     private void deleteEmptyLogDirs() {
         File logDir = new File(LOG_DIR);
@@ -136,34 +130,15 @@ public class StorageLoggingService {
                 .getObjectSummaries().stream()
                 .map(S3ObjectSummary::getKey)
                 .collect(Collectors.toList());
-        if(fileNames != null & fileNames.size() > 0) {
+        if(null != fileNames & fileNames.size() > 0) {
             for (String fileName : fileNames) {
                 s3Client.deleteObject(BUCKET_NAME, fileName);
             }
         }
     }
 
-    private void deleteLogDirs() {
-        File logDir = new File(LOG_DIR);
-        File[] logDirs = logDir.listFiles();
-        if(logDirs != null) {
-            for (File nextDir : logDirs) {
-                deleteDirWithFilesRecursive(nextDir);
-            }
-        }
-    }
 
-    private void deleteDirWithFilesRecursive(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (!Files.isSymbolicLink(file.toPath())) {
-                    deleteDirWithFilesRecursive(file);
-                }
-            }
-        }
-        dir.delete();
-    }
+
 
     public void deleteBucket() {
         this.s3Client = getAmazonS3();
