@@ -13,18 +13,18 @@ public class DialogDTO {
     private long id;
     @JsonProperty("last_message")
     private MessageDTO lastMessage;
-    private PersonDialogDTO recipient;
+    private PersonDialogDTO personDialogDTO;
     @JsonProperty("unread_count")
     private int unreadCount;
 
     public DialogDTO(Dialog dialog, Person me, Message lastMessage, int unreadCount) {
         this.id = dialog.getId();
         this.lastMessage = new MessageDTO(me, lastMessage);
-        Person recipient = dialog.getPersons().stream()
-                .filter(person -> !person.equals(me))
+        Person person = dialog.getPersons().stream()
+                .filter(p -> !p.equals(me))
                 .findFirst()
                 .orElseThrow(BadRequestException::new);
-        this.recipient = new PersonDialogDTO(recipient);
+        this.personDialogDTO = new PersonDialogDTO(person);
         this.unreadCount = unreadCount;
     }
 }

@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.model.RQ;
+package com.skillbox.socialnet.model.rq;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,11 +22,4 @@ public class PostSearchRQ {
     @JsonProperty("date_to")
     private long dateTo;
     private List<String> tags = new ArrayList<>();
-
-    public void setDate_from(long date_from) {
-        this.dateFrom = date_from;
-    }
-    public void setDate_to(long dateTo) {
-        this.dateTo = dateTo;
-    }
 }

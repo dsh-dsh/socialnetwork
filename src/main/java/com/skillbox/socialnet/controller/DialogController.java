@@ -1,8 +1,8 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.DialogCreateDTORequest;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rq.DialogCreateDTORequest;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.service.DialogService;
 import com.skillbox.socialnet.util.ElementPageable;
@@ -66,7 +66,7 @@ public class DialogController {
             @PathVariable(name = "dialog_id") long dialogId,
             @PathVariable(name = "message_id") int messageId) {
         GeneralResponse<MessageResponseDTO> response =
-                new GeneralResponse<>(dialogService.readMessage(dialogId, messageId));
+                new GeneralResponse<>(dialogService.readMessage(messageId));
 
         return ResponseEntity.ok(response);
     }
@@ -98,7 +98,7 @@ public class DialogController {
             @PathVariable long id,
             @PathVariable String ids) {
         GeneralResponse<DialogCreateDTORequest> response =
-                new GeneralResponse<>(dialogService.deleteUsersFromDialog(id, ids));
+                new GeneralResponse<>(dialogService.deleteUsersFromDialog(id));
 
         return ResponseEntity.ok(response);
     }

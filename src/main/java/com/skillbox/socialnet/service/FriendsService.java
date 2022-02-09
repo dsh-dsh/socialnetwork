@@ -1,7 +1,6 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.Friendship;
 import com.skillbox.socialnet.model.entity.FriendshipStatus;
@@ -12,9 +11,7 @@ import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -97,7 +94,7 @@ public class FriendsService {
     private Optional<Friendship> getAndAcceptFriendship(Person currentPerson, Person dstPerson) {
         List<Friendship> requests = friendshipRepository
                 .findRequests(currentPerson, dstPerson, FriendshipStatusCode.REQUEST);
-        if(requests.size() > 0) {
+        if(!requests.isEmpty()) {
             Friendship friendship = acceptFriendship(dstPerson, requests);
             return Optional.of(friendship);
         }
@@ -129,7 +126,7 @@ public class FriendsService {
 
     public Set<Person> getRecommendedFriends(Person currentPerson, Set<Person> myFriends) {
         Set<Person> recommendedFriends = new HashSet<>();
-        if(myFriends.size() > 0) {
+        if(!myFriends.isEmpty()) {
             recommendedFriends = friendshipRepository
                     .findAllFriendsOfMyFriends(myFriends, FriendshipStatusCode.FRIEND)
                     .stream().filter(friendship -> !isMyFriendship(friendship, currentPerson))

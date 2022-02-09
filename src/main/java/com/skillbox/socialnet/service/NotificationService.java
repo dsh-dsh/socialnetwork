@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.model.RS.NotificationDataRS;
-import com.skillbox.socialnet.model.RS.NotificationRS;
+import com.skillbox.socialnet.model.rs.NotificationDataRS;
+import com.skillbox.socialnet.model.rs.NotificationRS;
 import com.skillbox.socialnet.model.dto.CommentAuthorDTO;
 import com.skillbox.socialnet.model.entity.Notification;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;

@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.model.RQ;
+package com.skillbox.socialnet.model.rq;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.util.Constants;
@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 

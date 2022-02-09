@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.LikeRQ;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rq.LikeRQ;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.DeleteLikeDTO;
 import com.skillbox.socialnet.model.dto.LikeDTO;
 import com.skillbox.socialnet.model.dto.LikedDTO;

@@ -23,7 +23,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             "AND (:country is null OR person.country = :country) " +
             "AND (:city is null OR person.city = :city) " +
             "AND person.isBlocked = false " +
-            "AND person.isApproved = true " +  // TODO если эта строка нужна?
+            "AND person.isApproved = true " +
             "ORDER BY person.firstName, person.lastName")
     Page<Person> findBySearchRequest(String firstName, String lastName, String country, String city, Date from, Date to, Pageable pageable);
 
@@ -35,7 +35,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     @Query("SELECT person FROM Person AS person " +
             "WHERE person NOT IN (:myFriends) " +
-            "ORDER BY regDate DESC")
+            "ORDER BY person.regDate DESC")
     List<Person> findNewFriendsLimit(Collection<Person> myFriends, Pageable pageable);
 
     boolean existsByeMail(String email);

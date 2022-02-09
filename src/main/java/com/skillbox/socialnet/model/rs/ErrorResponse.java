@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.model.RS;
+package com.skillbox.socialnet.model.rs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

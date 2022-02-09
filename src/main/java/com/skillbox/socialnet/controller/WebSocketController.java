@@ -1,6 +1,6 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RS.NotificationRS;
+import com.skillbox.socialnet.model.rs.NotificationRS;
 import com.skillbox.socialnet.model.dto.MessageSendDtoRequest;
 import com.skillbox.socialnet.service.NotificationService;
 import lombok.RequiredArgsConstructor;

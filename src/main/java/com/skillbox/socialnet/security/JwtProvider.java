@@ -43,12 +43,10 @@ public class JwtProvider {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
-        } catch (ExpiredJwtException expiredJwtException) {
-            return false;
-        } catch (RuntimeException exception) {
-            // UnsupportedJwtException MalformedJwtException SignatureException
+        } catch (RuntimeException expiredJwtException) {
             return false;
         }
+
     }
 
     public String getUserNameFromToken(String token) {

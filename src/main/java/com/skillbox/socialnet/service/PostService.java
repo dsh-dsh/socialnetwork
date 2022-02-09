@@ -1,10 +1,10 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.RQ.CommentRQ;
-import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.PostSearchRQ;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.rq.CommentRQ;
+import com.skillbox.socialnet.model.rq.PostChangeRQ;
+import com.skillbox.socialnet.model.rq.PostSearchRQ;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
@@ -12,7 +12,6 @@ import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.annotation.InfoLoggable;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -63,7 +62,7 @@ public class PostService {
 
     private List<Person> getFriendList() {
         List<Person> friends = friendsService.getMyFriends();
-        if(friends.size() == 0) {
+        if(friends.isEmpty()) {
             Person me = authService.getPersonFromSecurityContext();
             friends = List.copyOf(friendsService.getRecommendedFriends(me, Set.of()));
         }
@@ -148,7 +147,7 @@ public class PostService {
 
     private Page<Post> getPostsPage(PostSearchRQ postSearchRQ, Pageable pageable, long dateTo) {
         Page<Post> postPage;
-        if (postSearchRQ.getTags().size() > 0) {
+        if (!postSearchRQ.getTags().isEmpty()) {
             postPage = postRepository.findPostWithTags(
                     postSearchRQ.getAuthor(), postSearchRQ.getText(),
                     new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),

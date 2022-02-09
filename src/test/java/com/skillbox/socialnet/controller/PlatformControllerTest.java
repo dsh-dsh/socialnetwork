@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public"})
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PlatformControllerTest {
+class PlatformControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -42,7 +42,7 @@ public class PlatformControllerTest {
     @Test
     @Sql(value = "/sql/platform/addCities.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getCities() throws Exception {
+    void getCities() throws Exception {
         mockMvc.perform(get(URL_PREFIX + CITIES))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -55,12 +55,12 @@ public class PlatformControllerTest {
     @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void setCity() throws Exception {
+    void setCity() throws Exception {
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setTitle("Тирасполь");
         mockMvc.perform(post(URL_PREFIX + CITIES)
                         .content(objectMapper.writeValueAsString(locationDTO))
-                        .contentType(MediaType.APPLICATION_JSON ))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
@@ -69,12 +69,12 @@ public class PlatformControllerTest {
     @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void setCityEmpty() throws Exception {
+    void setCityEmpty() throws Exception {
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setTitle("T");
         mockMvc.perform(post(URL_PREFIX + CITIES)
                         .content(objectMapper.writeValueAsString(locationDTO))
-                        .contentType(MediaType.APPLICATION_JSON ))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value(NOT_VALID_LOCAL_MESSAGE));
@@ -83,24 +83,24 @@ public class PlatformControllerTest {
     @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void setCountryEmpty() throws Exception {
+    void setCountryEmpty() throws Exception {
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setTitle("T");
         mockMvc.perform(post(URL_PREFIX + COUNTRIES)
                         .content(objectMapper.writeValueAsString(locationDTO))
-                        .contentType(MediaType.APPLICATION_JSON ))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value(NOT_VALID_LOCAL_MESSAGE));
     }
 
     @Test
-    public void setCityUnauthorized() throws Exception {
+    void setCityUnauthorized() throws Exception {
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setTitle("Тирасполь");
         mockMvc.perform(post(URL_PREFIX + CITIES)
                         .content(objectMapper.writeValueAsString(locationDTO))
-                        .contentType(MediaType.APPLICATION_JSON ))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -108,7 +108,7 @@ public class PlatformControllerTest {
     @Test
     @Sql(value = "/sql/platform/addCities.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getCountry() throws Exception {
+    void getCountry() throws Exception {
         mockMvc.perform(get(URL_PREFIX + COUNTRIES))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -121,24 +121,24 @@ public class PlatformControllerTest {
     @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void setCountry() throws Exception {
+    void setCountry() throws Exception {
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setTitle("Молдова");
         mockMvc.perform(post(URL_PREFIX + COUNTRIES)
                         .content(objectMapper.writeValueAsString(locationDTO))
-                        .contentType(MediaType.APPLICATION_JSON ))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
     }
 
     @Test
-    public void setCountryUnauthorized() throws Exception {
+    void setCountryUnauthorized() throws Exception {
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setTitle("Молдова");
         mockMvc.perform(post(URL_PREFIX + COUNTRIES)
                         .content(objectMapper.writeValueAsString(locationDTO))
-                        .contentType(MediaType.APPLICATION_JSON ))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -146,7 +146,7 @@ public class PlatformControllerTest {
     @Test
     @Sql(value = "/sql/platform/addLang.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/platform/deleteLang.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getLang() throws Exception {
+    void getLang() throws Exception {
         mockMvc.perform(get(URL_PREFIX + "languages"))
                 .andDo(print())
                 .andExpect(status().isOk())

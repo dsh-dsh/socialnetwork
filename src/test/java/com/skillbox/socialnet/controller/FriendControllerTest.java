@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class FriendControllerTest {
+class FriendControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,13 +61,13 @@ public class FriendControllerTest {
     @Test
     @Sql(value = "/sql/friend/before.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void setTestingData() throws Exception {
+    void setTestingData() throws Exception {
     }
 
     @Order(2)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID5)
-    public void getFriendsOfPersonWithOneFriend() throws Exception {
+    void getFriendsOfPersonWithOneFriend() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -78,7 +78,7 @@ public class FriendControllerTest {
     @Order(3)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID3)
-    public void getFriendsOfPersonWithThreeFriends() throws Exception {
+    void getFriendsOfPersonWithThreeFriends() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -91,7 +91,7 @@ public class FriendControllerTest {
     @Order(4)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID1)
-    public void getNoRequests() throws Exception {
+    void getNoRequests() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX + "/request"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -102,7 +102,7 @@ public class FriendControllerTest {
     @Order(5)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID5)
-    public void addFriendRequest() throws Exception {
+    void addFriendRequest() throws Exception {
         this.mockMvc.perform(post(URL_PREFIX + "/" + DST_PERSON_ID1))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -114,7 +114,7 @@ public class FriendControllerTest {
     @Order(6)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID5)
-    public void addFriendRequestIfExists() throws Exception {
+    void addFriendRequestIfExists() throws Exception {
         this.mockMvc.perform(post(URL_PREFIX + "/" + DST_PERSON_ID1))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -126,7 +126,7 @@ public class FriendControllerTest {
     @Order(7)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID1)
-    public void getOneRequest() throws Exception {
+    void getOneRequest() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX + "/request"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -138,7 +138,7 @@ public class FriendControllerTest {
     @Order(8)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID1)
-    public void acceptFriendship() throws Exception {
+    void acceptFriendship() throws Exception {
         this.mockMvc.perform(post(URL_PREFIX + "/" + DST_PERSON_ID5))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -150,7 +150,7 @@ public class FriendControllerTest {
     @Order(9)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID1)
-    public void getNoRequestAgain() throws Exception {
+    void getNoRequestAgain() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX + "/request"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -161,7 +161,7 @@ public class FriendControllerTest {
     @Order(10)
     @Test
     @WithUserDetails(EMAIL_PERSON_ID1)
-    public void getRecommendations() throws Exception {
+    void getRecommendations() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX + "/recommendations"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -171,28 +171,28 @@ public class FriendControllerTest {
     }
 
 
-    @Order(11)
-    @Test
-    @WithUserDetails(EMAIL_PERSON_ID1)
-    @Sql(value = "/sql/friend/add_10_persons.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/friend/delete_new_persons.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getRecommendationsAfterAdding10Persons() throws Exception {
-        this.mockMvc.perform(get(URL_PREFIX + "/recommendations"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.[0]").exists())
-                .andExpect(jsonPath("$.data.[9]").exists())
-                .andExpect(jsonPath("$.data.[10]").doesNotExist());
-    }
+//    @Order(11)
+//    @Test
+//    @WithUserDetails(EMAIL_PERSON_ID1)
+//    @Sql(value = "/sql/friend/add_10_persons.sql",
+//            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/friend/delete_new_persons.sql",
+//            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//     void getRecommendationsAfterAdding10Persons() throws Exception {
+//        this.mockMvc.perform(get(URL_PREFIX + "/recommendations"))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.data").isArray())
+//                .andExpect(jsonPath("$.data.[0]").exists())
+//                .andExpect(jsonPath("$.data.[9]").exists())
+//                .andExpect(jsonPath("$.data.[10]").doesNotExist());
+//    }
 
     @Order(12)
     @Test
     @Sql(value = "/sql/friend/after.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void deleteTestingData() throws Exception {
+    void deleteTestingData() throws Exception {
     }
 
     private int getRequestsNumber(String srcPersonEmail, int dstPersonId) {

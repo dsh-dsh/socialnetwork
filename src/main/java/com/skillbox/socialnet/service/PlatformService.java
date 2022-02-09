@@ -1,8 +1,6 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.RS.ErrorResponse;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.entity.City;
@@ -12,13 +10,7 @@ import com.skillbox.socialnet.repository.CityRepository;
 import com.skillbox.socialnet.repository.CountryRepository;
 import com.skillbox.socialnet.repository.LanguageRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +25,7 @@ public class PlatformService {
     private final CountryRepository countryRepository;
     private final CityRepository cityRepository;
 
-    public List<LocationDTO> getLanguage(String language) {
+    public List<LocationDTO> getLanguage() {
         List<Language> languages = languageRepository.findAll();
         return languages.stream()
                 .map(LocationDTO::getLocationDTO)
@@ -55,13 +47,13 @@ public class PlatformService {
     }
 
     public MessageOkDTO addCity(LocationDTO cityDTO) {
-        City city = cityRepository.findByTitle(cityDTO.getTitle())
+        cityRepository.findByTitle(cityDTO.getTitle())
                 .orElseGet(() -> createNewCity(cityDTO));
         return new MessageOkDTO();
     }
 
     public MessageOkDTO addCountry(LocationDTO locationDTO) {
-        Country country = countryRepository.findByTitle(locationDTO.getTitle())
+        countryRepository.findByTitle(locationDTO.getTitle())
                 .orElseGet(() -> createNewCountry(locationDTO));
         return new MessageOkDTO();
     }

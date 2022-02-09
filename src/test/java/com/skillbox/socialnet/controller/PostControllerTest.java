@@ -1,9 +1,8 @@
 package com.skillbox.socialnet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skillbox.socialnet.model.RQ.CommentRQ;
-import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.model.rq.CommentRQ;
+import com.skillbox.socialnet.model.rq.PostChangeRQ;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public"})
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PostControllerTest {
+class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -45,7 +44,7 @@ public class PostControllerTest {
 //    @WithUserDetails(P1_MAIL)
 //    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 //    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    public void searchPost() throws Exception {
+//     void searchPost() throws Exception {
 //        mockMvc.perform(get(URL_PREFIX).param("text", "test title"))
 //                .andDo(print())
 //                .andExpect(status().isOk())
@@ -56,7 +55,7 @@ public class PostControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getPost() throws Exception {
+    void getPost() throws Exception {
         mockMvc.perform(get(URL_PREFIX + 10))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -67,7 +66,7 @@ public class PostControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editPost() throws Exception {
+    void editPost() throws Exception {
         PostChangeRQ postChangeRQ = createPost("test title changed", "valid changed text");
         mockMvc.perform(put(URL_PREFIX + 10)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -82,7 +81,7 @@ public class PostControllerTest {
     @Test
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editPostUnauthorized() throws Exception {
+    void editPostUnauthorized() throws Exception {
         PostChangeRQ postChangeRQ = createPost("test title changed", "valid changed text");
         mockMvc.perform(put(URL_PREFIX + 10)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +93,7 @@ public class PostControllerTest {
 
     @Test
     @WithUserDetails(P1_MAIL)
-    public void editPostWithNotValidTitleTest() throws Exception {
+    void editPostWithNotValidTitleTest() throws Exception {
         PostChangeRQ postChangeRQ = createPost("te", "changed valid text");
         mockMvc.perform(put(URL_PREFIX + 10)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +106,7 @@ public class PostControllerTest {
 
     @Test
     @WithUserDetails(P1_MAIL)
-    public void editPostWithNotValidTextTest() throws Exception {
+    void editPostWithNotValidTextTest() throws Exception {
         PostChangeRQ postChangeRQ = createPost("title", "short text");
         mockMvc.perform(put(URL_PREFIX + 10)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -122,7 +121,7 @@ public class PostControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void deletePost() throws Exception {
+    void deletePost() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + 10))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -132,7 +131,7 @@ public class PostControllerTest {
     @Test
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void deletePostUnauthorized() throws Exception {
+    void deletePostUnauthorized() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + 10))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
@@ -142,7 +141,7 @@ public class PostControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getComments() throws Exception {
+    void getComments() throws Exception {
         mockMvc.perform(get(URL_PREFIX + 10 + COMMENT))
                 .andDo(print())
                 .andExpect(jsonPath("$.data.[0]").exists())
@@ -154,7 +153,7 @@ public class PostControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void addComment() throws Exception {
+    void addComment() throws Exception {
         mockMvc.perform(post(URL_PREFIX + 10 + COMMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new CommentRQ(null, "test comment new"))))
@@ -165,7 +164,7 @@ public class PostControllerTest {
     @Test
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void addCommentUnauthorized() throws Exception {
+    void addCommentUnauthorized() throws Exception {
         mockMvc.perform(post(URL_PREFIX + 10 + COMMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new CommentRQ(null, "test comment new"))))
@@ -177,7 +176,7 @@ public class PostControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void addBlankComment() throws Exception {
+    void addBlankComment() throws Exception {
         mockMvc.perform(post(URL_PREFIX + 10 + COMMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new CommentRQ(null, ""))))
@@ -190,8 +189,8 @@ public class PostControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editComment() throws Exception {
-        mockMvc.perform(put(URL_PREFIX + 10 + COMMENT + "/" +10)
+    void editComment() throws Exception {
+        mockMvc.perform(put(URL_PREFIX + 10 + COMMENT + "/" + 10)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new CommentRQ(null, "test comment edited"))))
                 .andDo(print())
@@ -202,8 +201,8 @@ public class PostControllerTest {
     @Test
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editCommentUnauthorized() throws Exception {
-        mockMvc.perform(put(URL_PREFIX + 10 + COMMENT + "/" +10)
+    void editCommentUnauthorized() throws Exception {
+        mockMvc.perform(put(URL_PREFIX + 10 + COMMENT + "/" + 10)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new CommentRQ(null, "test comment edited"))))
                 .andDo(print())
@@ -214,7 +213,7 @@ public class PostControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void deleteComment() throws Exception {
+    void deleteComment() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + 10 + COMMENT + "/" + 11))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -224,12 +223,11 @@ public class PostControllerTest {
     @Test
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void deleteCommentUnauthorized() throws Exception {
+    void deleteCommentUnauthorized() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + 10 + COMMENT + "/" + 11))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
-
 
 
     private PostChangeRQ createPost(String title, String text) {

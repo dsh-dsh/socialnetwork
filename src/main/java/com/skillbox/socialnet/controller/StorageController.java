@@ -1,6 +1,6 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.FileDTO;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.StorageService;

@@ -27,10 +27,11 @@ public class MessageService {
 
     public Page<Message> getMessagePageByDialog(Dialog dialog, ElementPageable pageable) {
         pageable.setSort(Sort.by("time"));
-        return  messageRepository.findByDialog(dialog, pageable);
+        return messageRepository.findByDialog(dialog, pageable);
     }
+
     public List<Message> getMessagesByDialog(Dialog dialog) {
-        return  messageRepository.findByDialog(dialog);
+        return messageRepository.findByDialog(dialog);
     }
 
     public long countUnreadMessages(Person me, Set<Dialog> dialogs) {
@@ -97,7 +98,7 @@ public class MessageService {
 
     //покаНеИспользуется
     public void deleteMessages(List<Message> messages) {
-        if(messages != null) {
+        if (messages != null) {
             messageRepository.deleteMessagesByList(messages);
         }
     }

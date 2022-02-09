@@ -1,8 +1,8 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.RQ.DialogCreateDTORequest;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.rq.DialogCreateDTORequest;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
@@ -11,8 +11,6 @@ import com.skillbox.socialnet.repository.DialogRepository;
 import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +37,7 @@ public class DialogService {
         return dialogRepository.findByPerson(author);
     }
 
+    @Transactional
     public DialogIdDTO createDialog(DialogCreateDTORequest dialogCreateDTORequest) {
         Set<Person> persons = personService.getPersonsByIdList(dialogCreateDTORequest.getUserIds());
         Person author = authService.getPersonFromSecurityContext();
@@ -117,7 +116,7 @@ public class DialogService {
     }
 
     //покаНеИспользуется
-    public MessageResponseDTO readMessage(long dialogId, int messageId) {
+    public MessageResponseDTO readMessage( int messageId) {
         Message message = messageService.getMessageToRead(messageId);
         return new MessageResponseDTO(message.getMessageText());
     }
@@ -145,10 +144,10 @@ public class DialogService {
     }
 
     //покаНеИспользуется
-    public DialogCreateDTORequest deleteUsersFromDialog(long dialogId, String ids) {
+    public DialogCreateDTORequest deleteUsersFromDialog(long dialogId) {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
-        List<Integer> personIdList = new ArrayList<>(); // TODO выяснить формат String ids
+        List<Integer> personIdList = new ArrayList<>();
         Set<Person> persons = personService.getPersonsByIdList(personIdList);
         dialog.getPersons().removeAll(persons);
         dialogRepository.save(dialog);
@@ -159,9 +158,9 @@ public class DialogService {
 
     //покаНеИспользуется
     public InviteLinkDTO getLinkToJoin(long dialogId) {
-        Dialog dialog = dialogRepository.findById(dialogId)
-                .orElseThrow(BadRequestException::new);
-        String link = ""; // TODO выяснить формат String link
+//        Dialog dialog = dialogRepository.findById(dialogId)
+//                .orElseThrow(BadRequestException::new);
+        String link = ""; // выяснить формат String link
 
         return new InviteLinkDTO(link);
     }

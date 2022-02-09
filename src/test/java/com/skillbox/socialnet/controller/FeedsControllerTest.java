@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public"})
 @SpringBootTest
 @AutoConfigureMockMvc
-public class FeedsControllerTest {
+class FeedsControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -37,7 +37,7 @@ public class FeedsControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getFeeds() throws Exception {
+    void getFeeds() throws Exception {
         mockMvc.perform(get(URL_PREFIX))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -45,7 +45,7 @@ public class FeedsControllerTest {
     }
 
     @Test
-    public void getFeedsUnauthorized() throws Exception {
+    void getFeedsUnauthorized() throws Exception {
         mockMvc.perform(get(URL_PREFIX))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());

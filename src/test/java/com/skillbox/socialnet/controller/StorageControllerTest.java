@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public"})
 @SpringBootTest
 @AutoConfigureMockMvc
-public class StorageControllerTest {
+class StorageControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -47,7 +47,7 @@ public class StorageControllerTest {
 
     @Test
     @WithUserDetails(P1_MAIL)
-    public void saveImg() throws Exception {
+    void saveImg() throws Exception {
         String name = "file";
         String originalFileName = "file.txt";
         String contentType = "text/plain";
@@ -63,7 +63,7 @@ public class StorageControllerTest {
     }
 
     @Test
-    public void saveImgUnauthorized() throws Exception {
+    void saveImgUnauthorized() throws Exception {
         String name = "file";
         String originalFileName = "file.txt";
         String contentType = "text/plain";

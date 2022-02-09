@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.service.AuthService;
@@ -26,7 +26,7 @@ public class PlatformController {
     public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
             @RequestParam(defaultValue = "") String language){
         return ResponseEntity.ok(
-                new GeneralListResponse<>(platformService.getLanguage(language)));
+                new GeneralListResponse<>(platformService.getLanguage()));
     }
 
     @Loggable

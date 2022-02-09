@@ -3,11 +3,9 @@ package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.dto.NotificationInterfaceProjectile;
 import com.skillbox.socialnet.model.entity.Friendship;
-import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

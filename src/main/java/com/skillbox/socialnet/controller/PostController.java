@@ -1,10 +1,10 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.CommentRQ;
-import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.PostSearchRQ;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rq.CommentRQ;
+import com.skillbox.socialnet.model.rq.PostChangeRQ;
+import com.skillbox.socialnet.model.rq.PostSearchRQ;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.CommentDTO;
 import com.skillbox.socialnet.model.dto.DeleteDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
@@ -45,19 +45,19 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<GeneralResponse<PostDTO>> editPost(
             @PathVariable int id,
-            @RequestParam(defaultValue = "0") long publish_date,
+            @RequestParam(defaultValue = "0", name = "publishDate") long publishDate,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
         if (authService.getPersonFromSecurityContext() == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
-                new GeneralResponse<>(postService.changePostById(id, publish_date, postChangeRQ)));
+                new GeneralResponse<>(postService.changePostById(id, publishDate, postChangeRQ)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable int id) {
+    public ResponseEntity<GeneralResponse<DeleteDTO>> deletePost(@PathVariable int id) {
         if (authService.getPersonFromSecurityContext() == null) {
-            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.deletePostById(id)));
@@ -83,24 +83,24 @@ public class PostController {
     @PutMapping("/{id}/comments/{comment_id}")
     public ResponseEntity<GeneralResponse<CommentDTO>> editComment(
             @PathVariable int id,
-            @PathVariable int comment_id,
+            @PathVariable(name = "comment_id") int commentId,
             @RequestBody @Valid CommentRQ commentRQ) {
         if (authService.getPersonFromSecurityContext() == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
-                new GeneralResponse<>(commentService.rewriteCommentToThePost(id, comment_id, commentRQ)));
+                new GeneralResponse<>(commentService.rewriteCommentToThePost(id, commentId, commentRQ)));
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
     public ResponseEntity<GeneralResponse<DeleteDTO>> deleteComment(
             @PathVariable int id,
-            @PathVariable int comment_id) {
+            @PathVariable(name = "comment_id") int commentId) {
         if (authService.getPersonFromSecurityContext() == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
-                new GeneralResponse<>(commentService.deleteCommentToThePost(id, comment_id)));
+                new GeneralResponse<>(commentService.deleteCommentToThePost(id, commentId)));
     }
 
 }

@@ -26,7 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "JOIN post.tags AS tags " +
             "WHERE (:authorName is null OR post.author.firstName LIKE %:authorName% OR post.author.lastName LIKE %:authorName%) " +
             "AND (:text is null OR post.postText LIKE %:text% OR post.title LIKE %:text%) " +
-            "AND tags.tag.tag IN (:tags) " +
+            "AND tags.tag.tagName IN (:tags) " +
             "AND post.time BETWEEN :timeFrom AND :timeTo")
     Page<Post> findPostWithTags(String authorName, String text, Timestamp timeFrom, Timestamp timeTo, List<String> tags, Pageable pageable);
 

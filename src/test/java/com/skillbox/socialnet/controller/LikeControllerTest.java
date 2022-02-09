@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skillbox.socialnet.model.RQ.LikeRQ;
+import com.skillbox.socialnet.model.rq.LikeRQ;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public"})
 @SpringBootTest
 @AutoConfigureMockMvc
-public class LikeControllerTest {
+class LikeControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -41,7 +41,7 @@ public class LikeControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getLikes() throws Exception {
+    void getLikes() throws Exception {
         mockMvc.perform(get(URL_PREFIX + LIKES)
                         .param("item_id", "10")
                         .param("type", "type"))
@@ -54,7 +54,7 @@ public class LikeControllerTest {
     @WithUserDetails(P2_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void addLikes() throws Exception {
+    void addLikes() throws Exception {
         LikeRQ likeRQ = new LikeRQ(10, "type");
         mockMvc.perform(put(URL_PREFIX + LIKES)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -68,7 +68,7 @@ public class LikeControllerTest {
     @WithUserDetails(P2_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void addLikesWrongPost() throws Exception {
+    void addLikesWrongPost() throws Exception {
         LikeRQ likeRQ = new LikeRQ(100, "type");
         mockMvc.perform(put(URL_PREFIX + LIKES)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,7 +80,7 @@ public class LikeControllerTest {
     @Test
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void addLikesUnauthorized() throws Exception {
+    void addLikesUnauthorized() throws Exception {
         LikeRQ likeRQ = new LikeRQ(10, "type");
         mockMvc.perform(put(URL_PREFIX + LIKES)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +93,7 @@ public class LikeControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getLiked() throws Exception {
+    void getLiked() throws Exception {
         mockMvc.perform(get(URL_PREFIX + "liked")
                         .param("item_id", "10")
                         .param("type", "type")
@@ -107,7 +107,7 @@ public class LikeControllerTest {
     @WithUserDetails(P2_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getUnLiked() throws Exception {
+    void getUnLiked() throws Exception {
         mockMvc.perform(get(URL_PREFIX + "liked")
                         .param("item_id", "10")
                         .param("type", "type")
@@ -121,7 +121,7 @@ public class LikeControllerTest {
     @WithUserDetails(P2_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getUnLikedWrongPost() throws Exception {
+    void getUnLikedWrongPost() throws Exception {
         mockMvc.perform(get(URL_PREFIX + "liked")
                         .param("item_id", "100")
                         .param("type", "type")
@@ -134,10 +134,10 @@ public class LikeControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void deleteLike() throws Exception {
+    void deleteLike() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + "likes")
-                .param("item_id", "10")
-                .param("type", "type"))
+                        .param("item_id", "10")
+                        .param("type", "type"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -146,10 +146,10 @@ public class LikeControllerTest {
     @WithUserDetails(P2_MAIL)
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void deleteLikeWrongPost() throws Exception {
+    void deleteLikeWrongPost() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + "likes")
-                .param("item_id", "100")
-                .param("type", "type"))
+                        .param("item_id", "100")
+                        .param("type", "type"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -157,10 +157,10 @@ public class LikeControllerTest {
     @Test
     @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void deleteLikeUnauthorized() throws Exception {
+    void deleteLikeUnauthorized() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + "likes")
-                .param("item_id", "10")
-                .param("type", "type"))
+                        .param("item_id", "10")
+                        .param("type", "type"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }

@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         {"spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public"})
 @SpringBootTest
 @AutoConfigureMockMvc
-public class NotificationControllerTest {
+class NotificationControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -37,18 +37,19 @@ public class NotificationControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/notification/addNotify.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/notification/deleteNotify.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void getNotify() throws Exception {
+    void getNotify() throws Exception {
         mockMvc.perform(get(URL_PREFIX))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0]").exists())
                 .andExpect(jsonPath("$.data.[1]").exists());
     }
+
     @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/notification/addNotify.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/notification/deleteNotify.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void setNotify() throws Exception {
+    void setNotify() throws Exception {
         mockMvc.perform(put(URL_PREFIX))
                 .andDo(print())
                 .andExpect(status().isOk())

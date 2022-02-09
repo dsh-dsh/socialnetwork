@@ -1,4 +1,4 @@
-package com.skillbox.socialnet.model.RQ;
+package com.skillbox.socialnet.model.rq;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

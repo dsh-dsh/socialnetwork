@@ -13,10 +13,7 @@ public class RecoveringCodeExpirationValidator implements ConstraintValidator<Co
         String expirationString = recoveringCode
                 .substring(recoveringCode.lastIndexOf(Constants.EXPIRATION_PREFIX) + 1);
         long expiration = Long.parseLong(expirationString);
-        if(expiration < System.currentTimeMillis()) {
-            return false;
-        }
-        return true;
+        return expiration >= System.currentTimeMillis();
     }
 
 }

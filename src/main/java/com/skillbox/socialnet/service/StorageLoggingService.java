@@ -1,19 +1,13 @@
 package com.skillbox.socialnet.service;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
-import com.skillbox.socialnet.config.Config;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -46,14 +40,13 @@ public class StorageLoggingService {
 
     @Scheduled(cron = "${log.files.scheduling.cron.expression}")
     public void updateLogFilesToCloud() {
-        List<Path> paths = saveLogFilesToCloud();
         deleteEmptyLogDirs();
         deleteOldFilesFromCloud();
     }
 
     private List<Path> saveLogFilesToCloud() {
         List<Path> paths = getLogFilePaths(Paths.get(LOG_DIR));
-        if(paths != null && paths.size() > 0) {
+        if(paths != null && !paths.isEmpty()) {
             for(Path path : paths) {
                 saveLogFileToCloud(path);
             }
@@ -98,7 +91,7 @@ public class StorageLoggingService {
     private void deleteOldFilesFromCloud() {
         long expirationTime = new Date().getTime() - EXPIRATION_PERIOD;
         List<String> fileNames = getOldFilesFromCloud(expirationTime);
-        if(fileNames != null & fileNames.size() > 0) {
+        if(fileNames != null && !fileNames.isEmpty()) {
             for (String fileName : fileNames) {
                 s3Client.deleteObject(BUCKET_NAME, fileName);
             }
@@ -113,55 +106,4 @@ public class StorageLoggingService {
                 .collect(Collectors.toList());
     }
 
-    private void readFilesFromBucket(){
-        System.out.println("files in bucket");
-        ObjectListing listing = s3Client.listObjects(BUCKET_NAME);
-        listing.getObjectSummaries().stream()
-                .map(S3ObjectSummary::getKey)
-                .forEach(System.out::println);
-    }
-
-    private void deleteAllFilesFromCloud() {
-        List<String> fileNames = s3Client.listObjects(BUCKET_NAME)
-                .getObjectSummaries().stream()
-                .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
-        if(null != fileNames & fileNames.size() > 0) {
-            for (String fileName : fileNames) {
-                s3Client.deleteObject(BUCKET_NAME, fileName);
-            }
-        }
-    }
-
-
-
-
-    public void deleteBucket() {
-        String bucketName = "social-net-20-group-log-files";
-        try {
-            s3Client.deleteBucket("social-net-20-group-log-files");
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-        }
-        List<Bucket> buckets = s3Client.listBuckets();
-        for(Bucket bucket : buckets) {
-            System.out.println(bucket.getName());
-        }
-    }
-
-    public void createBucket(){
-        String bucketName = "social-net-20-group";
-        if(s3Client.doesBucketExistV2(bucketName)) {
-            System.out.println("Bucket name is not available."
-                    + " Try again with a different Bucket name.");
-            return;
-        } else {
-            System.out.println("Bucket name is available");
-        }
-        s3Client.createBucket(bucketName);
-        List<Bucket> buckets = s3Client.listBuckets();
-        for(Bucket bucket : buckets) {
-            System.out.println(bucket.getName());
-        }
-    }
 }
