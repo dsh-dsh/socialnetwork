@@ -49,6 +49,7 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
+    @Loggable
     public GeneralListResponse<PostDTO> getFeeds(ElementPageable pageable) {
         List<Person> friends = getFriendList();
         pageable.setSort(Sort.by("time").descending());
@@ -106,6 +107,7 @@ public class PostService {
         return new DeleteDTO(id);
     }
 
+    @Loggable
     public GeneralListResponse<PostDTO> getUserWall(int id, ElementPageable pageable) {
         Person person = personService.getPersonById(id);
         pageable.setSort(Sort.by("time").descending());
