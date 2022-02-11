@@ -42,30 +42,6 @@ public class StorageLoggingService {
         deleteOldFilesFromCloud();
     }
 
-    private List<Path> saveLogFilesToCloud() {
-        List<Path> paths = getLogFilePaths(Paths.get(LOG_DIR));
-        if(paths != null && !paths.isEmpty()) {
-            for(Path path : paths) {
-                saveLogFileToCloud(path);
-            }
-        }
-        return paths;
-    }
-
-    private List<Path> getLogFilePaths(Path path) {
-        try (Stream<Path> paths = Files.walk(path)) {
-            return paths.filter(Files::isRegularFile).collect(Collectors.toList());
-        } catch (IOException e) {
-            return List.of();
-        }
-    }
-
-    private void saveLogFileToCloud(Path path) {
-        String fileName = path.toString();
-        File file = path.toFile();
-        s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, file));
-    }
-
 
     private void deleteEmptyLogDirs() {
         File logDir = new File(LOG_DIR);
@@ -77,7 +53,9 @@ public class StorageLoggingService {
                             .filter(File::isDirectory)
                             .filter(this::isEmptyDir)
                             .forEach(File::delete);
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+
+                }
             }
         }
     }
