@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,22 +77,16 @@ public class DialogService {
         Person recipient = getRecipient(dialog, author);
         Message message = messageService.addMessage(dialog, author,
                 recipient, messageSendDtoRequest.getMessageText());
-        dialog.getMessages().add(message);
-        dialogRepository.save(dialog);
+
+        pushMessageToFront(author, recipient, message);
 
         return new MessageDTO(author, message);
     }
-    public void sendMessageByWebSocket(long dialogId, int authorId, MessageSendDtoRequest messageSendDtoRequest) {
-        Dialog dialog = dialogRepository.findById(dialogId)
-                .orElseThrow(BadRequestException::new);
-        Person author = personService.getPersonById(authorId);
-        Person recipient = getRecipient(dialog, author);
-        Message message = messageService.addMessage(dialog, author,
-                recipient, messageSendDtoRequest.getMessageText());
-//        dialog.getMessages().add(message); // эти две строки скорей всего лишние
-//        dialogRepository.save(dialog);
 
-        webSocketService.sendMessage(message.getAuthor().getId(), new MessageDTO(author, message));
+    private void pushMessageToFront(Person author, Person recipient, Message message) {
+        int recipientId = recipient.getId();
+        webSocketService.sendMessage(recipientId, new MessageDTO(author, message));
+        webSocketService.sendUnreadCount(recipientId);
     }
 
     private List<DialogDTO> getDialogDTOList(Person author, Collection<Dialog> dialogs) {
