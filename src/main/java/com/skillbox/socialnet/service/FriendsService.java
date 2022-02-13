@@ -139,9 +139,11 @@ public class FriendsService {
                     .collect(Collectors.toSet());
         }
         int limit = Constants.RECOMMENDED_FRIENDS_LIMIT - recommendedFriends.size();
-        Set<Person> personsToExclude = getPersonsToExclude(currentPerson, myFriends, recommendedFriends);
-        List<Person> newFriends = personRepository.findNewFriendsLimit(personsToExclude, PageRequest.of(0, limit));
-        recommendedFriends.addAll(newFriends);
+        if(limit > 0) {
+            Set<Person> personsToExclude = getPersonsToExclude(currentPerson, myFriends, recommendedFriends);
+            List<Person> newFriends = personRepository.findNewFriendsLimit(personsToExclude, PageRequest.of(0, limit));
+            recommendedFriends.addAll(newFriends);
+        }
 
         return recommendedFriends;
     }
