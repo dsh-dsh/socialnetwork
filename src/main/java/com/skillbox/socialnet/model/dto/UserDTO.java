@@ -38,10 +38,10 @@ public class UserDTO {
     @JsonProperty("is_blocked")
     private boolean isBlocked;
     @JsonProperty("is_friend")
-    private String isFriend;
+    private boolean isFriend;
     @JsonProperty("is_you_blocked")
     private boolean isYouBlocked;
-    private boolean me = false;
+    private boolean me;
     private String token;
 
     public static UserDTO getUserDTO(Person person){

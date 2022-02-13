@@ -39,7 +39,7 @@ public class FriendsService {
     public GeneralListResponse<UserDTO> getAllFriends(String name, ElementPageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Page<Friendship> friendshipPage = friendshipRepository
-                .findAllFriendsPageable(currentPerson, FriendshipStatusCode.FRIEND, pageable);
+                .findAllFriendsPageable(currentPerson, pageable);
         List<Person> persons = getFriendsFromFriendships(name, currentPerson, friendshipPage.getContent());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
@@ -148,6 +148,34 @@ public class FriendsService {
         return recommendedFriends;
     }
 
+    public MessageOkDTO blockUser(int personId) {
+        Person srcPerson = authService.getPersonFromSecurityContext();
+        Person dstPerson = personService.getPersonById(personId);
+        Friendship friendship = friendshipRepository
+                .findFriendship(srcPerson, dstPerson, FriendshipStatusCode.FRIEND)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_FRIENDSHIP_MESSAGE));
+        if(friendship.getSrcPerson().equals(dstPerson)) {
+            friendship.setSrcPerson(srcPerson);
+            friendship.setDstPerson(dstPerson);
+        }
+        friendship.getStatus().setCode(FriendshipStatusCode.BLOCKED);
+        friendshipRepository.save(friendship);
+
+        return new MessageOkDTO();
+    }
+
+    public MessageOkDTO unblockUser(int personId) {
+        Person srcPerson = authService.getPersonFromSecurityContext();
+        Person dstPerson = personService.getPersonById(personId);
+        Friendship friendship = friendshipRepository
+                .findBySrcPersonAndDstPerson(srcPerson, dstPerson)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_FRIENDSHIP_MESSAGE));
+        friendship.getStatus().setCode(FriendshipStatusCode.FRIEND);
+        friendshipRepository.save(friendship);
+
+        return new MessageOkDTO();
+    }
+
     private Set<Person> getPersonsToExclude(Person currentPerson, Set<Person> myFriends, Set<Person> recommendedFriends) {
         Set<Person> personsToExclude = new HashSet<>();
         personsToExclude.addAll(myFriends);
@@ -169,7 +197,7 @@ public class FriendsService {
         Friendship friendship = new Friendship();
         friendship.setSrcPerson(currentPerson);
         friendship.setDstPerson(dstPerson);
-        friendship.setStatus(createRequestFriendshipStatus());
+        friendship.setStatus(createFriendshipStatus(FriendshipStatusCode.FRIEND));
         notificationService.createNewNotification(
                 NotificationTypeCode.FRIEND_REQUEST,
                 dstPerson.getId(),
@@ -179,11 +207,11 @@ public class FriendsService {
     }
 
 
-    private FriendshipStatus createRequestFriendshipStatus() {
+    private FriendshipStatus createFriendshipStatus(FriendshipStatusCode statusCode) {
         FriendshipStatus friendshipStatus = new FriendshipStatus();
         friendshipStatus.setTime(LocalDateTime.now());
-        friendshipStatus.setName("Request");
-        friendshipStatus.setCode(FriendshipStatusCode.REQUEST);
+//        friendshipStatus.setName("Request");
+        friendshipStatus.setCode(statusCode);
 
         return friendshipStatus;
     }
@@ -220,7 +248,7 @@ public class FriendsService {
         }
     }
 
-    private boolean isFriends(Person currentPerson, Person dstPerson) {
+    public boolean isFriends(Person currentPerson, Person dstPerson) {
         List<Friendship> friendships = friendshipRepository
                 .isFriends(currentPerson, dstPerson, FriendshipStatusCode.FRIEND);
 

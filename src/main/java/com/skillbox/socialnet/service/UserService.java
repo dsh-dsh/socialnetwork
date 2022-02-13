@@ -75,20 +75,6 @@ public class UserService {
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 
-    public MessageOkDTO blockUser(int id) {
-        Person person = personService.getPersonById(id);
-        person.setBlocked(true);
-        personRepository.save(person);
-        return new MessageOkDTO();
-    }
-
-    public MessageOkDTO unblockUser(int id) {
-        Person person = personService.getPersonById(id);
-        person.setBlocked(false);
-        personRepository.save(person);
-        return new MessageOkDTO();
-    }
-
     public MessageOkDTO checkOnline() {
         Person me = authService.getPersonFromSecurityContext();
         me.setLastOnlineTime(new Timestamp(new Date().getTime()));

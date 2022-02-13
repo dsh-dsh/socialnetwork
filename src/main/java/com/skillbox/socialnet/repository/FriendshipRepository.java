@@ -36,9 +36,10 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     @Query("SELECT friendship " +
             "FROM Friendship AS friendship " +
             "WHERE (friendship.srcPerson = :person or friendship.dstPerson = :person) " +
-            "AND friendship.status.code = :code " +
-            "ORDER BY friendship.srcPerson.lastName, friendship.dstPerson.lastName")
-    Page<Friendship> findAllFriendsPageable(Person person, FriendshipStatusCode code, Pageable pageable);
+            "AND friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND " +
+            "OR friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.BLOCKED " +
+            "ORDER BY friendship.dstPerson.lastName, friendship.srcPerson.lastName")
+    Page<Friendship> findAllFriendsPageable(Person person, Pageable pageable);
 
     @Query("SELECT friendship " +
             "FROM Friendship AS friendship " +
@@ -74,4 +75,17 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
             "WHERE (srcPerson IN (:persons) OR dstPerson IN (:persons)) " +
             "AND status.code = :code")
     List<Friendship> findAllFriendsOfMyFriends(Collection<Person> persons, FriendshipStatusCode code);
+
+    Optional<Friendship> findBySrcPersonAndDstPerson(Person srcPerson, Person dstPerson);
+
+    @Query("FROM Friendship " +
+            "WHERE ((srcPerson = :srcPerson and dstPerson = :dstPerson) " +
+            "OR (srcPerson = :dstPerson and dstPerson = :srcPerson)) " +
+            "AND status.code = :code")
+    Optional<Friendship> findFriendship(Person srcPerson, Person dstPerson, FriendshipStatusCode code);
+
+    @Query("FROM Friendship " +
+            "WHERE srcPerson = :srcPerson AND dstPerson = :dstPerson " +
+            "AND status.code = :code")
+    Optional<Friendship> findFriendshipByStatusCode(Person srcPerson, Person dstPerson, FriendshipStatusCode code);
 }

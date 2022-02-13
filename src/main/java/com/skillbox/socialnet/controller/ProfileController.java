@@ -8,16 +8,15 @@ import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
+import com.skillbox.socialnet.service.FriendsService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @CrossOrigin
@@ -28,6 +27,7 @@ public class ProfileController {
 
     private final UserService userService;
     private final PostService postService;
+    private final FriendsService friendsService;
 
     @GetMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
@@ -46,8 +46,10 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GeneralResponse<UserDTO>> getUser(@PathVariable int id) {
-        return ResponseEntity.ok(new GeneralResponse<>(userService.getUserById(id)));
+    public ResponseEntity<GeneralResponse<UserDTO>> getUser(
+            @PathVariable int id) {
+        return ResponseEntity.ok(
+                new GeneralResponse<>(userService.getUserById(id)));
     }
 
     @GetMapping("/{id}/wall")
@@ -86,14 +88,18 @@ public class ProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/block/{id}")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>> blockUser(@PathVariable int id) {
-        return ResponseEntity.ok(new GeneralResponse<>(userService.blockUser(id)));
+    @PutMapping("/block/{personId}")
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> blockUser(
+            @PathVariable int personId) {
+        return ResponseEntity.ok(
+                new GeneralResponse<>(friendsService.blockUser(personId)));
     }
 
-    @DeleteMapping("/block/{id}")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>> unblockUser(@PathVariable int id) {
-        return ResponseEntity.ok(new GeneralResponse<>(userService.unblockUser(id)));
+    @DeleteMapping("/block/{personId}")
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> unblockUser(
+            @PathVariable int personId) {
+        return ResponseEntity.ok(
+                new GeneralResponse<>(friendsService.unblockUser(personId)));
     }
 
     @PutMapping("/checkonline")
