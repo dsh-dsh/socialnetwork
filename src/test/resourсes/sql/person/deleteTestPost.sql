@@ -1,1 +1,0 @@
-delete from post where post.title like '%testTitle%';

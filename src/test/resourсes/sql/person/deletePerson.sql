@@ -1,1 +1,0 @@
-DELETE FROM person where e_mail = 'nikita.r200019@gmail.com';

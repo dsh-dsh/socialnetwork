@@ -1,1 +1,0 @@
-update person set is_blocked = false where e_mail = 'p1@mail.ru';
