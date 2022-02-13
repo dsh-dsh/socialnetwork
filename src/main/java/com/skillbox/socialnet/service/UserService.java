@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnet.util.Constants.USER_DELETE_SUCCESS;
+import static com.skillbox.socialnet.util.Constants.USER_RECOVER_SUCCESS;
 
 @Service
 @RequiredArgsConstructor
