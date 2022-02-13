@@ -45,4 +45,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     Optional<Notification> findBySentTimeAndEntityAndContactAndSeen(Timestamp sentTime, String entity, String contact, boolean seen);
 
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from notification as n where n.person_id = :id",
+            nativeQuery = true)
+    void deleteForDeletedPerson(int id);
 }

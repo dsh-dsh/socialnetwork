@@ -55,6 +55,11 @@ public class ProfileController {
         return ResponseEntity.ok(new GeneralResponse<>(userService.deleteUser()));
     }
 
+    @PutMapping("/meRecover")
+    public ResponseEntity<GeneralResponse<String>> recoverUser() {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.recoverUser()));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser(@PathVariable int id) {
         return ResponseEntity.ok(new GeneralResponse<>(userService.getUserById(id)));
