@@ -20,8 +20,7 @@ public class DialogController {
     private final DialogService dialogService;
 
     @GetMapping
-    public ResponseEntity<GeneralListResponse<DialogDTO>> getDialogs(
-            @RequestParam(required = false) String query) {
+    public ResponseEntity<GeneralListResponse<DialogDTO>> getDialogs() {
         return ResponseEntity.ok(
                 new GeneralListResponse<>(dialogService.getDialogs()));
     }

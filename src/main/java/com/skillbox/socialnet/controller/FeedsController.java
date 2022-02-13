@@ -22,8 +22,7 @@ public class FeedsController {
     private final AuthService authService;
 
     @GetMapping
-    public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(
-            @RequestParam(defaultValue = "") String name, ElementPageable pageable){
+    public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(ElementPageable pageable){
         if (authService.getPersonFromSecurityContext() == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

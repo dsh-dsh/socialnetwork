@@ -27,7 +27,7 @@ public class MessageService {
 
     public Page<Message> getMessagePageByDialog(Dialog dialog, ElementPageable pageable) {
         pageable.setSort(Sort.by("time"));
-        return messageRepository.findByDialog(dialog, pageable);
+        return  messageRepository.findByDialog(dialog, pageable);
     }
 
     public List<Message> getMessagesByDialog(Dialog dialog) {
@@ -40,13 +40,6 @@ public class MessageService {
                 .filter(message -> message.getRecipient().equals(me))
                 .filter(message -> message.getReadStatus().equals(MessageReadStatus.SENT))
                 .count();
-    }
-
-    public Message addAndSendMessage(Dialog dialog, Person author, Person recipient, String text) {
-        Message message = addMessage(dialog, author, recipient, text);
-        sendMessage(author, recipient, message);
-
-        return message;
     }
 
     public Message getLastMessage(Dialog dialog) {
@@ -62,16 +55,7 @@ public class MessageService {
         messageRepository.setMessagesReadStatus(messages, author, MessageReadStatus.READ);
     }
 
-    private void sendMessage(Person author, Person recipient, Message message) {
-//        webSocketService.sendMessages(author, message);
-        notificationService.createNewNotification(
-                NotificationTypeCode.MESSAGE,
-                recipient.getId(),
-                author.getId(),
-                recipient.getEMail());
-    }
-
-    private Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
+    public Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
         Message message = new Message();
         message.setDialog(dialog);
         message.setAuthor(author);
@@ -80,26 +64,13 @@ public class MessageService {
         message.setRecipient(recipient);
         message.setTime(LocalDateTime.now());
         messageRepository.save(message);
+        notificationService.createNewNotification(
+                NotificationTypeCode.MESSAGE,
+                recipient.getId(),
+                author.getId(),
+                recipient.getEMail());
         return message;
     }
 
-    //покаНеИспользуется
-    public Message getMessageToRead(int messageId) {
-        Message message = messageRepository.findById(messageId)
-                .orElseThrow(BadRequestException::new);
-        return setMessagesStatusRead(message, MessageReadStatus.READ);
-    }
 
-    //покаНеИспользуется
-    public Message setMessagesStatusRead(Message message, MessageReadStatus status) {
-        message.setReadStatus(status);
-        return messageRepository.save(message);
-    }
-
-    //покаНеИспользуется
-    public void deleteMessages(List<Message> messages) {
-        if (messages != null) {
-            messageRepository.deleteMessagesByList(messages);
-        }
-    }
 }

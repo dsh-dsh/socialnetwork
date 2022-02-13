@@ -24,9 +24,12 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnet.config.Config.bcrypt;
@@ -54,6 +57,7 @@ public class AccountService {
         person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
         person.setLastOnlineTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         person.setRegDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        person.setApproved(true);
         personRepository.save(person);
 
         setNotificationSettingsOnRegistering(person);

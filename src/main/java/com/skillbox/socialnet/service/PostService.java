@@ -50,11 +50,12 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
+    @Loggable
     public GeneralListResponse<PostDTO> getFeeds(ElementPageable pageable) {
         List<Person> friends = getFriendList();
         pageable.setSort(Sort.by("time").descending());
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
-        List<Post> posts = addPostsToLimit(postPage.getContent());
+        List<Post> posts = addPostsToLimit(postPage);
         List<PostDTO> postDTOs = getPostDTOList(posts);
 
         return new GeneralListResponse<>(postDTOs, postPage);
@@ -107,11 +108,14 @@ public class PostService {
         return new DeleteDTO(id);
     }
 
-    public List<PostDTO> getUserWall(int id, Pageable pageable) {
+    @Loggable
+    public GeneralListResponse<PostDTO> getUserWall(int id, ElementPageable pageable) {
         Person person = personService.getPersonById(id);
+        pageable.setSort(Sort.by("time").descending());
         Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
+        List<PostDTO> postDTOList = getPostDTOList(postPage.getContent());
 
-        return getPostDTOList(postPage.getContent());
+        return new GeneralListResponse<>(postDTOList, postPage);
     }
 
     public List<CommentDTO> getCommentsToPost(int id) {
@@ -130,9 +134,10 @@ public class PostService {
         return CommentDTO.getCommentDTO(postComment);
     }
 
-    public List<Post> addPostsToLimit(List<Post> posts) {
+    public List<Post> addPostsToLimit(Page<Post> postPage) {
+        List<Post> posts = postPage.getContent();
         List<Post> postList = new ArrayList<>(posts);
-        if (posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
+        if (postPage.getPageable().getOffset() == 0 && posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
             int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
             List<Post> additionalPosts = postRepository
                     .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));

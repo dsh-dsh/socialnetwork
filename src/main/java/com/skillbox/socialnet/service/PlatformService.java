@@ -12,6 +12,7 @@ import com.skillbox.socialnet.repository.LanguageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class PlatformService {
     private final CountryRepository countryRepository;
     private final CityRepository cityRepository;
 
-    public List<LocationDTO> getLanguage() {
+    public List<LocationDTO> getLanguage(String language) {
         List<Language> languages = languageRepository.findAll();
         return languages.stream()
                 .map(LocationDTO::getLocationDTO)
@@ -35,6 +36,7 @@ public class PlatformService {
     public List<LocationDTO> getCity() {
         List<City> cities = cityRepository.findAll();
         return cities.stream()
+                .sorted(Comparator.comparing(City::getTitle))
                 .map(LocationDTO::getLocationDTO)
                 .collect(Collectors.toList());
     }
@@ -42,6 +44,7 @@ public class PlatformService {
     public List<LocationDTO> getCountry() {
         List<Country> cities = countryRepository.findAll();
         return cities.stream()
+                .sorted(Comparator.comparing(Country::getTitle))
                 .map(LocationDTO::getLocationDTO)
                 .collect(Collectors.toList());
     }

@@ -7,10 +7,13 @@ import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -34,22 +37,24 @@ public class FriendsService {
     private final AuthService authService;
     private final NotificationService notificationService;
 
-    public List<UserDTO> getAllFriends(String name) {
+    public GeneralListResponse<UserDTO> getAllFriends(String name, ElementPageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        List<Friendship> friendships = friendshipRepository
-                .findAllFriends(currentPerson, FriendshipStatusCode.FRIEND);
-        List<Person> persons = getFriendsFromFriendships(name, currentPerson, friendships);
+        Page<Friendship> friendshipPage = friendshipRepository
+                .findAllFriendsPageable(currentPerson, FriendshipStatusCode.FRIEND, pageable);
+        List<Person> persons = getFriendsFromFriendships(name, currentPerson, friendshipPage.getContent());
+        List<UserDTO> userDTOList = getUserDTOList(persons);
 
-        return getUserDTOList(persons);
+        return new GeneralListResponse<UserDTO>(userDTOList, friendshipPage);
     }
 
-    public List<UserDTO> getRequests(String name) {
+    public GeneralListResponse<UserDTO> getRequests(String name, ElementPageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        List<Friendship> requests = friendshipRepository
-                .findAllRequests(currentPerson, FriendshipStatusCode.REQUEST);
-        List<Person> persons = getFriendsFromRequests(name, requests);
+        Page<Friendship> requestPage = friendshipRepository
+                .findAllRequestsPageable(currentPerson, FriendshipStatusCode.REQUEST, pageable);
+        List<Person> persons = getFriendsFromRequests(name, requestPage.getContent());
+        List<UserDTO> userDTOList = getUserDTOList(persons);
 
-        return getUserDTOList(persons);
+        return new GeneralListResponse<UserDTO>(userDTOList, requestPage);
     }
 
     private List<Person> getFriendsFromRequests(String name, List<Friendship> requests) {

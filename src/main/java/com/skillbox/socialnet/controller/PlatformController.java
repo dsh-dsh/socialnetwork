@@ -21,15 +21,13 @@ public class PlatformController {
     private final PlatformService platformService;
     private final AuthService authService;
 
-    @Loggable
     @GetMapping("/languages")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
             @RequestParam(defaultValue = "") String language){
         return ResponseEntity.ok(
-                new GeneralListResponse<>(platformService.getLanguage()));
+                new GeneralListResponse<>(platformService.getLanguage(language)));
     }
 
-    @Loggable
     @GetMapping("/countries")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getCountry(){
         return ResponseEntity.ok(
@@ -37,14 +35,14 @@ public class PlatformController {
     }
 
     @PostMapping("/countries")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(@RequestBody LocationDTO locationDTO){
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(
+            @RequestBody LocationDTO locationDTO){
         if (authService.getPersonFromSecurityContext() == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
-    @Loggable
     @GetMapping("/cities")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getCity(){
         return ResponseEntity.ok(
@@ -52,7 +50,8 @@ public class PlatformController {
     }
 
     @PostMapping("/cities")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(@RequestBody LocationDTO locationDTO){
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(
+            @RequestBody LocationDTO locationDTO){
         if (authService.getPersonFromSecurityContext() == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

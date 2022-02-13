@@ -1,19 +1,19 @@
 package com.skillbox.socialnet.controller;
 
+import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.model.dto.PostDTO;
+import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.rq.PostChangeRQ;
 import com.skillbox.socialnet.model.rq.UserChangeRQ;
 import com.skillbox.socialnet.model.rq.UserSearchRQ;
 import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.model.rs.GeneralResponse;
-import com.skillbox.socialnet.model.dto.MessageOkDTO;
-import com.skillbox.socialnet.model.dto.PostDTO;
-import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,7 +63,7 @@ public class ProfileController {
     @GetMapping("/{id}/wall")
     public ResponseEntity<GeneralListResponse<PostDTO>> getUserWall(
             @PathVariable int id, ElementPageable pageable) {
-        return ResponseEntity.ok(new GeneralListResponse<>(postService.getUserWall(id, pageable), pageable));
+        return ResponseEntity.ok(postService.getUserWall(id, pageable));
     }
 
     @PostMapping("/{id}/wall")
@@ -77,6 +77,7 @@ public class ProfileController {
         return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(personId, publishDate, postChangeRQ)));
     }
 
+    @Loggable
     @GetMapping("/search")
     public ResponseEntity<GeneralListResponse<UserDTO>> searchUsers(
             @RequestParam(name = "first_or_last_name", required = false) String firstOrLastName,
@@ -86,7 +87,7 @@ public class ProfileController {
             @RequestParam(name = "age_to", defaultValue = "0") int ageTo,
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String city,
-            Pageable pageable) {
+            ElementPageable pageable) {
 
         GeneralListResponse<UserDTO> response;
         if(firstOrLastName != null) {

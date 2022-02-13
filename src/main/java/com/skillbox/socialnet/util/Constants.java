@@ -32,7 +32,7 @@ public class Constants {
 
     public static final String API_ACCOUNT = "/api/v1/account";
     public static final String API_PLATFORM = "/api/v1/platform";
-    public static final int RECOMMENDED_FRIENDS_LIMIT = 100;
+    public static final int RECOMMENDED_FRIENDS_LIMIT = 15;
     public static final int RECOMMENDED_POST_LIMIT = 5;
 
     public static final String USER_BLOCKED_RS = "User is blocked";

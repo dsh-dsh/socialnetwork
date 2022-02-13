@@ -18,17 +18,14 @@ public class LoggableAspect {
 
     @Pointcut("@annotation(com.skillbox.socialnet.util.annotation.Loggable)")
     public void onMethodLog() {
-        //Need to be empty
     }
 
     @Pointcut("@within(com.skillbox.socialnet.util.annotation.Loggable)")
     public void onClassLog() {
-        //Need to be empty
     }
 
     @Pointcut("onMethodLog() || onClassLog()")
     public void anyTypeLog() {
-        //Need to be empty
     }
 
     @Around("anyTypeLog()")

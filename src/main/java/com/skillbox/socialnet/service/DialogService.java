@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +26,10 @@ public class DialogService {
     private final MessageService messageService;
     private final PersonService personService;
     private final AuthService authService;
+    private final WebSocketService webSocketService;
+
+    private final static Comparator<DialogDTO> comparatorByLastMessage =
+            Comparator.comparing(dialogDTO -> dialogDTO.getLastMessage().getTime());
 
     public List<DialogDTO> getDialogs() {
         Person author = authService.getPersonFromSecurityContext();
@@ -72,12 +77,23 @@ public class DialogService {
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
         Person recipient = getRecipient(dialog, author);
-        Message message = messageService.addAndSendMessage(dialog, author,
+        Message message = messageService.addMessage(dialog, author,
                 recipient, messageSendDtoRequest.getMessageText());
         dialog.getMessages().add(message);
         dialogRepository.save(dialog);
 
         return new MessageDTO(author, message);
+    }
+    public void sendMessageByWebSocket(long dialogId, int authorId, MessageSendDtoRequest messageSendDtoRequest) {
+        Dialog dialog = dialogRepository.findById(dialogId)
+                .orElseThrow(BadRequestException::new);
+        Person author = personService.getPersonById(authorId);
+        Person recipient = getRecipient(dialog, author);
+        Message message = messageService.addMessage(dialog, author,
+                recipient, messageSendDtoRequest.getMessageText());
+
+
+        webSocketService.sendMessage(message.getAuthor().getId(), new MessageDTO(author, message));
     }
 
     private List<DialogDTO> getDialogDTOList(Person author, Collection<Dialog> dialogs) {
@@ -86,6 +102,7 @@ public class DialogService {
                         dialog, author,
                         messageService.getLastMessage(dialog),
                         messageService.getUnreadCount(dialog, author)))
+                .sorted(comparatorByLastMessage.reversed())
                 .collect(Collectors.toList());
     }
 

@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.rs.NotificationRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
 import com.skillbox.socialnet.model.entity.Message;
@@ -20,9 +21,7 @@ public class WebSocketService {
         messagingTemplate.convertAndSend(NOTIFICATION_TOPIC + receiverId, notificationRS);
     }
 
-    public void sendMessages(Person author, Message message) {
-        int receiverId = message.getRecipient().getId();
-        messagingTemplate.convertAndSend(MESSAGE_TOPIC + receiverId, new MessageDTO(author, message));
+    public void sendMessage(int receiverId, MessageDTO messageDTO) {
+        messagingTemplate.convertAndSend(MESSAGE_TOPIC + receiverId, messageDTO);
     }
-
 }
