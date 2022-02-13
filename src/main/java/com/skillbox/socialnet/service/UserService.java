@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.skillbox.socialnet.util.Constants.USER_DELETE_SUCCESS;
+import static com.skillbox.socialnet.util.Constants.USER_RECOVER_SUCCESS;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +46,16 @@ public class UserService {
     }
 
     public String deleteUser() {
-        personRepository.delete(authService.getPersonFromSecurityContext());
+        Person person = authService.getPersonFromSecurityContext();
+        person.setDeleted(true);
+        personRepository.save(person);
         return USER_DELETE_SUCCESS;
+    }
+    public String recoverUser() {
+        Person person = authService.getPersonFromSecurityContext();
+        person.setDeleted(false);
+        personRepository.save(person);
+        return USER_RECOVER_SUCCESS;
     }
 
     public GeneralListResponse<UserDTO> searchUsers(String firstOrLastName, Pageable pageable) {
@@ -87,8 +96,10 @@ public class UserService {
 
     public MessageOkDTO checkOnline() {
         Person me = authService.getPersonFromSecurityContext();
-        me.setLastOnlineTime(new Timestamp(new Date().getTime()));
-        personRepository.save(me);
+        if (!me.isDeleted()) {
+            me.setLastOnlineTime(new Timestamp(new Date().getTime()));
+            personRepository.save(me);
+        }
         return new MessageOkDTO();
     }
 
