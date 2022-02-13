@@ -1,15 +1,14 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.rq.CommentRQ;
 import com.skillbox.socialnet.model.dto.CommentDTO;
 import com.skillbox.socialnet.model.dto.DeleteDTO;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
+import com.skillbox.socialnet.model.rq.CommentRQ;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
+    public CommentDTO rewriteCommentToThePost(int commentId, CommentRQ commentRQ) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);
         postComment.setCommentText(commentRQ.getCommentText());

@@ -1,6 +1,5 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;

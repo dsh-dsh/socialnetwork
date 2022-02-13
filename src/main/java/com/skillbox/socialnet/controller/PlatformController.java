@@ -1,12 +1,11 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.rs.GeneralListResponse;
-import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PlatformService;
-import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,7 @@ public class PlatformController {
     public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
             @RequestParam(defaultValue = "") String language){
         return ResponseEntity.ok(
-                new GeneralListResponse<>(platformService.getLanguage(language)));
+                new GeneralListResponse<>(platformService.getLanguage()));
     }
 
     @GetMapping("/countries")

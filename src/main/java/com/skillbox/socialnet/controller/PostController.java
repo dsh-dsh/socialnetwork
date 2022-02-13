@@ -89,7 +89,7 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(
-                new GeneralResponse<>(commentService.rewriteCommentToThePost(id, commentId, commentRQ)));
+                new GeneralResponse<>(commentService.rewriteCommentToThePost(commentId, commentRQ)));
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")

@@ -26,7 +26,7 @@ public class PlatformService {
     private final CountryRepository countryRepository;
     private final CityRepository cityRepository;
 
-    public List<LocationDTO> getLanguage(String language) {
+    public List<LocationDTO> getLanguage() {
         List<Language> languages = languageRepository.findAll();
         return languages.stream()
                 .map(LocationDTO::getLocationDTO)

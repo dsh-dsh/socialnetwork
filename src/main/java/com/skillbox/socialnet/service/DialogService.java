@@ -1,12 +1,12 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.rq.DialogCreateDTORequest;
-import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.rq.DialogCreateDTORequest;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.repository.DialogRepository;
 import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +27,7 @@ public class DialogService {
     private final AuthService authService;
     private final WebSocketService webSocketService;
 
-    private final static Comparator<DialogDTO> comparatorByLastMessage =
+    private static final Comparator<DialogDTO> comparatorByLastMessage =
             Comparator.comparing(dialogDTO -> dialogDTO.getLastMessage().getTime());
 
     public List<DialogDTO> getDialogs() {
@@ -84,6 +83,7 @@ public class DialogService {
 
         return new MessageDTO(author, message);
     }
+
     public void sendMessageByWebSocket(long dialogId, int authorId, MessageSendDtoRequest messageSendDtoRequest) {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);

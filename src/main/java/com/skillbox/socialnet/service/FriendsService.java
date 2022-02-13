@@ -44,7 +44,7 @@ public class FriendsService {
         List<Person> persons = getFriendsFromFriendships(name, currentPerson, friendshipPage.getContent());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
-        return new GeneralListResponse<UserDTO>(userDTOList, friendshipPage);
+        return new GeneralListResponse<>(userDTOList, friendshipPage);
     }
 
     public GeneralListResponse<UserDTO> getRequests(String name, ElementPageable pageable) {
@@ -54,7 +54,7 @@ public class FriendsService {
         List<Person> persons = getFriendsFromRequests(name, requestPage.getContent());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
-        return new GeneralListResponse<UserDTO>(userDTOList, requestPage);
+        return new GeneralListResponse<>(userDTOList, requestPage);
     }
 
     private List<Person> getFriendsFromRequests(String name, List<Friendship> requests) {
