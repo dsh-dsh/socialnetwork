@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.skillbox.socialnet.model.dto.NotificationInterfaceProjectile;
 import com.skillbox.socialnet.model.rs.NotificationDataRS;
 import com.skillbox.socialnet.model.rs.NotificationRS;
 import com.skillbox.socialnet.model.dto.CommentAuthorDTO;
@@ -9,6 +10,7 @@ import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -102,4 +104,33 @@ public class NotificationService {
                 .map(this::createDataRS)
                 .collect(Collectors.toList());
     }
+
+//
+//    //@Scheduled(cron = "0 * * * * *") //каждую минуту
+//    //@Scheduled(cron = "0 0 * * * *") //каждый час
+//    @Scheduled(cron = "0 12,00 * * * *")//каждые 12 часов
+//    private void createBirthdayNotifications(){
+//        List<Integer> allIds = personRepository.getAllIds();
+//        for (Integer allId : allIds) {
+//            createBirthdayRS(allId);
+//        }
+//    }
+//
+//
+//    private void createBirthdayRS(int id){
+//        List<NotificationInterfaceProjectile> ids = friendshipRepository.getIdsForNotification(id);
+//
+//        for (NotificationInterfaceProjectile nip : ids) {
+//            if (nip.getSrc() == id) {
+//                if (personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getDst()) != null) {
+//                    notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getDst().toString(), personRepository.getEmailById(id), false);
+//                }
+//            }
+//            if (nip.getDst() == id) {
+//                if(personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getSrc()) != null){
+//                    notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getSrc().toString(), personRepository.getEmailById(id), false);
+//                }
+//            }
+//        }
+//    }
 }

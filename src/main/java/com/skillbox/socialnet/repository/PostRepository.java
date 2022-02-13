@@ -66,4 +66,20 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = "delete from post as p where p.author_id = :id ",
             nativeQuery = true)
     void deleteForDeletedPerson(int id);
+
+    @Query(value = "select count(*) from post where author_id = :id",
+            nativeQuery = true)
+    Integer getSumOfPostsById(int id);
+
+    @Query(value = "select count(*) from post_like where person_id = :id",
+            nativeQuery = true)
+    Integer getSumOfLikes(int id);
+
+    @Query(value = "select MIN(time) from post where author_id = :id",
+            nativeQuery = true)
+    Timestamp getFirstPublication(int id);
+
+    @Query(value = "select count(*) from post_comment where author_id = :id",
+            nativeQuery = true)
+    Integer getSumOfComments(int id);
 }
