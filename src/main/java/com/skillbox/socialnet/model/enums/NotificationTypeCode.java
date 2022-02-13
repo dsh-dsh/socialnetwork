@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.model.enums;
 
 public enum NotificationTypeCode {
-    zero,
+    ZERO,
     POST,
     POST_COMMENT,
     COMMENT_COMMENT,

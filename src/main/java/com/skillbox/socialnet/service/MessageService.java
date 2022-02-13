@@ -1,6 +1,5 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
@@ -29,8 +28,9 @@ public class MessageService {
         pageable.setSort(Sort.by("time"));
         return  messageRepository.findByDialog(dialog, pageable);
     }
+
     public List<Message> getMessagesByDialog(Dialog dialog) {
-        return  messageRepository.findByDialog(dialog);
+        return messageRepository.findByDialog(dialog);
     }
 
     public long countUnreadMessages(Person me, Set<Dialog> dialogs) {
@@ -71,23 +71,5 @@ public class MessageService {
         return message;
     }
 
-    //покаНеИспользуется
-    public Message getMessageToRead(int messageId) {
-        Message message = messageRepository.findById(messageId)
-                .orElseThrow(BadRequestException::new);
-        return setMessagesStatusRead(message, MessageReadStatus.READ);
-    }
 
-    //покаНеИспользуется
-    public Message setMessagesStatusRead(Message message, MessageReadStatus status) {
-        message.setReadStatus(status);
-        return messageRepository.save(message);
-    }
-
-    //покаНеИспользуется
-    public void deleteMessages(List<Message> messages) {
-        if(messages != null) {
-            messageRepository.deleteMessagesByList(messages);
-        }
-    }
 }

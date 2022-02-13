@@ -1,9 +1,10 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.exception.NoSuchPostException;
+import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.dto.DeleteLikeDTO;
 import com.skillbox.socialnet.model.dto.LikeDTO;
 import com.skillbox.socialnet.model.dto.LikedDTO;
+import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostLike;
 import com.skillbox.socialnet.repository.LikesRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
@@ -37,11 +38,9 @@ public class LikeService {
 
     public LikeDTO setLike(int postId) {
         PostLike postLike = new PostLike();
-        postLike.setPost(postRepository.findPostById(postId).orElseThrow(NoSuchPostException::new));
-//        postLike.setPost(postRepository.findById(postId));
+        postLike.setPost(postRepository.findPostById(postId).orElseThrow(BadRequestException::new));
         postLike.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         postLike.setPerson(authService.getPersonFromSecurityContext());
-        //todo create notification for like
         likesRepository.save(postLike);
         LikeDTO likeDTO = new LikeDTO();
         LikeDTO.addUser(likeDTO, postLike.getPerson());
@@ -49,16 +48,20 @@ public class LikeService {
     }
 
     public LikedDTO getLiked(int postId, int userId) {
-        Optional<PostLike> postLikeOptional =
-                likesRepository.findByPostAndPerson(postRepository.findById(postId), personRepository.findPersonById(userId));
-        boolean prop = postLikeOptional.isPresent();
+        Post post = postRepository.findById(postId);
+        if (post == null){
+            throw new BadRequestException();
+        }
+        Optional<PostLike> postLike =
+                likesRepository.findByPostAndPerson(post, personRepository.findPersonById(userId));
+        boolean prop = postLike.isPresent();
         return new LikedDTO(prop, prop, prop);
     }
 
     public DeleteLikeDTO deleteLike(int postId){
-        Optional<PostLike> postLikeOptional =
-                likesRepository.findByPostAndPerson(postRepository.findById(postId), authService.getPersonFromSecurityContext());
-        postLikeOptional.ifPresent(likesRepository::delete);
+        PostLike postLike =
+                likesRepository.findByPostAndPerson(postRepository.findById(postId), authService.getPersonFromSecurityContext()).orElseThrow(BadRequestException::new);
+        likesRepository.delete(postLike);
         return new DeleteLikeDTO();
     }
 

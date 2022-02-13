@@ -1,6 +1,5 @@
 var stompClient = null;
 var user_id = 1;
-var dialog_id = 1;
 
 $(function () {
     connect();
@@ -30,6 +29,6 @@ function getMessages(data_body) {
 }
 
 function sendMessage() {
-    var end_point = "/ws/app/message/" + dialog_id + "/" + user_id;
+    var end_point = "/ws/app/message/" + user_id;
     stompClient.send(end_point, {}, JSON.stringify({'text': 'test message text'}));
 }

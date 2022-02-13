@@ -1,13 +1,13 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.Friendship;
 import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
@@ -33,6 +33,7 @@ public class FriendsService {
 
     private final FriendshipRepository friendshipRepository;
     private final PersonRepository personRepository;
+    private final PersonService personService;
     private final AuthService authService;
     private final NotificationService notificationService;
 
@@ -43,7 +44,7 @@ public class FriendsService {
         List<Person> persons = getFriendsFromFriendships(name, currentPerson, friendshipPage.getContent());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
-        return new GeneralListResponse<UserDTO>(userDTOList, friendshipPage);
+        return new GeneralListResponse<>(userDTOList, friendshipPage);
     }
 
     public GeneralListResponse<UserDTO> getRequests(String name, ElementPageable pageable) {
@@ -53,7 +54,7 @@ public class FriendsService {
         List<Person> persons = getFriendsFromRequests(name, requestPage.getContent());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
-        return new GeneralListResponse<UserDTO>(userDTOList, requestPage);
+        return new GeneralListResponse<>(userDTOList, requestPage);
     }
 
     private List<Person> getFriendsFromRequests(String name, List<Friendship> requests) {
@@ -98,7 +99,7 @@ public class FriendsService {
     private Optional<Friendship> getAndAcceptFriendship(Person currentPerson, Person dstPerson) {
         List<Friendship> requests = friendshipRepository
                 .findRequests(currentPerson, dstPerson, FriendshipStatusCode.REQUEST);
-        if(requests.size() > 0) {
+        if(!requests.isEmpty()) {
             Friendship friendship = acceptFriendship(dstPerson, requests);
             return Optional.of(friendship);
         }
@@ -130,7 +131,7 @@ public class FriendsService {
 
     public Set<Person> getRecommendedFriends(Person currentPerson, Set<Person> myFriends) {
         Set<Person> recommendedFriends = new HashSet<>();
-        if(myFriends.size() > 0) {
+        if(!myFriends.isEmpty()) {
             recommendedFriends = friendshipRepository
                     .findAllFriendsOfMyFriends(myFriends, FriendshipStatusCode.FRIEND)
                     .stream().filter(friendship -> !isMyFriendship(friendship, currentPerson))

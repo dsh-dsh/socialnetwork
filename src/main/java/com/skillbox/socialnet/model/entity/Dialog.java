@@ -1,16 +1,9 @@
 package com.skillbox.socialnet.model.entity;
 
-import com.skillbox.socialnet.model.dto.MessageDTO;
-import com.skillbox.socialnet.model.enums.MessageReadStatus;
-import com.skillbox.socialnet.repository.DialogRepository;
-import com.skillbox.socialnet.repository.MessageRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 import javax.persistence.*;
 import java.util.HashSet;

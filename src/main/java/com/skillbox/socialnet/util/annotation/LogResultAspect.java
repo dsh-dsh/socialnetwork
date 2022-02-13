@@ -27,22 +27,27 @@ public class LogResultAspect {
 
     @Pointcut("within(@com.skillbox.socialnet.util.annotation.InfoLoggable *)")
     public void infoLogClass() {
+        //Need to be empty
     }
 
     @Pointcut("execution(public * *(..))")
     public void publicMethod() {
+        //Need to be empty
     }
 
     @Pointcut("execution(* *..*(..))")
     public void anyMethod() {
+        //Need to be empty
     }
 
     @Pointcut("publicMethod() && infoLogClass()")
     public void infoLogPublicMethods() {
+        //Need to be empty
     }
 
     @Pointcut("anyMethod() && infoLogClass()")
     public void infoLogAnyMethods() {
+        //Need to be empty
     }
 
     @Before("infoLogAnyMethods()")

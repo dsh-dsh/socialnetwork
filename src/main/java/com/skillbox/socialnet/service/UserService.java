@@ -1,13 +1,12 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.model.RQ.UserSearchRQ;
-import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.mapper.PersonMapper;
-import com.skillbox.socialnet.repository.*;
+import com.skillbox.socialnet.model.rq.UserChangeRQ;
+import com.skillbox.socialnet.model.rq.UserSearchRQ;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.annotation.Loggable;
@@ -16,36 +15,33 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.skillbox.socialnet.util.Constants.*;
+import static com.skillbox.socialnet.util.Constants.USER_DELETE_SUCCESS;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final PersonMapper personMapper;
     private final PersonService personService;
     private final PersonRepository personRepository;
     private final AuthService authService;
 
     public UserDTO getUser() {
-        Person person = authService.getPersonFromSecurityContext();
-        return UserDTO.getUserDTO(person);
+        return UserDTO.getUserDTO(authService.getPersonFromSecurityContext());
     }
 
     public UserDTO getUserById(int id) {
-        UserDTO userDTO = UserDTO.getUserDTO(personService.getPersonById(id));
-        return userDTO;
+        return UserDTO.getUserDTO(personService.getPersonById(id));
     }
 
     public UserDTO editUser(UserChangeRQ userChangeRQ) {
-        String email = authService.getPersonFromSecurityContext().getEMail();
-        return UserDTO.getUserDTO(personService.editPerson(email, userChangeRQ));
+        return UserDTO.getUserDTO(personService.editPerson(authService.getPersonFromSecurityContext().getEMail(),
+                userChangeRQ));
     }
 
     public String deleteUser() {
@@ -57,7 +53,7 @@ public class UserService {
         Page<Person> personPage = personRepository
                 .findByFirstNameContainingOrLastNameContainingIgnoreCase(firstOrLastName, firstOrLastName, pageable);
         List<UserDTO> userDTOList = personPage.stream()
-                .map(personMapper::mapToUserDTO).collect(Collectors.toList());
+                .map(UserDTO::getUserDTO).collect(Collectors.toList());
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 
@@ -71,7 +67,7 @@ public class UserService {
                 userSearchRQ.getFirstName(), userSearchRQ.getLastName(),
                 userSearchRQ.getCountry(), userSearchRQ.getCity(), from, to, pageable);
         List<UserDTO> userDTOList = personPage.stream()
-                .map(personMapper::mapToUserDTO).collect(Collectors.toList());
+                .map(UserDTO::getUserDTO).collect(Collectors.toList());
         return new GeneralListResponse<>(userDTOList, personPage);
     }
 

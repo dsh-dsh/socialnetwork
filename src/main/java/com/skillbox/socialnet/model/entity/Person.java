@@ -2,7 +2,6 @@ package com.skillbox.socialnet.model.entity;
 
 import com.skillbox.socialnet.model.enums.MessagesPermission;
 import lombok.*;
-import org.springframework.data.domain.Pageable;
 
 import javax.persistence.*;
 import java.sql.Timestamp;

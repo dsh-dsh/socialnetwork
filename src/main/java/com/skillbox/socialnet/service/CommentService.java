@@ -1,15 +1,14 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.RQ.CommentRQ;
 import com.skillbox.socialnet.model.dto.CommentDTO;
 import com.skillbox.socialnet.model.dto.DeleteDTO;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
 import com.skillbox.socialnet.model.entity.PostComment;
+import com.skillbox.socialnet.model.rq.CommentRQ;
 import com.skillbox.socialnet.repository.CommentRepository;
 import com.skillbox.socialnet.util.Constants;
-import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    public CommentDTO rewriteCommentToThePost(int id, int commentId, CommentRQ commentRQ) {
+    public CommentDTO rewriteCommentToThePost(int commentId, CommentRQ commentRQ) {
         PostComment postComment = commentRepository.findById(commentId)
                 .orElseThrow(BadRequestException::new);
         postComment.setCommentText(commentRQ.getCommentText());
@@ -59,11 +58,9 @@ public class CommentService {
 
     public List<CommentDTO> getCommentsDTOList(Post post) {
         List<PostComment> comments = commentRepository.findByPostAndParentAndIsBlocked(post, null, false);
-        List<CommentDTO> commentsDTO = comments.stream()
+        return comments.stream()
                 .map(this::getCommentDTO)
                 .collect(Collectors.toList());
-
-        return commentsDTO;
     }
 
     private CommentDTO getCommentDTO(PostComment comment) {
@@ -74,7 +71,7 @@ public class CommentService {
 
     private List<CommentDTO> getSubCommentsDTO(PostComment comment) {
         List<PostComment> comments = getSubComments(comment);
-        return  comments.stream()
+        return comments.stream()
                 .map(CommentDTO::getCommentDTO)
                 .collect(Collectors.toList());
     }

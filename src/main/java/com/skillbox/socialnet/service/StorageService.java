@@ -1,15 +1,10 @@
 package com.skillbox.socialnet.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.skillbox.socialnet.config.Config;
 import com.skillbox.socialnet.model.dto.FileDTO;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +33,7 @@ public class StorageService {
                 String[] strings = activePerson.getPhoto().split("/");
                 prevImg = strings[strings.length - 1];
             }
-            activePerson.setPhoto(savePhotoInCloud(file, prevImg));
+            activePerson.setPhoto(Cloud.savePhotoInCloud(file, prevImg));
             personRepository.save(activePerson);
             fileDTO.setOwnerId(activePerson.getId());
             fileDTO.setFileName(multipartFile.getName());
@@ -51,20 +46,5 @@ public class StorageService {
         return fileDTO;
     }
 
-    private String savePhotoInCloud(File file, String prevImg) {
-        String fileName = System.currentTimeMillis() + file.getName();
-        String bucketName = "jevaibucket/publicprefix";
-        String fileObjKeyName = fileName;
 
-        s3Client.putObject(new PutObjectRequest(bucketName, fileObjKeyName, file));
-        if (!prevImg.isEmpty()){
-            s3Client.deleteObject(new DeleteObjectRequest(bucketName, prevImg));
-        }
-        return "https://jevaibucket.s3.eu-central-1.amazonaws.com/publicprefix/" + fileObjKeyName;
-    }
-
-    private void deletePhotoFromCloud(String prevImg){
-        String bucketName = "jevaibucket/publicprefix";
-        s3Client.deleteObject(new DeleteObjectRequest(bucketName, prevImg));
-    }
 }

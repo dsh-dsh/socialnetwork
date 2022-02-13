@@ -24,20 +24,16 @@ public class ElementPageable implements Pageable {
 
     @Override
     public int getPageNumber() {
-//        System.out.println("offset = " + offset);
-//        System.out.println("itemPerPage = " + itemPerPage);
         return offset / itemPerPage;
     }
 
     @Override
     public int getPageSize() {
-//        System.out.println("getPageSize() itemPerPage = " + itemPerPage);
         return itemPerPage;
     }
 
     @Override
     public long getOffset() {
-//        System.out.println("getOffset() offset = " + offset);
         return offset;
     }
 

@@ -1,8 +1,8 @@
 package com.skillbox.socialnet.controller;
 
 
-import com.skillbox.socialnet.model.RQ.AuthUserRQ;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rq.AuthUserRQ;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.AuthService;

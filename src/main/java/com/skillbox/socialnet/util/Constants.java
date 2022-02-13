@@ -1,6 +1,8 @@
 package com.skillbox.socialnet.util;
 
 public class Constants {
+    private Constants() {
+    }
 
     public static final int MAX_AGE = 6733;
 
@@ -17,16 +19,16 @@ public class Constants {
     public static final String PASSWWORD_RECOVERY_SUBJECT = "Востановление пароля";
     public static final String PASSWWORD_RECOVERY_TEXT =
             "Здравствуйте,\n" +
-            "Мы получили запрос на изменение пароля вашей учётной записи ZERON.\n" +
-            "Если вы не отправляли его, пожалуйста, игнорируйте это письмо и продолжайте использовать текущий пароль.\n" +
-            "Чтобы сбросить пароль, перейдите по следующей ссылке в течение 24 часов: \n%s\n";
+                    "Мы получили запрос на изменение пароля вашей учётной записи ZERON.\n" +
+                    "Если вы не отправляли его, пожалуйста, игнорируйте это письмо и продолжайте использовать текущий пароль.\n" +
+                    "Чтобы сбросить пароль, перейдите по следующей ссылке в течение 24 часов: \n%s\n";
 
     public static final String EMAIL_RECOVERY_SUBJECT = "Смена почты";
     public static final String EMAIL_RECOVERY_TEXT =
             "Здравствуйте,\n" +
-            "Мы получили запрос на изменение почты в вашей учётной записи ZERON.\n" +
-            "Если вы не отправляли его, пожалуйста, игнорируйте это письмо.\n" +
-            "Чтобы изменить вашу почту, перейдите по следующей ссылке в течение 24 часов: \n%s\n";
+                    "Мы получили запрос на изменение почты в вашей учётной записи ZERON.\n" +
+                    "Если вы не отправляли его, пожалуйста, игнорируйте это письмо.\n" +
+                    "Чтобы изменить вашу почту, перейдите по следующей ссылке в течение 24 часов: \n%s\n";
 
     public static final String API_ACCOUNT = "/api/v1/account";
     public static final String API_PLATFORM = "/api/v1/platform";
@@ -36,6 +38,7 @@ public class Constants {
     public static final String USER_BLOCKED_RS = "User is blocked";
     public static final String USER_UNBLOCKED_RS = "User is unblocked";
     public static final String OK = "ok";
+    public static final String STRING = "string";
     public static final String USER_ALREADY_EXIST = "Email is already registered";
 
     public static final String EXPIRATION_PREFIX = "E";
@@ -53,5 +56,6 @@ public class Constants {
     public static final String NOT_VALID_SETTING_TYPE_MESSAGE = "Notification setting type must be valid";
     public static final String BLANK_COMMENT_MESSAGE = "Comment text must not be blank";
     public static final String NOT_VALID_TITLE_MESSAGE = "Title must more then 3 length";
+    public static final String NOT_VALID_LOCAL_MESSAGE = "Location title must more then 3 length";
     public static final String NOT_VALID_TEXT_MESSAGE = "Text must more then 15 length";
 }

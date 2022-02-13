@@ -61,7 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         config.addAllowedOrigin("");
         config.addAllowedHeader("");
         config.addAllowedMethod("*");
-//        source.registerCorsConfiguration("/", config);
         org.springframework.web.filter.CorsFilter corsFilter = new org.springframework.web.filter.CorsFilter(source);
         FilterRegistrationBean bean = new FilterRegistrationBean(corsFilter);
         bean.setOrder(0);

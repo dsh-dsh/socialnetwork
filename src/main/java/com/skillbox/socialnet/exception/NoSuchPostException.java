@@ -1,6 +1,6 @@
 package com.skillbox.socialnet.exception;
 
-public class NoSuchPostException extends RuntimeException{
+public class NoSuchPostException extends RuntimeException {
     public NoSuchPostException() {
     }
     public NoSuchPostException(String message) {

@@ -2,15 +2,15 @@ package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.exception.NoSuchUserException;
-import com.skillbox.socialnet.model.RQ.AccountEmailRQ;
-import com.skillbox.socialnet.model.RQ.AccountNotificationRQ;
-import com.skillbox.socialnet.model.RQ.AccountPasswordSetRQ;
-import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.NotificationSettingsDto;
 import com.skillbox.socialnet.model.entity.NotificationSetting;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
+import com.skillbox.socialnet.model.rq.AccountEmailRQ;
+import com.skillbox.socialnet.model.rq.AccountNotificationRQ;
+import com.skillbox.socialnet.model.rq.AccountPasswordSetRQ;
+import com.skillbox.socialnet.model.rq.AccountRegisterRQ;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.repository.SettingsRepository;
 import com.skillbox.socialnet.security.JwtProvider;
@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.Month;
@@ -100,7 +99,7 @@ public class AccountService {
                 .orElseThrow(NoSuchUserException::new);
         long expiration = System.currentTimeMillis() + expirationTime;
         String confirmationCode = UUID.randomUUID()
-                .toString().replaceAll("-", "") + "E" + expiration;
+                .toString().replace("-", "") + "E" + expiration;
         person.setConfirmationCode(confirmationCode);
         personRepository.save(person);
 
