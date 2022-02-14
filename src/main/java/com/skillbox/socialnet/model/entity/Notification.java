@@ -15,18 +15,25 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private int id;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id")
     private NotificationType type;
+
     @Column(name = "sent_time")
     private Timestamp sentTime;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "person_id")
     private Person person;
+
     @Column(name = "entity_id")
     private String entity;
+
     @Column(name = "contact")
     private String contact;
+
     @Column
     private boolean seen;
 }

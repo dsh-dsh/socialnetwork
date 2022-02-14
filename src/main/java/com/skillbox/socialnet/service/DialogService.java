@@ -1,16 +1,16 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.RQ.DialogCreateDTORequest;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.rq.DialogCreateDTORequest;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.repository.DialogRepository;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,19 +25,23 @@ public class DialogService {
     private final MessageService messageService;
     private final PersonService personService;
     private final AuthService authService;
+    private final WebSocketService webSocketService;
 
-    public GeneralListResponse<DialogDTO> getDialogs(Pageable pageable) {
+    private static final Comparator<DialogDTO> comparatorByLastMessage =
+            Comparator.comparing(dialogDTO -> dialogDTO.getLastMessage().getTime());
+
+    public List<DialogDTO> getDialogs() {
         Person author = authService.getPersonFromSecurityContext();
-        Page<Dialog> dialogPage = dialogRepository.findByPerson(author, pageable);
-        List<DialogDTO> dialogDTOS = getDialogDTOList(author, dialogPage.getContent());
+        List<Dialog> dialogs = dialogRepository.findByPerson(author);
 
-        return new GeneralListResponse<DialogDTO>(dialogDTOS, dialogPage);
+        return getDialogDTOList(author, dialogs);
     }
 
     public List<Dialog> getDialogs(Person author) {
         return dialogRepository.findByPerson(author);
     }
 
+    @Transactional
     public DialogIdDTO createDialog(DialogCreateDTORequest dialogCreateDTORequest) {
         Set<Person> persons = personService.getPersonsByIdList(dialogCreateDTORequest.getUserIds());
         Person author = authService.getPersonFromSecurityContext();
@@ -48,7 +52,7 @@ public class DialogService {
         return new DialogIdDTO(dialog.getId());
     }
 
-    public GeneralListResponse<MessageDTO> getMessagesInDialog(long dialogId, Pageable pageable) {
+    public GeneralListResponse<MessageDTO> getMessagesInDialog(long dialogId, ElementPageable pageable) {
         Dialog dialog = dialogRepository.findById(dialogId)
                 .orElseThrow(BadRequestException::new);
         Person author = authService.getPersonFromSecurityContext();
@@ -80,12 +84,25 @@ public class DialogService {
         return new MessageDTO(author, message);
     }
 
+    public void sendMessageByWebSocket(long dialogId, int authorId, MessageSendDtoRequest messageSendDtoRequest) {
+        Dialog dialog = dialogRepository.findById(dialogId)
+                .orElseThrow(BadRequestException::new);
+        Person author = personService.getPersonById(authorId);
+        Person recipient = getRecipient(dialog, author);
+        Message message = messageService.addMessage(dialog, author,
+                recipient, messageSendDtoRequest.getMessageText());
+
+
+        webSocketService.sendMessage(message.getAuthor().getId(), new MessageDTO(author, message));
+    }
+
     private List<DialogDTO> getDialogDTOList(Person author, Collection<Dialog> dialogs) {
         return dialogs.stream()
                 .map(dialog -> new DialogDTO(
                         dialog, author,
                         messageService.getLastMessage(dialog),
                         messageService.getUnreadCount(dialog, author)))
+                .sorted(comparatorByLastMessage.reversed())
                 .collect(Collectors.toList());
     }
 
@@ -115,68 +132,4 @@ public class DialogService {
         return dialogRepository.save(dialog);
     }
 
-    //покаНеИспользуется
-    public MessageResponseDTO readMessage(long dialogId, int messageId) {
-        Message message = messageService.getMessageToRead(messageId);
-        return new MessageResponseDTO(message.getMessageText());
-    }
-
-    //покаНеИспользуется
-    public DialogIdDTO deleteDialog(long id) {
-        Dialog dialog = dialogRepository.getOne(id);
-        List<Message> messages = messageService.getMessagesByDialog(dialog);
-        messageService.deleteMessages(messages);
-        dialogRepository.delete(dialog);
-
-        return new DialogIdDTO(dialog.getId());
-    }
-
-    //покаНеИспользуется
-    public DialogCreateDTORequest addUsersToDialog(long dialogId, DialogCreateDTORequest dialogCreateDTORequest) {
-        Dialog dialog = dialogRepository.findById(dialogId)
-                .orElseThrow(BadRequestException::new);
-        Set<Person> persons = personService.getPersonsByIdList(dialogCreateDTORequest.getUserIds());
-        dialog.getPersons().addAll(persons);
-        dialogRepository.save(dialog);
-        List<Integer> idList = persons.stream().map(Person::getId).collect(Collectors.toList());
-
-        return new DialogCreateDTORequest(idList);
-    }
-
-    //покаНеИспользуется
-    public DialogCreateDTORequest deleteUsersFromDialog(long dialogId, String ids) {
-        Dialog dialog = dialogRepository.findById(dialogId)
-                .orElseThrow(BadRequestException::new);
-        List<Integer> personIdList = new ArrayList<>(); // TODO выяснить формат String ids
-        Set<Person> persons = personService.getPersonsByIdList(personIdList);
-        dialog.getPersons().removeAll(persons);
-        dialogRepository.save(dialog);
-        List<Integer> idList = persons.stream().map(Person::getId).collect(Collectors.toList());
-
-        return new DialogCreateDTORequest(idList);
-    }
-
-    //покаНеИспользуется
-    public InviteLinkDTO getLinkToJoin(long dialogId) {
-        Dialog dialog = dialogRepository.findById(dialogId)
-                .orElseThrow(BadRequestException::new);
-        String link = ""; // TODO выяснить формат String link
-
-        return new InviteLinkDTO(link);
-    }
-
-    //покаНеИспользуется
-    public DialogCreateDTORequest joinByLink(long dialogId) {
-        Person person = authService.getPersonFromSecurityContext();
-        Dialog dialog = dialogRepository.findById(dialogId)
-                .orElseThrow(BadRequestException::new);
-        Set<Person> personSet = dialog.getPersons();
-        personSet.add(person);
-        dialogRepository.save(dialog);
-        List<Integer> idList = personSet.stream()
-                .map(Person::getId)
-                .collect(Collectors.toList());
-
-        return new DialogCreateDTORequest(idList);
-    }
 }

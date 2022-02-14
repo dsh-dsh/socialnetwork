@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skillbox.socialnet.model.RQ.DialogCreateDTORequest;
+import com.skillbox.socialnet.model.rq.DialogCreateDTORequest;
 import com.skillbox.socialnet.model.dto.MessageSendDtoRequest;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Person;
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class DialogControllerTest {
+class DialogControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -60,7 +60,7 @@ public class DialogControllerTest {
     @Order(1)
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/dialog/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void createDialogsTest() throws Exception {
+    void createDialogsTest() throws Exception {
         setTestingDialogId();
         DialogCreateDTORequest request = new DialogCreateDTORequest(List.of(NEW_DIALOG_RECIPIENT_ID));
         mockMvc.perform(post(URL_PREFIX)
@@ -77,7 +77,7 @@ public class DialogControllerTest {
     @Test
     @Order(2)
     @WithUserDetails(EXISTING_EMAIL)
-    public void createDialogsExistsTest() throws Exception {
+    void createDialogsExistsTest() throws Exception {
         DialogCreateDTORequest request = new DialogCreateDTORequest(List.of(NEW_DIALOG_RECIPIENT_ID));
         mockMvc.perform(post(URL_PREFIX)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +93,7 @@ public class DialogControllerTest {
     @Test
     @Order(3)
     @WithUserDetails(EXISTING_EMAIL)
-    public void getDialogsTest() throws Exception {
+    void getDialogsTest() throws Exception {
         setTestingDialogId();
         Pageable pageable = PageRequest.of(0, 10);
         mockMvc.perform(get(URL_PREFIX))
@@ -102,11 +102,10 @@ public class DialogControllerTest {
                 .andExpect(jsonPath("$.data").isArray());
     }
 
-    @Test
     @Order(4)
-    @RepeatedTest(2)
+    @RepeatedTest(3)
     @WithUserDetails(EXISTING_EMAIL)
-    public void sendMessageTest() throws Exception {
+    void sendMessageTest() throws Exception {
         setTestingDialogId();
         MessageSendDtoRequest request = new MessageSendDtoRequest("message text");
         mockMvc.perform(post(URL_PREFIX + "/" + newDialogId + "/messages")
@@ -121,7 +120,7 @@ public class DialogControllerTest {
     @Test
     @Order(7)
     @WithUserDetails(RECIPIENT_EMAIL)
-    public void getRecipientUnreadCountTest() throws Exception {
+    void getRecipientUnreadCountTest() throws Exception {
         setTestingDialogId();
         mockMvc.perform(get(URL_PREFIX + "/unreaded"))
                 .andDo(print())
@@ -132,7 +131,7 @@ public class DialogControllerTest {
     @Test
     @Order(8)
     @WithUserDetails(RECIPIENT_EMAIL)
-    public void getMessagesTest() throws Exception {
+    void getMessagesTest() throws Exception {
         setTestingDialogId();
         mockMvc.perform(get(URL_PREFIX + "/" + newDialogId + "/messages"))
                 .andDo(print())
@@ -143,7 +142,7 @@ public class DialogControllerTest {
     @Test
     @Order(9)
     @WithUserDetails(RECIPIENT_EMAIL)
-    public void getRecipientUnreadCountAfterGetMessageTest() throws Exception {
+    void getRecipientUnreadCountAfterGetMessageTest() throws Exception {
         setTestingDialogId();
         mockMvc.perform(get(URL_PREFIX + "/unreaded"))
                 .andDo(print())
@@ -151,11 +150,10 @@ public class DialogControllerTest {
                 .andExpect(jsonPath("$.data.count").value(0));
     }
 
-    @Test
     @Order(10)
-    @RepeatedTest(1)
+    @RepeatedTest(2)
     @WithUserDetails(RECIPIENT_EMAIL)
-    public void sendReplyMessageTest() throws Exception {
+    void sendReplyMessageTest() throws Exception {
         setTestingDialogId();
         MessageSendDtoRequest request = new MessageSendDtoRequest("message text");
         mockMvc.perform(post(URL_PREFIX + "/" + newDialogId + "/messages")
@@ -170,7 +168,7 @@ public class DialogControllerTest {
     @Test
     @Order(11)
     @WithUserDetails(EXISTING_EMAIL)
-    public void getAuthorUnreadCountTest() throws Exception {
+    void getAuthorUnreadCountTest() throws Exception {
         setTestingDialogId();
         mockMvc.perform(get(URL_PREFIX + "/unreaded"))
                 .andDo(print())
@@ -182,7 +180,7 @@ public class DialogControllerTest {
         Person author = personService.getPersonByEmail(EXISTING_EMAIL);
         Person recipient = personService.getPersonById(NEW_DIALOG_RECIPIENT_ID);
         Dialog dialog = dialogService.getDialogByPersonSet(author, Set.of(author, recipient)).orElse(null);
-        if(dialog != null) {
+        if (dialog != null) {
             this.newDialogId = dialog.getId();
         }
     }

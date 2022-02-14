@@ -16,30 +16,30 @@ public class ElementPageable implements Pageable {
 
     private int itemPerPage = DEFAULT_ITEM_PER_PAGE;
     private int offset;
-    private String sort = DEFAULT_SORT_ITEM;
+    private Sort sort = Sort.by(DEFAULT_SORT_ITEM);
+
+    public void setSort(Sort sort) {
+        this.sort = sort;
+    }
 
     @Override
     public int getPageNumber() {
-//        System.out.println("offset = " + offset);
-//        System.out.println("itemPerPage = " + itemPerPage);
         return offset / itemPerPage;
     }
 
     @Override
     public int getPageSize() {
-//        System.out.println("getPageSize() itemPerPage = " + itemPerPage);
         return itemPerPage;
     }
 
     @Override
     public long getOffset() {
-//        System.out.println("getOffset() offset = " + offset);
         return offset;
     }
 
     @Override
     public Sort getSort() {
-        return Sort.by(sort);
+        return sort;
     }
 
     @Override

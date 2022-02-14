@@ -42,4 +42,13 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
                    "values(:typeId, :sentTime, :personId, :entityId, :contact, :seen)",
     nativeQuery = true)
     void createNewNotification(int typeId, Timestamp sentTime, int personId, String entityId, String contact, boolean seen);
+
+    Optional<Notification> findBySentTimeAndEntityAndContactAndSeen(Timestamp sentTime, String entity, String contact, boolean seen);
+
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from notification as n where n.person_id = :id",
+            nativeQuery = true)
+    void deleteForDeletedPerson(int id);
 }

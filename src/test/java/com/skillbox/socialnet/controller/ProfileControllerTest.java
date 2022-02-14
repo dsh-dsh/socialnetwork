@@ -1,8 +1,8 @@
 package com.skillbox.socialnet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.UserChangeRQ;
+import com.skillbox.socialnet.model.rq.PostChangeRQ;
+import com.skillbox.socialnet.model.rq.UserChangeRQ;
 import com.skillbox.socialnet.util.Constants;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ProfileControllerTest {
+class ProfileControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,7 +61,7 @@ public class ProfileControllerTest {
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void gettingPerson() throws Exception {
+    void gettingPerson() throws Exception {
         mockMvc.perform(get(URL_PREFIX + ME)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -69,8 +69,9 @@ public class ProfileControllerTest {
                 .andExpect(jsonPath("$.data.email").value(EXISTING_EMAIL));
     }
 
+
     @Test
-    public void gettingWrongPerson() throws Exception {
+    void gettingWrongPerson() throws Exception {
         mockMvc.perform(get(URL_PREFIX + ME)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -81,7 +82,7 @@ public class ProfileControllerTest {
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editingPerson() throws Exception {
+    void editingPerson() throws Exception {
         UserChangeRQ userChangeRQ = getUserChangeRQ();
         mockMvc.perform(put(URL_PREFIX + ME)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +96,7 @@ public class ProfileControllerTest {
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editingPersonWithOutCityAndCountryTest() throws Exception {
+    void editingPersonWithOutCityAndCountryTest() throws Exception {
         UserChangeRQ userChangeRQ = getUserChangeRQ();
         userChangeRQ.setCity(null);
         userChangeRQ.setCountry(null);
@@ -113,7 +114,7 @@ public class ProfileControllerTest {
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editingPersonWithOutFirstNameTest() throws Exception {
+    void editingPersonWithOutFirstNameTest() throws Exception {
         UserChangeRQ userChangeRQ = getUserChangeRQ();
         userChangeRQ.setFirstName("");
         mockMvc.perform(put(URL_PREFIX + ME)
@@ -128,7 +129,7 @@ public class ProfileControllerTest {
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editingPersonWithOutLastNameTest() throws Exception {
+    void editingPersonWithOutLastNameTest() throws Exception {
         UserChangeRQ userChangeRQ = getUserChangeRQ();
         userChangeRQ.setLastName("");
         mockMvc.perform(put(URL_PREFIX + ME)
@@ -143,7 +144,7 @@ public class ProfileControllerTest {
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editingPersonWithNotValidPhoneNumberTest() throws Exception {
+    void editingPersonWithNotValidPhoneNumberTest() throws Exception {
         UserChangeRQ userChangeRQ = getUserChangeRQ();
         userChangeRQ.setPhone(NOT_VALID_PHONE_NUMBER);
         mockMvc.perform(put(URL_PREFIX + ME)
@@ -158,7 +159,7 @@ public class ProfileControllerTest {
     @WithUserDetails(EXISTING_EMAIL)
     @Sql(value = "/sql/person/addPerson.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/deletePerson.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void editingPersonWithNotValidBirthDateTest() throws Exception {
+    void editingPersonWithNotValidBirthDateTest() throws Exception {
         UserChangeRQ userChangeRQ = getUserChangeRQ();
         userChangeRQ.setBirthDate(BIRTHDAY_IN_FUTURE);
         mockMvc.perform(put(URL_PREFIX + ME)
@@ -171,7 +172,7 @@ public class ProfileControllerTest {
 
     @Test
     @WithUserDetails(P1_MAIL)
-    public void getUserWall() throws Exception {
+    void getUserWall() throws Exception {
         mockMvc.perform(get(URL_PREFIX + ID_1 + "/wall"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -180,7 +181,7 @@ public class ProfileControllerTest {
 
     @Test
     @WithUserDetails(P2_MAIL)
-    public void searching() throws Exception {
+    void searching() throws Exception {
         mockMvc.perform(get(URL_PREFIX + "search")
                         .param("first_name", "Василий"))
                 .andDo(print())
@@ -191,7 +192,7 @@ public class ProfileControllerTest {
     @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/person/deleteTestPost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void addPost() throws Exception {
+    void addPost() throws Exception {
         PostChangeRQ postChangeRQ = createPost("testTitle", "valid testText 1");
         mockMvc.perform(post(URL_PREFIX + ID_1 + "/wall")
                         .content(objectMapper.writeValueAsString(postChangeRQ))
@@ -204,8 +205,19 @@ public class ProfileControllerTest {
     }
 
     @Test
+    void addPostUnauthorized() throws Exception {
+        PostChangeRQ postChangeRQ = createPost("testTitle", "valid testText 1");
+        mockMvc.perform(post(URL_PREFIX + ID_1 + "/wall")
+                        .content(objectMapper.writeValueAsString(postChangeRQ))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
     @WithUserDetails(P1_MAIL)
-    public void addPostWithNotValidTitleTest() throws Exception {
+    void addPostWithNotValidTitleTest() throws Exception {
         PostChangeRQ postChangeRQ = createPost("te", "valid testText 1");
         mockMvc.perform(post(URL_PREFIX + ID_1 + "/wall")
                         .content(objectMapper.writeValueAsString(postChangeRQ))
@@ -218,7 +230,7 @@ public class ProfileControllerTest {
 
     @Test
     @WithUserDetails(P1_MAIL)
-    public void addPostWithNotValidTextTest() throws Exception {
+    void addPostWithNotValidTextTest() throws Exception {
         PostChangeRQ postChangeRQ = createPost("title", "short text");
         mockMvc.perform(post(URL_PREFIX + ID_1 + "/wall")
                         .content(objectMapper.writeValueAsString(postChangeRQ))
@@ -233,7 +245,7 @@ public class ProfileControllerTest {
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/person/unblockP1.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/unblockP1.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void blockPerson() throws Exception {
+    void blockPerson() throws Exception {
         mockMvc.perform(put(URL_PREFIX + BLOCK + "/" + ID_1))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -241,14 +253,35 @@ public class ProfileControllerTest {
     }
 
     @Test
+    void blockPersonUnauthorized() throws Exception {
+        mockMvc.perform(put(URL_PREFIX + BLOCK + "/" + ID_1))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/person/blockP1.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/person/unblockP1.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void unblockPerson() throws Exception {
+    void unblockPerson() throws Exception {
         mockMvc.perform(delete(URL_PREFIX + BLOCK + "/" + ID_1))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("ok"));
+    }
+
+    @Test
+    void unblockPersonUnauthorized() throws Exception {
+        mockMvc.perform(delete(URL_PREFIX + BLOCK + "/" + ID_1))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deleteUserUnauthorized() throws Exception {
+        mockMvc.perform(delete(URL_PREFIX + ME))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
 

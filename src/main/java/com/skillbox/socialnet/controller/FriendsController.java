@@ -1,49 +1,52 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.service.FriendsService;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/friends")
 public class FriendsController {
 
     private final FriendsService friendsService;
 
-    @GetMapping("/friends")
+    @GetMapping
     public ResponseEntity<GeneralListResponse<UserDTO>> getAllFriends(
-            @RequestParam(defaultValue = "") String name, Pageable pageable) {
+            @RequestParam(defaultValue = "") String name, ElementPageable pageable) {
         return ResponseEntity.ok(friendsService.getAllFriends(name, pageable));
     }
 
-    @DeleteMapping("/friends/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> deleteFriend(@PathVariable int id) {
-        return ResponseEntity.ok(new GeneralResponse<>(friendsService.deleteFriend(id)));
+        return ResponseEntity.ok(
+                new GeneralResponse<>(friendsService.deleteFriend(id)));
     }
 
-    @PostMapping("/friends/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> addFriend(@PathVariable int id) {
-        return ResponseEntity.ok(new GeneralResponse<>(friendsService.addFriend(id)));
+        return ResponseEntity.ok(
+                new GeneralResponse<>(friendsService.addFriend(id)));
     }
 
-    @GetMapping("/friends/request")
+    @GetMapping("/request")
     public ResponseEntity<GeneralListResponse<UserDTO>> getRequests(
-            @RequestParam(defaultValue = "") String name, Pageable pageable) {
+            @RequestParam(defaultValue = "") String name,
+            ElementPageable pageable) {
         return ResponseEntity.ok(friendsService.getRequests(name, pageable));
     }
 
-    @GetMapping("/friends/recommendations")
-    public ResponseEntity<GeneralListResponse<UserDTO>> getRecommendations(Pageable pageable) {
-        return ResponseEntity.ok(friendsService.getRecommendations(pageable));
+    @GetMapping("/recommendations")
+    public ResponseEntity<GeneralListResponse<UserDTO>> getRecommendations() {
+        return ResponseEntity.ok(
+                new GeneralListResponse<>(friendsService.getRecommendations()));
     }
 
 

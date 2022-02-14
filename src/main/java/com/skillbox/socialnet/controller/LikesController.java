@@ -1,12 +1,14 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.LikeRQ;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rq.LikeRQ;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.DeleteLikeDTO;
 import com.skillbox.socialnet.model.dto.LikeDTO;
 import com.skillbox.socialnet.model.dto.LikedDTO;
+import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.LikeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class LikesController {
 
     private final LikeService likeService;
+    private final AuthService authService;
 
     @GetMapping("/likes")
     public ResponseEntity<GeneralResponse<LikeDTO>> getLikes(@RequestParam("item_id") int itemId,
@@ -26,6 +29,9 @@ public class LikesController {
 
     @PutMapping("/likes")
     public ResponseEntity<GeneralResponse<LikeDTO>> setLike(@RequestBody LikeRQ likeRQ){
+        if (authService.getPersonFromSecurityContext() == null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(likeService.setLike(likeRQ.getId())));
     }
 
@@ -39,6 +45,9 @@ public class LikesController {
     @DeleteMapping("/likes")
     public ResponseEntity<GeneralResponse<DeleteLikeDTO>> deleteLike(@RequestParam("item_id") int itemId,
                                                                      @RequestParam String type){
+        if (authService.getPersonFromSecurityContext() == null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(likeService.deleteLike(itemId)));
     }
 

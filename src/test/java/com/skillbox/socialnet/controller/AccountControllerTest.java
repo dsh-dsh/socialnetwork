@@ -1,10 +1,10 @@
 package com.skillbox.socialnet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skillbox.socialnet.model.RQ.AccountEmailRQ;
-import com.skillbox.socialnet.model.RQ.AccountNotificationRQ;
-import com.skillbox.socialnet.model.RQ.AccountPasswordSetRQ;
-import com.skillbox.socialnet.model.RQ.AccountRegisterRQ;
+import com.skillbox.socialnet.model.rq.AccountEmailRQ;
+import com.skillbox.socialnet.model.rq.AccountNotificationRQ;
+import com.skillbox.socialnet.model.rq.AccountPasswordSetRQ;
+import com.skillbox.socialnet.model.rq.AccountRegisterRQ;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.service.AccountService;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:postgresql://localhost:5432/socialnettest?currentSchema=public")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AccountControllerTest {
+class AccountControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -76,7 +76,7 @@ public class AccountControllerTest {
             "DELETE FROM notification_setting WHERE person_id = (SELECT person.id FROM person WHERE person.e_mail = '" + NEW_EMAIL + "')",
             "DELETE FROM person WHERE person.e_mail = '" + NEW_EMAIL + "'"},
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void registerTest() throws Exception {
+    void registerTest() throws Exception {
         AccountRegisterRQ request = getRegisterRequest(NEW_EMAIL);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/register")
@@ -88,7 +88,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void registerWithNotValidEmailTest() throws Exception {
+    void registerWithNotValidEmailTest() throws Exception {
         AccountRegisterRQ request = getRegisterRequest(NOT_VALID_EMAIL);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/register")
@@ -100,7 +100,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void registerWithExistingEmailTest() throws Exception {
+    void registerWithExistingEmailTest() throws Exception {
         AccountRegisterRQ request = getRegisterRequest(EXISTING_EMAIL);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/register")
@@ -112,7 +112,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void registerWithNotValidPasswordTest() throws Exception {
+    void registerWithNotValidPasswordTest() throws Exception {
         AccountRegisterRQ request = getRegisterRequest(NEW_EMAIL);
         request.setPasswd1("short");
         this.mockMvc.perform(
@@ -125,7 +125,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void registerWithBlankFirstNameTest() throws Exception {
+    void registerWithBlankFirstNameTest() throws Exception {
         AccountRegisterRQ request = getRegisterRequest(NEW_EMAIL);
         request.setFirstName("");
         this.mockMvc.perform(
@@ -138,7 +138,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void registerWithBlankLastNameTest() throws Exception {
+    void registerWithBlankLastNameTest() throws Exception {
         AccountRegisterRQ request = getRegisterRequest(NEW_EMAIL);
         request.setLastName("");
         this.mockMvc.perform(
@@ -151,7 +151,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void recoveryPasswordWithNotExistingEmailTest() throws Exception{
+    void recoveryPasswordWithNotExistingEmailTest() throws Exception {
         AccountEmailRQ request = new AccountEmailRQ(NEW_EMAIL);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/password/recovery")
@@ -163,7 +163,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void recoveryPasswordTest() throws Exception{
+    void recoveryPasswordTest() throws Exception {
         AccountEmailRQ request = new AccountEmailRQ(EXISTING_EMAIL);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/password/recovery")
@@ -177,10 +177,10 @@ public class AccountControllerTest {
     @Test
     @Sql(statements =
             "UPDATE person " +
-            "SET password = '" + ENCODED_PASSWORD + "', confirmation_code = '123456' " +
-            "WHERE e_mail = '" + EXISTING_EMAIL + "'",
+                    "SET password = '" + ENCODED_PASSWORD + "', confirmation_code = '123456' " +
+                    "WHERE e_mail = '" + EXISTING_EMAIL + "'",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void passwordSetTest() throws Exception{
+    void passwordSetTest() throws Exception {
         String confirmationCode = accountService.getConfirmationCode(EXISTING_EMAIL);
         AccountPasswordSetRQ request = new AccountPasswordSetRQ(confirmationCode, NEW_PASSWORD);
 
@@ -197,7 +197,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void passwordSetWithExpiredCodeTest() throws Exception{
+    void passwordSetWithExpiredCodeTest() throws Exception {
         AccountPasswordSetRQ request = new AccountPasswordSetRQ(getExpiredConfirmationCode(), NEW_PASSWORD);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/password/set")
@@ -209,7 +209,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    public void passwordSetWithWrongCodeTest() throws Exception{
+    void passwordSetWithWrongCodeTest() throws Exception {
         String wrongConfirmationCode = "wrong" + accountService.getConfirmationCode(EXISTING_EMAIL);
         AccountPasswordSetRQ request = new AccountPasswordSetRQ(wrongConfirmationCode, NEW_PASSWORD);
         this.mockMvc.perform(
@@ -223,7 +223,7 @@ public class AccountControllerTest {
 
     @Test
     @WithUserDetails(EXISTING_EMAIL)
-    public void shiftEmailTest() throws Exception{
+    void shiftEmailTest() throws Exception {
         AccountEmailRQ request = new AccountEmailRQ(NEW_EMAIL);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/shift-email")
@@ -240,7 +240,7 @@ public class AccountControllerTest {
             "SET e_mail = '" + EXISTING_EMAIL + "' " +
             "WHERE id = " + EXISTING_PERSON_ID,
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void setNewEmailTest() throws Exception{
+    void setNewEmailTest() throws Exception {
         AccountEmailRQ request = new AccountEmailRQ(NEW_EMAIL);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/email")
@@ -255,7 +255,7 @@ public class AccountControllerTest {
 
     @Test
     @WithUserDetails(EXISTING_EMAIL)
-    public void setNotValidEmailTest() throws Exception{
+    void setNotValidEmailTest() throws Exception {
         AccountEmailRQ request = new AccountEmailRQ(NOT_VALID_EMAIL);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/email")
@@ -268,7 +268,7 @@ public class AccountControllerTest {
 
     @Test
     @WithUserDetails(EXISTING_EMAIL)
-    public void setExistingEmailTest() throws Exception{
+    void setExistingEmailTest() throws Exception {
         AccountEmailRQ request = new AccountEmailRQ(EXISTING_EMAIL);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/email")
@@ -286,7 +286,7 @@ public class AccountControllerTest {
             "WHERE notification_type_code = '" + TYPE_CODE + "' " +
             "AND person_id = " + EXISTING_PERSON_ID,
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    public void setNotificationTest() throws Exception{
+    void setNotificationTest() throws Exception {
         AccountNotificationRQ request = new AccountNotificationRQ(String.valueOf(NotificationTypeCode.FRIEND_REQUEST), true);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/notifications")
@@ -299,7 +299,7 @@ public class AccountControllerTest {
 
     @Test
     @WithUserDetails(EXISTING_EMAIL)
-    public void setBlankNotificationSettingTest() throws Exception{
+    void setBlankNotificationSettingTest() throws Exception {
         String notificationRequest = "{\"notification_type\": \"\",\"enable\": true}";
         this.mockMvc.perform(
                         put(URL_PREFIX + "/notifications")
@@ -312,7 +312,7 @@ public class AccountControllerTest {
 
     @Test
     @WithUserDetails(EXISTING_EMAIL)
-    public void setNotValidNotificationSettingTest() throws Exception{
+    void setNotValidNotificationSettingTest() throws Exception {
         String notificationRequest = "{\"notification_type\": \"not_valid_type\",\"enable\": true}";
         this.mockMvc.perform(
                         put(URL_PREFIX + "/notifications")

@@ -1,6 +1,6 @@
 package com.skillbox.socialnet.validation.validator;
 
-import com.skillbox.socialnet.validation.anotation.PhoneNumber;
+import com.skillbox.socialnet.validation.annotation.PhoneNumber;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

@@ -42,6 +42,8 @@ public class UserDTO {
     @JsonProperty("is_you_blocked")
     private boolean isYouBlocked;
     private boolean me = false;
+    @JsonProperty("is_deleted")
+    private boolean isDeleted;
     private String token;
 
     public static UserDTO getUserDTO(Person person){
@@ -60,6 +62,7 @@ public class UserDTO {
         userDTO.setPermission(person.getMessagesPermission());
         userDTO.setLastOnlineTime(person.getLastOnlineTime().getTime());
         userDTO.setBlocked(person.isBlocked());
+        userDTO.setDeleted(person.isDeleted());
         return userDTO;
     }
 }

@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.validation.validator;
 
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
-import com.skillbox.socialnet.validation.anotation.ValidNotificationType;
+import com.skillbox.socialnet.validation.annotation.ValidNotificationType;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

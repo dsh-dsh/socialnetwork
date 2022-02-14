@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.validation.validator;
 
 import com.skillbox.socialnet.service.PersonService;
-import com.skillbox.socialnet.validation.anotation.IsEmailExists;
+import com.skillbox.socialnet.validation.annotation.IsEmailExists;
 import lombok.RequiredArgsConstructor;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
