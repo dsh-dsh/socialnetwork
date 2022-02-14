@@ -42,5 +42,18 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     boolean existsByeMail(String email);
     @Query("select person from Person as person where person.isDeleted = :is_deleted and person.lastOnlineTime < :timestamp")
     List<Person> findAllByDeleted(boolean is_deleted, Timestamp timestamp);
+
+    @Query(value = "select id from person order by id",
+            nativeQuery = true)
+    List<Integer> getAllIds();
+
+    @Query(value = "select id from person where id =:id and (EXTRACT(DAY FROM person.birth_date) - EXTRACT(DAY FROM now()) IN (0,1))",
+            nativeQuery = true)
+    Integer getIdIfBirthDayIsTomorrowOrToday(int id);
+
+    @Query(value = "select e_mail from person where id =:id",
+            nativeQuery = true)
+    String getEmailById(int id);
+
 }
 

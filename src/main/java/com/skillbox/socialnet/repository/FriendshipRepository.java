@@ -82,4 +82,5 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     @Query(value = "delete from friendship as f where f.src_person_id = :id or f.dst_person_id = :id",
             nativeQuery = true)
     void deleteForDeletedPerson(int id);
+
 }
