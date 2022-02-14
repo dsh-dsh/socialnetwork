@@ -1,21 +1,18 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.entity.Dialog;
 import com.skillbox.socialnet.model.entity.Message;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessageReadStatus;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.MessageRepository;
-import com.skillbox.socialnet.repository.NotificationRepository;
+import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -24,13 +21,16 @@ import java.util.Set;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
+    private final WebSocketService webSocketService;
 
-    public Page<Message> getMessagePageByDialog(Dialog dialog, Pageable pageable) {
+    public Page<Message> getMessagePageByDialog(Dialog dialog, ElementPageable pageable) {
+        pageable.setSort(Sort.by("time"));
         return  messageRepository.findByDialog(dialog, pageable);
     }
+
     public List<Message> getMessagesByDialog(Dialog dialog) {
-        return  messageRepository.findByDialog(dialog);
+        return messageRepository.findByDialog(dialog);
     }
 
     public long countUnreadMessages(Person me, Set<Dialog> dialogs) {
@@ -39,19 +39,6 @@ public class MessageService {
                 .filter(message -> message.getRecipient().equals(me))
                 .filter(message -> message.getReadStatus().equals(MessageReadStatus.SENT))
                 .count();
-    }
-
-    public Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
-        Message message = new Message();
-        message.setDialog(dialog);
-        message.setAuthor(author);
-        message.setMessageText(text);
-        message.setReadStatus(MessageReadStatus.SENT);
-        message.setRecipient(recipient);
-        message.setTime(LocalDateTime.now());
-        messageRepository.save(message);
-        notificationRepository.createNewNotification(NotificationTypeCode.MESSAGE.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), recipient.getId(), String.valueOf(author.getId()), recipient.getEMail(), false);
-        return message;
     }
 
     public Message getLastMessage(Dialog dialog) {
@@ -67,23 +54,22 @@ public class MessageService {
         messageRepository.setMessagesReadStatus(messages, author, MessageReadStatus.READ);
     }
 
-    //покаНеИспользуется
-    public Message getMessageToRead(int messageId) {
-        Message message = messageRepository.findById(messageId)
-                .orElseThrow(BadRequestException::new);
-        return setMessagesStatusRead(message, MessageReadStatus.READ);
+    public Message addMessage(Dialog dialog, Person author, Person recipient, String text) {
+        Message message = new Message();
+        message.setDialog(dialog);
+        message.setAuthor(author);
+        message.setMessageText(text);
+        message.setReadStatus(MessageReadStatus.SENT);
+        message.setRecipient(recipient);
+        message.setTime(LocalDateTime.now());
+        messageRepository.save(message);
+        notificationService.createNewNotification(
+                NotificationTypeCode.MESSAGE,
+                recipient.getId(),
+                author.getId(),
+                recipient.getEMail());
+        return message;
     }
 
-    //покаНеИспользуется
-    public Message setMessagesStatusRead(Message message, MessageReadStatus status) {
-        message.setReadStatus(status);
-        return messageRepository.save(message);
-    }
 
-    //покаНеИспользуется
-    public void deleteMessages(List<Message> messages) {
-        if(messages != null) {
-            messageRepository.deleteMessagesByList(messages);
-        }
-    }
 }

@@ -1,8 +1,8 @@
 package com.skillbox.socialnet.controller;
 
 
-import com.skillbox.socialnet.model.RQ.AuthUserRQ;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rq.AuthUserRQ;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.service.AuthService;
@@ -18,8 +18,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<GeneralResponse<UserDTO>>
-    login(@RequestBody AuthUserRQ authUserRQ) {
+    public ResponseEntity<GeneralResponse<UserDTO>> login(@RequestBody AuthUserRQ authUserRQ) {
         GeneralResponse<UserDTO> response =
                 new GeneralResponse<>(authService.login(authUserRQ));
 
@@ -27,8 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>>
-    logout () {
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> logout () {
         GeneralResponse<MessageOkDTO> response =
                 new GeneralResponse<>(authService.logout());
 

@@ -3,15 +3,15 @@ package com.skillbox.socialnet.repository;
 
 import com.skillbox.socialnet.model.dto.NotificationInterfaceProjectile;
 import com.skillbox.socialnet.model.entity.Friendship;
-import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,14 +38,22 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     @Query("SELECT friendship " +
             "FROM Friendship AS friendship " +
             "WHERE (friendship.srcPerson = :person or friendship.dstPerson = :person) " +
-            "AND friendship.status.code = :code")
+            "AND friendship.status.code = :code " +
+            "ORDER BY friendship.srcPerson.lastName, friendship.dstPerson.lastName")
     Page<Friendship> findAllFriendsPageable(Person person, FriendshipStatusCode code, Pageable pageable);
 
     @Query("SELECT friendship " +
             "FROM Friendship AS friendship " +
             "WHERE friendship.dstPerson = :person " +
             "AND friendship.status.code = :code")
-    Page<Friendship> findAllRequestPageable(Person person, FriendshipStatusCode code, Pageable pageable);
+    List<Friendship> findAllRequests(Person person, FriendshipStatusCode code);
+
+    @Query("SELECT friendship " +
+            "FROM Friendship AS friendship " +
+            "WHERE friendship.dstPerson = :person " +
+            "AND friendship.status.code = :code " +
+            "ORDER BY friendship.srcPerson.lastName, friendship.dstPerson.lastName")
+    Page<Friendship> findAllRequestsPageable(Person person, FriendshipStatusCode code, Pageable pageable);
 
     @Query("FROM Friendship " +
             "WHERE (srcPerson = :srcPerson AND dstPerson = :dstPerson) " +
@@ -68,4 +76,11 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
             "WHERE (srcPerson IN (:persons) OR dstPerson IN (:persons)) " +
             "AND status.code = :code")
     List<Friendship> findAllFriendsOfMyFriends(Collection<Person> persons, FriendshipStatusCode code);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from friendship as f where f.src_person_id = :id or f.dst_person_id = :id",
+            nativeQuery = true)
+    void deleteForDeletedPerson(int id);
+
 }

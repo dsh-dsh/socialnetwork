@@ -29,7 +29,7 @@ public class TagService {
     public List<Tag> addTagsIfNotExists(List<String> tagNames) {
         List<Tag> tags = new ArrayList<>();
         for (String tagName : tagNames) {
-            Tag tag = tagRepository.findByTag(tagName)
+            Tag tag = tagRepository.findByTagName(tagName)
                     .orElseGet(() -> createNewTag(tagName));
             tags.add(tag);
         }
@@ -39,7 +39,7 @@ public class TagService {
 
     public Tag createNewTag(String tagName) {
         Tag tag = new Tag();
-        tag.setTag(tagName);
+        tag.setTagName(tagName);
 
         return tagRepository.save(tag);
     }

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
+
 @CrossOrigin
 @Controller
 public class DefaultController {
@@ -15,8 +17,8 @@ public class DefaultController {
         return "index";
     }
 
-    @RequestMapping(method = {RequestMethod.OPTIONS, RequestMethod.GET}, value = "/**/{path:[^\\\\.]*}")
-    public String redirectToIndex() {
+    @RequestMapping(method = {RequestMethod.OPTIONS, RequestMethod.GET}, value = {"/shift-email", "/**/{path:^(?!/ws)[^\\\\.]*}"})
+    public String redirectToIndex(HttpServletRequest request) {
         return "forward:/";
     }
 

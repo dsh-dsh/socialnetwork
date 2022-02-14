@@ -1,7 +1,6 @@
 package com.skillbox.socialnet.model.dto;
 
 import com.skillbox.socialnet.model.entity.NotificationSetting;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data

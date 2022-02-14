@@ -1,29 +1,24 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.UserSearchRQ;
-import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.model.RS.DefaultRS;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
-import com.skillbox.socialnet.model.mapper.DefaultRSMapper;
-import com.skillbox.socialnet.security.JwtProvider;
+import com.skillbox.socialnet.model.rq.PostChangeRQ;
+import com.skillbox.socialnet.model.rq.UserChangeRQ;
+import com.skillbox.socialnet.model.rq.UserSearchRQ;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
+import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.anotation.MethodLog;
+import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Calendar;
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -33,24 +28,36 @@ public class ProfileController {
 
     private final UserService userService;
     private final PostService postService;
+    private final AuthService authService;
 
-    @MethodLog
     @GetMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.getUser()));
     }
 
-    @MethodLog
     @PutMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> editUser(
-            @RequestBody @Valid UserChangeRQ userChangeRQ,
-            HttpServletRequest request) {
+            @RequestBody @Valid UserChangeRQ userChangeRQ) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.editUser(userChangeRQ)));
     }
 
     @DeleteMapping("/me")
     public ResponseEntity<GeneralResponse<String>> deleteUser() {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.deleteUser()));
+    }
+
+    @PutMapping("/meRecover")
+    public ResponseEntity<GeneralResponse<String>> recoverUser() {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.recoverUser()));
     }
 
     @GetMapping("/{id}")
@@ -61,19 +68,23 @@ public class ProfileController {
     @GetMapping("/{id}/wall")
     public ResponseEntity<GeneralListResponse<PostDTO>> getUserWall(
             @PathVariable int id, ElementPageable pageable) {
-        return ResponseEntity.ok(new GeneralListResponse<>(postService.getUserWall(id, pageable), pageable));
+        return ResponseEntity.ok(postService.getUserWall(id, pageable));
     }
 
     @PostMapping("/{id}/wall")
     public ResponseEntity<GeneralResponse<PostDTO>> addPostToUserWall(
-            @PathVariable int id,
+            @PathVariable(name = "id") int personId,
             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
-        return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(id, publishDate, postChangeRQ)));
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(personId, publishDate, postChangeRQ)));
     }
 
+    @Loggable
     @GetMapping("/search")
-    public ResponseEntity<?> searchUsers(
+    public ResponseEntity<GeneralListResponse<UserDTO>> searchUsers(
             @RequestParam(name = "first_or_last_name", required = false) String firstOrLastName,
             @RequestParam(name = "first_name", required = false) String firstName,
             @RequestParam(name = "last_name", required = false) String lastName,
@@ -81,9 +92,9 @@ public class ProfileController {
             @RequestParam(name = "age_to", defaultValue = "0") int ageTo,
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String city,
-            Pageable pageable) {
+            ElementPageable pageable) {
 
-        GeneralListResponse<?> response;
+        GeneralListResponse<UserDTO> response;
         if(firstOrLastName != null) {
             response = userService.searchUsers(firstOrLastName, pageable);
         } else {
@@ -95,11 +106,17 @@ public class ProfileController {
 
     @PutMapping("/block/{id}")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> blockUser(@PathVariable int id) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.blockUser(id)));
     }
 
     @DeleteMapping("/block/{id}")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> unblockUser(@PathVariable int id) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.unblockUser(id)));
     }
 

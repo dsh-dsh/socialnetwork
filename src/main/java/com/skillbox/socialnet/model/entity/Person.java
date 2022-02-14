@@ -2,7 +2,6 @@ package com.skillbox.socialnet.model.entity;
 
 import com.skillbox.socialnet.model.enums.MessagesPermission;
 import lombok.*;
-import org.springframework.data.domain.Pageable;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -73,6 +72,9 @@ public class Person {
 
     @Column(name = "is_blocked")
     private boolean isBlocked;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
     @ManyToMany(mappedBy = "persons")
     private Set<Dialog> dialogs = new HashSet<>();
