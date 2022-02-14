@@ -8,6 +8,7 @@ import com.skillbox.socialnet.model.entity.FriendshipStatus;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
+import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
@@ -15,8 +16,8 @@ import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,15 +36,18 @@ public class FriendsService {
     private final PersonRepository personRepository;
     private final AuthService authService;
     private final NotificationService notificationService;
+    private final PersonService personService;
+    private final PersonMapper personMapper;
 
     public GeneralListResponse<UserDTO> getAllFriends(String name, ElementPageable pageable) {
+        pageable.setSort(Sort.unsorted());
         Person currentPerson = authService.getPersonFromSecurityContext();
         Page<Friendship> friendshipPage = friendshipRepository
                 .findAllFriendsPageable(currentPerson, pageable);
         List<Person> persons = getFriendsFromFriendships(name, currentPerson, friendshipPage.getContent());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
-        return new GeneralListResponse<UserDTO>(userDTOList, friendshipPage);
+        return new GeneralListResponse<>(userDTOList, friendshipPage);
     }
 
     public GeneralListResponse<UserDTO> getRequests(String name, ElementPageable pageable) {
@@ -53,7 +57,7 @@ public class FriendsService {
         List<Person> persons = getFriendsFromRequests(name, requestPage.getContent());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
-        return new GeneralListResponse<UserDTO>(userDTOList, requestPage);
+        return new GeneralListResponse<>(userDTOList, requestPage);
     }
 
     private List<Person> getFriendsFromRequests(String name, List<Friendship> requests) {
@@ -111,7 +115,7 @@ public class FriendsService {
         if(request.getSrcPerson() == dstPerson) {
             FriendshipStatus status = request.getStatus();
             status.setCode(FriendshipStatusCode.FRIEND);
-            status.setName("Friend");
+            status.setName(FriendshipStatusCode.FRIEND.getName());
             status.setTime(LocalDateTime.now());
         }
 
@@ -159,6 +163,7 @@ public class FriendsService {
             friendship.setDstPerson(dstPerson);
         }
         friendship.getStatus().setCode(FriendshipStatusCode.BLOCKED);
+        friendship.getStatus().setName(FriendshipStatusCode.BLOCKED.getName());
         friendshipRepository.save(friendship);
 
         return new MessageOkDTO();
@@ -171,6 +176,7 @@ public class FriendsService {
                 .findBySrcPersonAndDstPerson(srcPerson, dstPerson)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_FRIENDSHIP_MESSAGE));
         friendship.getStatus().setCode(FriendshipStatusCode.FRIEND);
+        friendship.getStatus().setName(FriendshipStatusCode.FRIEND.getName());
         friendshipRepository.save(friendship);
 
         return new MessageOkDTO();
@@ -197,7 +203,7 @@ public class FriendsService {
         Friendship friendship = new Friendship();
         friendship.setSrcPerson(currentPerson);
         friendship.setDstPerson(dstPerson);
-        friendship.setStatus(createFriendshipStatus(FriendshipStatusCode.FRIEND));
+        friendship.setStatus(createFriendshipStatus(FriendshipStatusCode.REQUEST));
         notificationService.createNewNotification(
                 NotificationTypeCode.FRIEND_REQUEST,
                 dstPerson.getId(),
@@ -210,14 +216,10 @@ public class FriendsService {
     private FriendshipStatus createFriendshipStatus(FriendshipStatusCode statusCode) {
         FriendshipStatus friendshipStatus = new FriendshipStatus();
         friendshipStatus.setTime(LocalDateTime.now());
-//        friendshipStatus.setName("Request");
+        friendshipStatus.setName(statusCode.getName());
         friendshipStatus.setCode(statusCode);
 
         return friendshipStatus;
-    }
-
-    private List<UserDTO> getUserDTOList(Collection<Person> persons) {
-        return persons.stream().map(UserDTO::getUserDTO).collect(Collectors.toList());
     }
 
     private List<Person> getFriendsFromFriendships(String name, Person currentPerson, List<Friendship> friendships) {
@@ -253,6 +255,10 @@ public class FriendsService {
                 .isFriends(currentPerson, dstPerson, FriendshipStatusCode.FRIEND);
 
         return !friendships.isEmpty();
+    }
+
+    private List<UserDTO> getUserDTOList(Collection<Person> persons) {
+        return persons.stream().map(personMapper::mapToUserDTO).collect(Collectors.toList());
     }
 
 }

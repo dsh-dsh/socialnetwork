@@ -79,4 +79,8 @@ public class Person {
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<Post> posts;
+
+    public Person getThis() {
+        return this;
+    }
 }

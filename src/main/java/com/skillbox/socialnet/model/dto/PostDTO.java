@@ -1,18 +1,12 @@
 package com.skillbox.socialnet.model.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.PostPublishType;
-import com.skillbox.socialnet.service.AuthService;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.PostConstruct;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor

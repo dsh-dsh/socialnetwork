@@ -28,24 +28,26 @@ import static com.skillbox.socialnet.util.Constants.*;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final PersonMapper personMapper;
+
     private final PersonService personService;
     private final PersonRepository personRepository;
     private final AuthService authService;
+    private final PersonMapper personMapper;
 
     public UserDTO getUser() {
         Person person = authService.getPersonFromSecurityContext();
-        return UserDTO.getUserDTO(person);
+        return personMapper.mapToUserDTO(person);
     }
 
     public UserDTO getUserById(int id) {
-        UserDTO userDTO = UserDTO.getUserDTO(personService.getPersonById(id));
+        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonById(id));
         return userDTO;
     }
 
     public UserDTO editUser(UserChangeRQ userChangeRQ) {
         String email = authService.getPersonFromSecurityContext().getEMail();
-        return UserDTO.getUserDTO(personService.editPerson(email, userChangeRQ));
+        Person person = personService.editPerson(email, userChangeRQ);
+        return personMapper.mapToUserDTO(person);
     }
 
     public String deleteUser() {

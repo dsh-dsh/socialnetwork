@@ -1,10 +1,19 @@
 package com.skillbox.socialnet.model.enums;
 
 public enum FriendshipStatusCode {
-    REQUEST,
-    FRIEND,
-    BLOCKED,
-    DECLINED,
-    SUBSCRIBED
+    REQUEST("Request"),
+    FRIEND("Friend"),
+    BLOCKED("Blocked"),
+    DECLINED("Declined"),
+    SUBSCRIBED("Subscribed");
 
+    private String name;
+
+    FriendshipStatusCode(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
 }
