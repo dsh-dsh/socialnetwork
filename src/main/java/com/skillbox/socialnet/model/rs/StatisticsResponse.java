@@ -13,12 +13,15 @@ public class StatisticsResponse {
 
     private int likes;
 
+    private int comments;
+
     @JsonProperty("first_publication")
     private Timestamp firstPublication;
 
-    public StatisticsResponse(Integer sumOfPostsById, Integer sumOfLikes, Timestamp firstPublication) {
+    public StatisticsResponse(Integer sumOfPostsById, Integer sumOfLikes, Integer comments, Timestamp firstPublication) {
         this.posts = sumOfPostsById;
         this.likes = sumOfLikes;
+        this.comments = comments;
         this.firstPublication = firstPublication;
     }
 }

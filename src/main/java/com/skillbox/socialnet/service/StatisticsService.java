@@ -17,6 +17,7 @@ public class StatisticsService {
             return new StatisticsResponse(
                     postRepository.getSumOfPostsById(id) == null ? 0 : postRepository.getSumOfPostsById(id),
                     postRepository.getSumOfLikes(id) == null ? 0 : postRepository.getSumOfLikes(id),
+                    postRepository.getSumOfComments(id) == null ? 0 : postRepository.getSumOfComments(id),
                     postRepository.getFirstPublication(id)
             );
         }
