@@ -63,8 +63,7 @@ public class FriendsService {
 
     public MessageOkDTO deleteFriend(int id) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Person dstPerson = personRepository.getPersonById(id)
-                .orElseThrow(BadRequestException::new);
+        Person dstPerson = personService.getPersonById(id);
         Friendship friendships = friendshipRepository.getRelationship(currentPerson, dstPerson)
                 .orElseThrow(BadRequestException::new);
         friendshipRepository.delete(friendships);
@@ -74,31 +73,31 @@ public class FriendsService {
 
     public MessageOkDTO addFriend(int id) {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Person dstPerson = personRepository.getPersonById(id)
-                .orElseThrow(BadRequestException::new);
+        Person dstPerson = personService.getPersonById(id);
         if (!isFriends(currentPerson, dstPerson)) {
-            Friendship friendship = getAndAcceptFriendship(currentPerson, dstPerson)
-                    .orElseGet(() -> createFriendshipRequest(currentPerson, dstPerson));
+            Friendship friendship = getAndAcceptFriendship(currentPerson, dstPerson);
+            if(friendship == null) {
+                friendship = createFriendship(currentPerson, dstPerson, FriendshipStatusCode.REQUEST);
+                notificationService.createNewNotification(
+                        NotificationTypeCode.FRIEND_REQUEST,
+                        dstPerson.getId(),
+                        currentPerson.getId(),
+                        dstPerson.getEMail());
+            }
             friendshipRepository.save(friendship);
         }
-        notificationService.createNewNotification(
-                NotificationTypeCode.FRIEND_REQUEST,
-                dstPerson.getId(),
-                NotificationTypeCode.FRIEND_REQUEST.ordinal(),
-                dstPerson.getEMail());
 
         return new MessageOkDTO();
     }
-
-    private Optional<Friendship> getAndAcceptFriendship(Person currentPerson, Person dstPerson) {
+    
+    private Friendship getAndAcceptFriendship(Person currentPerson, Person dstPerson) {
         List<Friendship> requests = friendshipRepository
                 .findRequests(currentPerson, dstPerson, FriendshipStatusCode.REQUEST);
         if(requests.size() > 0) {
-            Friendship friendship = acceptFriendship(dstPerson, requests);
-            return Optional.of(friendship);
+            return acceptFriendship(dstPerson, requests);
         }
 
-        return Optional.empty();
+        return null;
     }
 
     private Friendship acceptFriendship(Person dstPerson, List<Friendship> requests) {
@@ -148,7 +147,7 @@ public class FriendsService {
         Person dstPerson = personService.getPersonById(personId);
         Friendship friendship = friendshipRepository
                 .findFriendshipByStatusCode(srcPerson, dstPerson, FriendshipStatusCode.FRIEND)
-                .orElseGet(() -> createFriendshipBlock(srcPerson, dstPerson));
+                .orElseGet(() -> createFriendship(srcPerson, dstPerson, FriendshipStatusCode.BLOCKED));
         friendship.getStatus().setCode(FriendshipStatusCode.BLOCKED);
         friendship.getStatus().setName(FriendshipStatusCode.BLOCKED.getName());
         friendshipRepository.save(friendship);
@@ -186,28 +185,14 @@ public class FriendsService {
                 .collect(Collectors.toList());
     }
 
-    private Friendship createFriendshipBlock(Person currentPerson, Person dstPerson) {
+    private Friendship createFriendship(Person currentPerson, Person dstPerson, FriendshipStatusCode statusCode) {
         Friendship friendship = new Friendship();
         friendship.setSrcPerson(currentPerson);
         friendship.setDstPerson(dstPerson);
-        friendship.setStatus(createFriendshipStatus(FriendshipStatusCode.BLOCKED));
+        friendship.setStatus(createFriendshipStatus(statusCode));
 
         return friendship;
     }
-
-    private Friendship createFriendshipRequest(Person currentPerson, Person dstPerson) {
-        Friendship friendship = new Friendship();
-        friendship.setSrcPerson(currentPerson);
-        friendship.setDstPerson(dstPerson);
-        friendship.setStatus(createFriendshipStatus(FriendshipStatusCode.REQUEST));
-        notificationService.createNewNotification(
-                NotificationTypeCode.FRIEND_REQUEST,
-                dstPerson.getId(),
-                currentPerson.getId(),
-                dstPerson.getEMail());
-        return friendship;
-    }
-
 
     private FriendshipStatus createFriendshipStatus(FriendshipStatusCode statusCode) {
         FriendshipStatus friendshipStatus = new FriendshipStatus();

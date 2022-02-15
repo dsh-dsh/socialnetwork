@@ -1,5 +1,6 @@
 package com.skillbox.socialnet.service;
 
+import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.exception.NoSuchUserException;
@@ -22,7 +23,7 @@ public class PersonService {
     public Person getPersonById(int id) {
         Person person = personRepository.findPersonById(id);
         if (person == null) {
-            throw new NoSuchUserException(Constants.NO_SUCH_USER_MESSAGE);
+            throw new BadRequestException(Constants.NO_SUCH_USER_MESSAGE);
         }
         return person;
     }
