@@ -205,7 +205,7 @@ public class FriendControllerTest {
     private boolean getFriendship(String srcPersonEmail, int dstPersonId) {
         Person srcPerson = personService.getPersonByEmail(srcPersonEmail);
         Person dstPerson = personService.getPersonById(dstPersonId);
-        List<Friendship> friendships = friendshipRepository.isFriends(srcPerson, dstPerson, FriendshipStatusCode.FRIEND);
+        List<Friendship> friendships = friendshipRepository.findFriendshipsByStatusCode(srcPerson, dstPerson, FriendshipStatusCode.FRIEND);
         return friendships.size() == 1;
     }
 }

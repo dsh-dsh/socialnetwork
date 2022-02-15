@@ -50,7 +50,7 @@ public class PersonConverter {
         System.out.println(getCurrentPerson());
         System.out.println("----------------");
         List<Friendship> friendshipList = friendshipRepository
-                .isFriends(getCurrentPerson(), opponentPerson, FriendshipStatusCode.FRIEND);
+                .findFriendshipsByStatusCode(getCurrentPerson(), opponentPerson, FriendshipStatusCode.FRIEND);
         return friendshipList.size() > 0;
     }
 

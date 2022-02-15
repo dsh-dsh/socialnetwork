@@ -147,12 +147,8 @@ public class FriendsService {
         Person srcPerson = authService.getPersonFromSecurityContext();
         Person dstPerson = personService.getPersonById(personId);
         Friendship friendship = friendshipRepository
-                .findFriendship(srcPerson, dstPerson, FriendshipStatusCode.FRIEND)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_FRIENDSHIP_MESSAGE));
-        if(friendship.getSrcPerson().equals(dstPerson)) {
-            friendship.setSrcPerson(srcPerson);
-            friendship.setDstPerson(dstPerson);
-        }
+                .findFriendshipByStatusCode(srcPerson, dstPerson, FriendshipStatusCode.FRIEND)
+                .orElseGet(() -> createFriendshipBlock(srcPerson, dstPerson));
         friendship.getStatus().setCode(FriendshipStatusCode.BLOCKED);
         friendship.getStatus().setName(FriendshipStatusCode.BLOCKED.getName());
         friendshipRepository.save(friendship);
@@ -164,7 +160,7 @@ public class FriendsService {
         Person srcPerson = authService.getPersonFromSecurityContext();
         Person dstPerson = personService.getPersonById(personId);
         Friendship friendship = friendshipRepository
-                .findBySrcPersonAndDstPerson(srcPerson, dstPerson)
+                .findFriendshipByStatusCode(srcPerson, dstPerson, FriendshipStatusCode.BLOCKED)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_FRIENDSHIP_MESSAGE));
         friendship.getStatus().setCode(FriendshipStatusCode.FRIEND);
         friendship.getStatus().setName(FriendshipStatusCode.FRIEND.getName());
@@ -188,6 +184,15 @@ public class FriendsService {
         return friendships.stream()
                 .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson())
                 .collect(Collectors.toList());
+    }
+
+    private Friendship createFriendshipBlock(Person currentPerson, Person dstPerson) {
+        Friendship friendship = new Friendship();
+        friendship.setSrcPerson(currentPerson);
+        friendship.setDstPerson(dstPerson);
+        friendship.setStatus(createFriendshipStatus(FriendshipStatusCode.BLOCKED));
+
+        return friendship;
     }
 
     private Friendship createFriendshipRequest(Person currentPerson, Person dstPerson) {
@@ -219,7 +224,7 @@ public class FriendsService {
                         .getSrcPerson().equals(currentPerson) ?
                         friendship.getDstPerson() :
                         friendship.getSrcPerson())
-//                .distinct()
+                .distinct()
                 .collect(Collectors.toList());
     }
 
@@ -240,7 +245,7 @@ public class FriendsService {
 
     public boolean isFriends(Person currentPerson, Person dstPerson) {
         List<Friendship> friendships = friendshipRepository
-                .isFriends(currentPerson, dstPerson, FriendshipStatusCode.FRIEND);
+                .findFriendshipsByStatusCode(currentPerson, dstPerson, FriendshipStatusCode.FRIEND);
 
         return !friendships.isEmpty();
     }

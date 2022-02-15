@@ -56,7 +56,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
 
     @Query("FROM Friendship " +
             "WHERE (srcPerson = :srcPerson AND dstPerson = :dstPerson) " +
-            "OR ( srcPerson = :dstPerson AND dstPerson = :srcPerson) " +
+            "OR (srcPerson = :dstPerson AND dstPerson = :srcPerson) " +
             "AND status.code = :code")
     List<Friendship> findRequests(Person srcPerson, Person dstPerson, FriendshipStatusCode code);
 
@@ -69,7 +69,15 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
             "WHERE ((srcPerson = :srcPerson and dstPerson = :dstPerson) " +
             "OR (srcPerson = :dstPerson and dstPerson = :srcPerson)) " +
             "AND status.code = :code")
-    List<Friendship> isFriends(Person srcPerson, Person dstPerson, FriendshipStatusCode code);
+    List<Friendship> findFriendshipsByStatusCode(Person srcPerson, Person dstPerson, FriendshipStatusCode code);
+
+    @Query("SELECT friendship " +
+            "FROM Friendship AS friendship " +
+            "WHERE ((friendship.srcPerson = :srcPerson and friendship.dstPerson = :dstPerson) " +
+            "OR (friendship.srcPerson = :dstPerson and friendship.dstPerson = :srcPerson)) " +
+            "AND (friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND " +
+            "OR friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.BLOCKED)")
+    List<Friendship> findFriendships(Person srcPerson, Person dstPerson);
 
     @Query("FROM Friendship " +
             "WHERE (srcPerson IN (:persons) OR dstPerson IN (:persons)) " +

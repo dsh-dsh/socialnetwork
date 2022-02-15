@@ -71,7 +71,7 @@ public class PersonMapper {
 
     private boolean isFriend(Person opponentPerson) {
         List<Friendship> friendshipList = friendshipRepository
-                .isFriends(getCurrentPerson(), opponentPerson, FriendshipStatusCode.FRIEND);
+                .findFriendships(getCurrentPerson(), opponentPerson);
         return friendshipList.size() > 0;
     }
 
