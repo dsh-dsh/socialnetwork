@@ -16,7 +16,7 @@ public class LogMaskingConverter extends LogEventPatternConverter {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
     private static final String EMAIL_REPLACEMENT = "***@******.***";
 
-    private static final String PHONE_REGEX = "=[0-9]{11},";;
+    private static final String PHONE_REGEX = "=[0-9]{11},";
     private static final Pattern PHONE_PATTERN = Pattern.compile(PHONE_REGEX);
     private static final String PHONE_REPLACEMENT = "=***********,";
 
@@ -24,7 +24,7 @@ public class LogMaskingConverter extends LogEventPatternConverter {
         super(name, style);
     }
 
-    public static LogMaskingConverter newInstance(String[] options) {
+    public static LogMaskingConverter newInstance() {
         return new LogMaskingConverter("maskedMessage", Thread.currentThread().getName());
     }
 
@@ -36,7 +36,6 @@ public class LogMaskingConverter extends LogEventPatternConverter {
         try {
             maskedMessage = mask(message);
         } catch (Exception e) {
-            System.out.println("Failed While Masking");
             maskedMessage = message;
         }
         outputMessage.append(maskedMessage);

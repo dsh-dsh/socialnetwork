@@ -1,13 +1,12 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.model.RQ.UserSearchRQ;
-import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.entity.Person;
-import com.skillbox.socialnet.model.mapper.PersonMapper;
-import com.skillbox.socialnet.repository.*;
+import com.skillbox.socialnet.model.rq.UserChangeRQ;
+import com.skillbox.socialnet.model.rq.UserSearchRQ;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.repository.PersonRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.annotation.Loggable;
@@ -35,24 +34,29 @@ public class UserService {
     private final PersonMapper personMapper;
 
     public UserDTO getUser() {
-        Person person = authService.getPersonFromSecurityContext();
-        return personMapper.mapToUserDTO(person);
+        return UserDTO.getUserDTO(authService.getPersonFromSecurityContext());
     }
 
     public UserDTO getUserById(int id) {
-        UserDTO userDTO = personMapper.mapToUserDTO(personService.getPersonById(id));
-        return userDTO;
+        return UserDTO.getUserDTO(personService.getPersonById(id));
     }
 
     public UserDTO editUser(UserChangeRQ userChangeRQ) {
-        String email = authService.getPersonFromSecurityContext().getEMail();
-        Person person = personService.editPerson(email, userChangeRQ);
-        return personMapper.mapToUserDTO(person);
+        return UserDTO.getUserDTO(personService.editPerson(authService.getPersonFromSecurityContext().getEMail(),
+                userChangeRQ));
     }
 
     public String deleteUser() {
-        personRepository.delete(authService.getPersonFromSecurityContext());
+        Person person = authService.getPersonFromSecurityContext();
+        person.setDeleted(true);
+        personRepository.save(person);
         return USER_DELETE_SUCCESS;
+    }
+    public String recoverUser() {
+        Person person = authService.getPersonFromSecurityContext();
+        person.setDeleted(false);
+        personRepository.save(person);
+        return USER_RECOVER_SUCCESS;
     }
 
     public GeneralListResponse<UserDTO> searchUsers(String firstOrLastName, Pageable pageable) {
@@ -79,8 +83,10 @@ public class UserService {
 
     public MessageOkDTO checkOnline() {
         Person me = authService.getPersonFromSecurityContext();
-        me.setLastOnlineTime(new Timestamp(new Date().getTime()));
-        personRepository.save(me);
+        if (!me.isDeleted()) {
+            me.setLastOnlineTime(new Timestamp(new Date().getTime()));
+            personRepository.save(me);
+        }
         return new MessageOkDTO();
     }
 

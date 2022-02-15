@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -89,7 +90,7 @@ public class FriendsService {
 
         return new MessageOkDTO();
     }
-    
+
     private Friendship getAndAcceptFriendship(Person currentPerson, Person dstPerson) {
         List<Friendship> requests = friendshipRepository
                 .findRequests(currentPerson, dstPerson, FriendshipStatusCode.REQUEST);
@@ -124,7 +125,7 @@ public class FriendsService {
 
     public Set<Person> getRecommendedFriends(Person currentPerson, Set<Person> myFriends) {
         Set<Person> recommendedFriends = new HashSet<>();
-        if(myFriends.size() > 0) {
+        if(!myFriends.isEmpty()) {
             recommendedFriends = friendshipRepository
                     .findAllFriendsOfMyFriends(myFriends, FriendshipStatusCode.FRIEND)
                     .stream().filter(friendship -> !isMyFriendship(friendship, currentPerson))

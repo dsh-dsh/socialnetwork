@@ -1,0 +1,3 @@
+24.01.2022 22:04:30.359 INFO com.skillbox.socialnet.controller.LikeControllerTest Starting LikeControllerTest on Luci with PID 6544 (started by Jevai in C:\Users\Jevai\IdeaProjects\javapro-socialnetwork-studygroup-20)
+24.01.2022 22:04:30.390 INFO com.skillbox.socialnet.controller.LikeControllerTest The following profiles are active: nick
+24.01.2022 22:04:48.059 INFO com.skillbox.socialnet.controller.LikeControllerTest Started LikeControllerTest in 18.597 seconds (JVM running for 22.666)

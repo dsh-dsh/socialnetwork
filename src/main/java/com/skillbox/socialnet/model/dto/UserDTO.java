@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.enums.MessagesPermission;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -33,12 +36,14 @@ public class UserDTO {
     @JsonProperty("last_online_time")
     private long lastOnlineTime;
     @JsonProperty("is_blocked")
-    private boolean isBlocked = true;
+    private boolean isBlocked;
     @JsonProperty("is_friend")
     private boolean isFriend;
     @JsonProperty("is_you_blocked")
     private boolean isYouBlocked;
     private boolean me;
+    @JsonProperty("is_deleted")
+    private boolean isDeleted;
     private String token;
 
     public static UserDTO getUserDTO(Person person){
@@ -56,6 +61,8 @@ public class UserDTO {
         userDTO.setCountry(person.getCountry());
         userDTO.setPermission(person.getMessagesPermission());
         userDTO.setLastOnlineTime(person.getLastOnlineTime().getTime());
+        userDTO.setBlocked(person.isBlocked());
+        userDTO.setDeleted(person.isDeleted());
 
         return userDTO;
     }

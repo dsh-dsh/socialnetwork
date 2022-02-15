@@ -1,8 +1,11 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.*;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
+import com.skillbox.socialnet.model.rq.AccountEmailRQ;
+import com.skillbox.socialnet.model.rq.AccountNotificationRQ;
+import com.skillbox.socialnet.model.rq.AccountPasswordSetRQ;
+import com.skillbox.socialnet.model.rq.AccountRegisterRQ;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.NotificationSettingsDto;
 import com.skillbox.socialnet.service.AccountService;

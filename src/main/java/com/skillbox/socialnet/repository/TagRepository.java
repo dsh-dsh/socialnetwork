@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface TagRepository extends JpaRepository<Tag, Integer> {
-    Tag getTagByTag(String tag);
+    Tag getTagByTagName(String tag);
 
-    Optional<Tag> findByTag(String tag);
+    Optional<Tag> findByTagName(String tag);
 }

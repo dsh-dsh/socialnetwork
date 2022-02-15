@@ -19,8 +19,6 @@ public class DefaultController {
 
     @RequestMapping(method = {RequestMethod.OPTIONS, RequestMethod.GET}, value = {"/shift-email", "/**/{path:^(?!/ws)[^\\\\.]*}"})
     public String redirectToIndex(HttpServletRequest request) {
-        System.out.println("redirectToIndex()");
-        System.out.println(request.getServletPath());
         return "forward:/";
     }
 

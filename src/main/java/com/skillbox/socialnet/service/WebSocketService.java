@@ -1,7 +1,7 @@
 package com.skillbox.socialnet.service;
 
-import com.skillbox.socialnet.model.RS.NotificationRS;
 import com.skillbox.socialnet.model.dto.MessageDTO;
+import com.skillbox.socialnet.model.rs.NotificationRS;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;

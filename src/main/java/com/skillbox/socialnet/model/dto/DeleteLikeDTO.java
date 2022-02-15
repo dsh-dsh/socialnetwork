@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static com.skillbox.socialnet.util.Constants.STRING;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DeleteLikeDTO {
 
-    String additionalProp1 = "string";
-    String additionalProp2 = "string";
-    String additionalProp3 = "string";
+    String additionalProp1 = STRING;
+    String additionalProp2 = STRING;
+    String additionalProp3 = STRING;
 }

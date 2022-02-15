@@ -1,6 +1,5 @@
 package com.skillbox.socialnet.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"tag"})
+@EqualsAndHashCode(of = {"tagName"})
 @Entity
 @Table(name = "tag")
 public class Tag {
@@ -23,7 +22,7 @@ public class Tag {
     private int id;
 
     @Column(name = "tag")
-    private String tag;
+    private String tagName;
 
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
     private Set<Post2tag> posts = new HashSet<>();

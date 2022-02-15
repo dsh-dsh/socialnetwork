@@ -1,22 +1,22 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.UserSearchRQ;
-import com.skillbox.socialnet.model.RQ.UserChangeRQ;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
-import com.skillbox.socialnet.service.FriendsService;
+import com.skillbox.socialnet.model.rq.PostChangeRQ;
+import com.skillbox.socialnet.model.rq.UserChangeRQ;
+import com.skillbox.socialnet.model.rq.UserSearchRQ;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
+import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
 @CrossOrigin
@@ -31,25 +31,37 @@ public class ProfileController {
 
     @GetMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.getUser()));
     }
 
     @PutMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> editUser(
             @RequestBody @Valid UserChangeRQ userChangeRQ) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.editUser(userChangeRQ)));
     }
 
     @DeleteMapping("/me")
     public ResponseEntity<GeneralResponse<String>> deleteUser() {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.deleteUser()));
     }
 
+    @PutMapping("/meRecover")
+    public ResponseEntity<GeneralResponse<String>> recoverUser() {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.recoverUser()));
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<GeneralResponse<UserDTO>> getUser(
-            @PathVariable int id) {
-        return ResponseEntity.ok(
-                new GeneralResponse<>(userService.getUserById(id)));
+    public ResponseEntity<GeneralResponse<UserDTO>> getUser(@PathVariable int id) {
+        return ResponseEntity.ok(new GeneralResponse<>(userService.getUserById(id)));
     }
 
     @GetMapping("/{id}/wall")
@@ -63,6 +75,9 @@ public class ProfileController {
             @PathVariable(name = "id") int personId,
             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(personId, publishDate, postChangeRQ)));
     }
 
@@ -88,18 +103,20 @@ public class ProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/block/{personId}")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>> blockUser(
-            @PathVariable int personId) {
-        return ResponseEntity.ok(
-                new GeneralResponse<>(friendsService.blockUser(personId)));
+    @PutMapping("/block/{id}")
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> blockUser(@PathVariable int id) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseEntity.ok(new GeneralResponse<>(friendsService.blockUser(id)));
     }
 
-    @DeleteMapping("/block/{personId}")
-    public ResponseEntity<GeneralResponse<MessageOkDTO>> unblockUser(
-            @PathVariable int personId) {
-        return ResponseEntity.ok(
-                new GeneralResponse<>(friendsService.unblockUser(personId)));
+    @DeleteMapping("/block/{id}")
+    public ResponseEntity<GeneralResponse<MessageOkDTO>> unblockUser(@PathVariable int id) {
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseEntity.ok(new GeneralResponse<>(friendsService.unblockUser(id)));
     }
 
     @PutMapping("/checkonline")

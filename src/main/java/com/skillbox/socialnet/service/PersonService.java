@@ -4,7 +4,7 @@ import com.skillbox.socialnet.exception.BadRequestException;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.exception.NoSuchUserException;
-import com.skillbox.socialnet.model.RQ.UserChangeRQ;
+import com.skillbox.socialnet.model.rq.UserChangeRQ;
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;

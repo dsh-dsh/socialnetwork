@@ -17,7 +17,8 @@ create table if not exists person(
 	is_approved BOOLEAN,
 	messages_permission varchar(255),
 	last_online_time timestamp,
-	is_blocked BOOLEAN
+	is_blocked BOOLEAN,
+    is_deleted BOOLEAN
 );
 
 create table if not exists "user" (
@@ -122,4 +123,3 @@ create table if not exists notification(
 	entity_id varchar(255),
 	contact varchar(255)
 );
-

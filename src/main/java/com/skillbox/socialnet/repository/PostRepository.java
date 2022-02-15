@@ -5,7 +5,9 @@ import com.skillbox.socialnet.model.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -26,7 +28,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "JOIN post.tags AS tags " +
             "WHERE (:authorName is null OR post.author.firstName LIKE %:authorName% OR post.author.lastName LIKE %:authorName%) " +
             "AND (:text is null OR post.postText LIKE %:text% OR post.title LIKE %:text%) " +
-            "AND tags.tag.tag IN (:tags) " +
+            "AND tags.tag.tagName IN (:tags) " +
             "AND post.time BETWEEN :timeFrom AND :timeTo")
     Page<Post> findPostWithTags(String authorName, String text, Timestamp timeFrom, Timestamp timeTo, List<String> tags, Pageable pageable);
 
@@ -56,4 +58,28 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             " where post_id = :postId and author_id != :authorId",
     nativeQuery = true)
     List<Integer> getIdsForPostNotifications(int postId, int authorId);
+
+    List<Post> findAllByAuthor(Person person);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from post as p where p.author_id = :id ",
+            nativeQuery = true)
+    void deleteForDeletedPerson(int id);
+
+    @Query(value = "select count(*) from post where author_id = :id",
+            nativeQuery = true)
+    Integer getSumOfPostsById(int id);
+
+    @Query(value = "select count(*) from post_like where person_id = :id",
+            nativeQuery = true)
+    Integer getSumOfLikes(int id);
+
+    @Query(value = "select MIN(time) from post where author_id = :id",
+            nativeQuery = true)
+    Timestamp getFirstPublication(int id);
+
+    @Query(value = "select count(*) from post_comment where author_id = :id",
+            nativeQuery = true)
+    Integer getSumOfComments(int id);
 }

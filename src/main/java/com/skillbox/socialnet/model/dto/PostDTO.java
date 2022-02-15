@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.PostPublishType;
 import lombok.*;
+
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +47,7 @@ public class PostDTO {
 
     private static String[] getTagNames(Set<Post2tag> tags) {
         return tags.stream()
-                .map(tag2post -> tag2post.getTag().getTag())
+                .map(tag2post -> tag2post.getTag().getTagName())
                 .toArray(String[]::new);
     }
 

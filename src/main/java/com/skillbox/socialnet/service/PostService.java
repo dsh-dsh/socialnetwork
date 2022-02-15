@@ -1,10 +1,10 @@
 package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.exception.BadRequestException;
-import com.skillbox.socialnet.model.RQ.CommentRQ;
-import com.skillbox.socialnet.model.RQ.PostChangeRQ;
-import com.skillbox.socialnet.model.RQ.PostSearchRQ;
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
+import com.skillbox.socialnet.model.rq.CommentRQ;
+import com.skillbox.socialnet.model.rq.PostChangeRQ;
+import com.skillbox.socialnet.model.rq.PostSearchRQ;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.model.dto.*;
 import com.skillbox.socialnet.model.entity.*;
 import com.skillbox.socialnet.model.enums.NotificationTypeCode;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Loggable
 public class PostService {
 
     private final PostRepository postRepository;
@@ -62,7 +63,7 @@ public class PostService {
 
     private List<Person> getFriendList() {
         List<Person> friends = friendsService.getMyFriends();
-        if(friends.size() == 0) {
+        if(friends.isEmpty()) {
             Person me = authService.getPersonFromSecurityContext();
             friends = List.copyOf(friendsService.getRecommendedFriends(me, Set.of()));
         }
@@ -152,7 +153,7 @@ public class PostService {
 
     private Page<Post> getPostsPage(PostSearchRQ postSearchRQ, Pageable pageable, long dateTo) {
         Page<Post> postPage;
-        if (postSearchRQ.getTags().size() > 0) {
+        if (!postSearchRQ.getTags().isEmpty()) {
             postPage = postRepository.findPostWithTags(
                     postSearchRQ.getAuthor(), postSearchRQ.getText(),
                     new Timestamp(postSearchRQ.getDateFrom()), new Timestamp(dateTo),

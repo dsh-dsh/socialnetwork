@@ -1,12 +1,13 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.RS.GeneralListResponse;
-import com.skillbox.socialnet.model.RS.GeneralResponse;
 import com.skillbox.socialnet.model.dto.LocationDTO;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
+import com.skillbox.socialnet.model.rs.GeneralListResponse;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
+import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PlatformService;
-import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class PlatformController {
 
     private final PlatformService platformService;
+    private final AuthService authService;
 
     @GetMapping("/languages")
     public ResponseEntity<GeneralListResponse<LocationDTO>> getLanguages(
             @RequestParam(defaultValue = "") String language){
         return ResponseEntity.ok(
-                new GeneralListResponse<>(platformService.getLanguage(language)));
+                new GeneralListResponse<>(platformService.getLanguage()));
     }
 
     @GetMapping("/countries")
@@ -34,6 +36,9 @@ public class PlatformController {
     @PostMapping("/countries")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(
             @RequestBody LocationDTO locationDTO){
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
@@ -46,6 +51,9 @@ public class PlatformController {
     @PostMapping("/cities")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(
             @RequestBody LocationDTO locationDTO){
+        if (authService.getPersonFromSecurityContext() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCity(locationDTO)));
     }
 

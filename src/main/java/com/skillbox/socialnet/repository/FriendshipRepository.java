@@ -8,8 +8,10 @@ import com.skillbox.socialnet.model.enums.FriendshipStatusCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -83,6 +85,13 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
             "WHERE (srcPerson IN (:persons) OR dstPerson IN (:persons)) " +
             "AND status.code = :code")
     List<Friendship> findAllFriendsOfMyFriends(Collection<Person> persons, FriendshipStatusCode code);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from friendship as f where f.src_person_id = :id or f.dst_person_id = :id",
+            nativeQuery = true)
+    void deleteForDeletedPerson(int id);
+
 
     Optional<Friendship> findBySrcPersonAndDstPerson(Person srcPerson, Person dstPerson);
 

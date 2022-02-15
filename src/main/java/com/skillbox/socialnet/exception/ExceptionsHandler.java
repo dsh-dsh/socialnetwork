@@ -1,6 +1,6 @@
 package com.skillbox.socialnet.exception;
 
-import com.skillbox.socialnet.model.RS.ErrorResponse;
+import com.skillbox.socialnet.model.rs.ErrorResponse;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
