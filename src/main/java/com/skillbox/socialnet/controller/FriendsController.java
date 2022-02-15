@@ -20,9 +20,8 @@ public class FriendsController {
     private final FriendsService friendsService;
 
     @GetMapping
-    public ResponseEntity<GeneralListResponse<UserDTO>> getAllFriends(
-            @RequestParam(defaultValue = "") String name, ElementPageable pageable) {
-        return ResponseEntity.ok(friendsService.getAllFriends(name, pageable));
+    public ResponseEntity<GeneralListResponse<UserDTO>> getAllFriends(ElementPageable pageable) {
+        return ResponseEntity.ok(friendsService.getAllFriends(pageable));
     }
 
     @DeleteMapping("/{id}")
@@ -38,10 +37,8 @@ public class FriendsController {
     }
 
     @GetMapping("/request")
-    public ResponseEntity<GeneralListResponse<UserDTO>> getRequests(
-            @RequestParam(defaultValue = "") String name,
-            ElementPageable pageable) {
-        return ResponseEntity.ok(friendsService.getRequests(name, pageable));
+    public ResponseEntity<GeneralListResponse<UserDTO>> getRequests(ElementPageable pageable) {
+        return ResponseEntity.ok(friendsService.getRequests(pageable));
     }
 
     @GetMapping("/recommendations")

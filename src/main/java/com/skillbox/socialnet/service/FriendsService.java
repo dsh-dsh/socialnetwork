@@ -39,35 +39,26 @@ public class FriendsService {
     private final PersonService personService;
     private final PersonMapper personMapper;
 
-    public GeneralListResponse<UserDTO> getAllFriends(String name, ElementPageable pageable) {
+    public GeneralListResponse<UserDTO> getAllFriends(ElementPageable pageable) {
         pageable.setSort(Sort.unsorted());
         Person currentPerson = authService.getPersonFromSecurityContext();
         Page<Friendship> friendshipPage = friendshipRepository
                 .findAllFriendsPageable(currentPerson, pageable);
-        List<Person> persons = getFriendsFromFriendships(name, currentPerson, friendshipPage.getContent());
+        List<Person> persons = getFriendsFromFriendships(currentPerson, friendshipPage.getContent());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
         return new GeneralListResponse<>(userDTOList, friendshipPage);
     }
 
-    public GeneralListResponse<UserDTO> getRequests(String name, ElementPageable pageable) {
+    public GeneralListResponse<UserDTO> getRequests(ElementPageable pageable) {
         Person currentPerson = authService.getPersonFromSecurityContext();
         Page<Friendship> requestPage = friendshipRepository
                 .findAllRequestsPageable(currentPerson, FriendshipStatusCode.REQUEST, pageable);
-        List<Person> persons = getFriendsFromRequests(name, requestPage.getContent());
+        List<Person> persons = requestPage.getContent().stream()
+                .map(Friendship::getSrcPerson).collect(Collectors.toList());
         List<UserDTO> userDTOList = getUserDTOList(persons);
 
         return new GeneralListResponse<>(userDTOList, requestPage);
-    }
-
-    private List<Person> getFriendsFromRequests(String name, List<Friendship> requests) {
-        Stream<Person> personStream = requests.stream()
-                .map(Friendship::getSrcPerson);
-        if (!name.equals("")) {
-            personStream = personStream.filter(person -> person.getFirstName().equals(name));
-        }
-
-        return personStream.collect(Collectors.toList());
     }
 
     public MessageOkDTO deleteFriend(int id) {
@@ -222,17 +213,14 @@ public class FriendsService {
         return friendshipStatus;
     }
 
-    private List<Person> getFriendsFromFriendships(String name, Person currentPerson, List<Friendship> friendships) {
-        Stream<Person> personStream = friendships.stream()
+    private List<Person> getFriendsFromFriendships(Person currentPerson, List<Friendship> friendships) {
+        return friendships.stream()
                 .map(friendship -> friendship
                         .getSrcPerson().equals(currentPerson) ?
                         friendship.getDstPerson() :
-                        friendship.getSrcPerson());
-        if (!name.equals("")) {
-            personStream = personStream.filter(person -> person.getFirstName().equals(name));
-        }
-
-        return personStream.collect(Collectors.toList());
+                        friendship.getSrcPerson())
+//                .distinct()
+                .collect(Collectors.toList());
     }
 
     private boolean isMyFriendship(Friendship friendship, Person currentPerson) {
