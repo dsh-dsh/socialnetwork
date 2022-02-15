@@ -134,12 +134,13 @@ public class PostService {
     }
 
     public List<Post> addPostsToLimit(Page<Post> postPage) {
+        Person currentPerson = authService.getPersonFromSecurityContext();
         List<Post> posts = postPage.getContent();
         List<Post> postList = new ArrayList<>(posts);
         if (postPage.getPageable().getOffset() == 0 && posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
             int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
             List<Post> additionalPosts = postRepository
-                    .findOrderByNewAuthorsExclude(posts, PageRequest.of(0, limit));
+                    .findOrderByNewAuthorsExclude(posts, currentPerson, PageRequest.of(0, limit));
             postList.addAll(additionalPosts);
             postList = postList.stream()
                     .sorted(Comparator.comparing(Post::getTime).reversed())
