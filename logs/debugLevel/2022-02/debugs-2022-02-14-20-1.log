@@ -1,0 +1,2 @@
+14.02.2022 20:41:01.621 DEBUG com.skillbox.socialnet.SocialnetApplication Running with Spring Boot v2.3.10.RELEASE, Spring v5.2.14.RELEASE
+14.02.2022 20:41:06.028 DEBUG com.skillbox.socialnet.security.JwtFilter Filter 'jwtFilter' configured for use

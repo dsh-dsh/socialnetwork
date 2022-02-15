@@ -3,11 +3,21 @@ databaseChangeLog:
       file: v0.0.1_createTables.sql
       relativeToChangelogFile: true
 
+  - include:
+      file: v0.0.2_createTestData.sql
+      relativeToChangelogFile: true
 
   - include:
       file: v0.0.3_createNotTable.sql
       relativeToChangelogFile: true
 
+  - include:
+      file: v0.0.4_insertFriendships.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: v0.0.5_insertPost2Tags.sql
+      relativeToChangelogFile: true
 
   - include:
       file: v0.0.6_add_dialog_table.sql

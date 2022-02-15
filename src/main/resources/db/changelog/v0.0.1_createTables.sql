@@ -123,4 +123,3 @@ create table if not exists notification(
 	entity_id varchar(255),
 	contact varchar(255)
 );
-

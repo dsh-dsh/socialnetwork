@@ -108,9 +108,9 @@ public class NotificationService {
     }
 
 
-    //@Scheduled(cron = "0 * * * * *") //каждую минуту
+    @Scheduled(cron = "0 * * * * *") //каждую минуту
     //@Scheduled(cron = "0 0 * * * *") //каждый час
-    @Scheduled(cron = "0 12,00 * * * *")//каждые 12 часов
+    //@Scheduled(cron = "0 12,00 * * * *")//каждые 12 часов
     private void createBirthdayNotifications(){
         List<Integer> allIds = personRepository.getAllIds();
         for (Integer allId : allIds) {

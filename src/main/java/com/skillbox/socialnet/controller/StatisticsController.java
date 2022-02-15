@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/statistics")
 public class StatisticsController {
     private StatisticsService statisticsService;
 
-    @GetMapping("/statistics")
+    @GetMapping
     public ResponseEntity<StatisticsResponse> getStatisticsForUser() {
         return ResponseEntity.ok(statisticsService.getStatisticsResponse());
     }
