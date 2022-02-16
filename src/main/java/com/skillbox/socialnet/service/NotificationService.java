@@ -9,6 +9,7 @@ import com.skillbox.socialnet.model.enums.NotificationTypeCode;
 import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.NotificationRepository;
 import com.skillbox.socialnet.repository.PersonRepository;
+import com.skillbox.socialnet.repository.SettingsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,6 +30,7 @@ public class NotificationService {
     private final AuthService authService;
     private final NotificationRepository notificationRepository;
     private final WebSocketService webSocketService;
+    private final SettingsRepository settingsRepository;
 
     @Value("${socialnet.item-per-page}")
     private int itemPerPage = 20;
@@ -71,9 +73,11 @@ public class NotificationService {
     }
 
     public void createNewNotification(NotificationTypeCode typeCode, int dstPersonId, int entityId, String contact) {
-        Timestamp sentTime = new Timestamp(Calendar.getInstance().getTimeInMillis());
-        notificationRepository.createNewNotification(typeCode.ordinal(), sentTime, dstPersonId, String.valueOf(entityId), contact, false);
-        sendNotifications(dstPersonId);
+        if(isNotificationEnabled(dstPersonId, typeCode.toString())) {
+            Timestamp sentTime = new Timestamp(Calendar.getInstance().getTimeInMillis());
+            notificationRepository.createNewNotification(typeCode.ordinal(), sentTime, dstPersonId, String.valueOf(entityId), contact, false);
+            sendNotifications(dstPersonId);
+        }
     }
 
     public NotificationRS getNotificationRS(int receiverId) {
@@ -124,15 +128,19 @@ public class NotificationService {
 
         for (NotificationInterfaceProjectile nip : ids) {
             if (nip.getSrc() == id) {
-                if (personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getDst()) != null) {
+                if (personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getDst()) != null && isNotificationEnabled(id, NotificationTypeCode.FRIEND_BIRTHDAY.toString())) {
                     notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getDst().toString(), personRepository.getEmailById(id), false);
                 }
             }
             if (nip.getDst() == id) {
-                if(personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getSrc()) != null){
+                if(personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getSrc()) != null && isNotificationEnabled(id, NotificationTypeCode.FRIEND_BIRTHDAY.toString())){
                     notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getSrc().toString(), personRepository.getEmailById(id), false);
                 }
             }
         }
+    }
+
+    private boolean isNotificationEnabled(int id, String code){
+        return settingsRepository.getPermissionForPersonByType(id, code);
     }
 }
