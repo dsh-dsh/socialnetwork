@@ -3,6 +3,7 @@ package com.skillbox.socialnet.service;
 import com.skillbox.socialnet.model.dto.MessageOkDTO;
 import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.entity.Person;
+import com.skillbox.socialnet.model.mapper.PersonMapper;
 import com.skillbox.socialnet.model.rq.UserChangeRQ;
 import com.skillbox.socialnet.model.rq.UserSearchRQ;
 import com.skillbox.socialnet.model.rs.GeneralListResponse;

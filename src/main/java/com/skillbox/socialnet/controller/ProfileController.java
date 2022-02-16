@@ -9,6 +9,7 @@ import com.skillbox.socialnet.model.rq.UserSearchRQ;
 import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.service.AuthService;
+import com.skillbox.socialnet.service.FriendsService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
@@ -28,6 +29,7 @@ public class ProfileController {
     private final UserService userService;
     private final PostService postService;
     private final FriendsService friendsService;
+    private final AuthService authService;
 
     @GetMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
