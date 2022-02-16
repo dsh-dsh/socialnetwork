@@ -13,7 +13,7 @@ public class DialogDTO {
     private long id;
     @JsonProperty("last_message")
     private MessageDTO lastMessage;
-    private PersonDialogDTO personDialogDTO;
+    private PersonDialogDTO recipient;
     @JsonProperty("unread_count")
     private int unreadCount;
 
@@ -24,7 +24,7 @@ public class DialogDTO {
                 .filter(p -> !p.equals(me))
                 .findFirst()
                 .orElseThrow(BadRequestException::new);
-        this.personDialogDTO = new PersonDialogDTO(person);
+        this.recipient = new PersonDialogDTO(person);
         this.unreadCount = unreadCount;
     }
 }

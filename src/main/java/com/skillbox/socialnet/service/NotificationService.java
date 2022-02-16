@@ -108,8 +108,8 @@ public class NotificationService {
     }
 
 
-    @Scheduled(cron = "0 * * * * *") //каждую минуту
-    //@Scheduled(cron = "0 0 * * * *") //каждый час
+    //@Scheduled(cron = "0 * * * * *") //каждую минуту
+    @Scheduled(cron = "0 0 * * * *") //каждый час
     //@Scheduled(cron = "0 12,00 * * * *")//каждые 12 часов
     private void createBirthdayNotifications(){
         List<Integer> allIds = personRepository.getAllIds();
@@ -125,12 +125,12 @@ public class NotificationService {
         for (NotificationInterfaceProjectile nip : ids) {
             if (nip.getSrc() == id) {
                 if (personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getDst()) != null) {
-                    notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getDst().toString(), personRepository.getEmailById(id), false);
+                    notificationRepository.createNewNotification(NotificationTypeCode.BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getDst().toString(), personRepository.getEmailById(id), false);
                 }
             }
             if (nip.getDst() == id) {
                 if(personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getSrc()) != null){
-                    notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getSrc().toString(), personRepository.getEmailById(id), false);
+                    notificationRepository.createNewNotification(NotificationTypeCode.BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getSrc().toString(), personRepository.getEmailById(id), false);
                 }
             }
         }

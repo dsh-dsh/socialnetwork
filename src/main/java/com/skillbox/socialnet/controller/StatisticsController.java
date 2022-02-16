@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/statistics")
 public class StatisticsController {
-    private StatisticsService statisticsService;
+
+    private final StatisticsService statisticsService;
 
     @GetMapping
     public ResponseEntity<StatisticsResponse> getStatisticsForUser() {
