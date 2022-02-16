@@ -9,4 +9,4 @@ VALUES
 ('Ответ на комментарий', 'COMMENT_COMMENT'),
 ('Запрос дружбы', 'FRIEND_REQUEST'),
 ('Личное сообщение', 'MESSAGE'),
-('День рождения', 'BIRTHDAY');
+('День рождения', 'FRIEND_BIRTHDAY');
