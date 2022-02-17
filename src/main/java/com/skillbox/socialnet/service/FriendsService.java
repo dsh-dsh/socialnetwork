@@ -115,7 +115,7 @@ public class FriendsService {
 
     public List<UserDTO> getRecommendations() {
         Person currentPerson = authService.getPersonFromSecurityContext();
-        Set<Person> myFriends = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND)
+        Set<Person> myFriends = friendshipRepository.findAllFriendsIncludeBlocked(currentPerson)
                 .stream().map(f -> getFriendFromFriendship(f, currentPerson))
                 .collect(Collectors.toSet());
         Set<Person> recommendedFriends = getRecommendedFriends(currentPerson, myFriends);
@@ -130,7 +130,7 @@ public class FriendsService {
                     .findAllFriendsOfMyFriends(myFriends, FriendshipStatusCode.FRIEND)
                     .stream().filter(friendship -> !isMyFriendship(friendship, currentPerson))
                     .flatMap(friendship -> Stream.of(friendship.getDstPerson(), friendship.getSrcPerson()))
-                    .filter(person -> !isFriends(person, currentPerson))
+                    .filter(person -> !myFriends.contains(person))
                     .collect(Collectors.toSet());
         }
         int limit = Constants.RECOMMENDED_FRIENDS_LIMIT - recommendedFriends.size();

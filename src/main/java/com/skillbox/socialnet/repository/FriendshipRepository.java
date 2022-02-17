@@ -39,6 +39,13 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
             "FROM Friendship AS friendship " +
             "WHERE (friendship.srcPerson = :person or friendship.dstPerson = :person) " +
             "AND (friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND " +
+            "OR friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.BLOCKED)")
+    List<Friendship> findAllFriendsIncludeBlocked(Person person);
+
+    @Query("SELECT friendship " +
+            "FROM Friendship AS friendship " +
+            "WHERE (friendship.srcPerson = :person or friendship.dstPerson = :person) " +
+            "AND (friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.FRIEND " +
             "OR friendship.status.code = com.skillbox.socialnet.model.enums.FriendshipStatusCode.BLOCKED) " +
             "ORDER BY friendship.dstPerson.lastName, friendship.srcPerson.lastName")
     Page<Friendship> findAllFriendsPageable(Person person, Pageable pageable);

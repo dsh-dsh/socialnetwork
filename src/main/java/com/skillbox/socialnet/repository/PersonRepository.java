@@ -34,12 +34,14 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     Page<Person> findByFirstNameContainingOrLastNameContainingIgnoreCase(String fistName, String lastName, Pageable pageable);
 
-    @Query("SELECT person FROM Person AS person " +
+    @Query("SELECT person " +
+            "FROM Person AS person " +
             "WHERE person NOT IN (:myFriends) " +
             "ORDER BY person.regDate DESC")
     List<Person> findNewFriendsLimit(Collection<Person> myFriends, Pageable pageable);
 
     boolean existsByeMail(String email);
+
     @Query("select person from Person as person where person.isDeleted = :is_deleted and person.lastOnlineTime < :timestamp")
     List<Person> findAllByDeleted(boolean is_deleted, Timestamp timestamp);
 
