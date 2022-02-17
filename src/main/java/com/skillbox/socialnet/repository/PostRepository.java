@@ -49,10 +49,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT post " +
             "FROM Post AS post " +
-            "WHERE post NOT IN (:posts) " +
-            "AND post.author IS NOT :person " +
+            "WHERE post.author NOT IN (:persons) " +
             "ORDER BY post.author.regDate DESC")
-    List<Post> findOrderByNewAuthorsExclude(List<Post> posts, Person person, Pageable pageable);
+    List<Post> findOrderByNewAuthorsExclude(List<Person> persons, Pageable pageable);
 
     @Query(value = "select distinct(author_id) from post_comment " +
             " where post_id = :postId and author_id != :authorId",

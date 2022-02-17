@@ -169,6 +169,11 @@ public class FriendsService {
         return new MessageOkDTO();
     }
 
+    public List<Person> getBlockedFriends(Person currentPerson) {
+        List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.BLOCKED);
+        return getFriendsFromFriendships(currentPerson, friendships);
+    }
+
     private Set<Person> getPersonsToExclude(Person currentPerson, Set<Person> myFriends, Set<Person> recommendedFriends) {
         Set<Person> personsToExclude = new HashSet<>();
         personsToExclude.addAll(myFriends);
@@ -178,12 +183,19 @@ public class FriendsService {
         return personsToExclude;
     }
 
-    public List<Person> getMyFriends() {
+    public List<Person> getMyNotBlockedFriends() {
         Person currentPerson = authService.getPersonFromSecurityContext();
         List<Friendship> friendships = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.FRIEND);
-        return friendships.stream()
+        List<Person> friends = friendships.stream()
+                .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson())
+                .distinct()
+                .collect(Collectors.toList());
+        List<Friendship> blockedFriendships = friendshipRepository.findAllFriends(currentPerson, FriendshipStatusCode.BLOCKED);
+        List<Person> blockedFriends = blockedFriendships.stream()
                 .map(f -> f.getSrcPerson().equals(currentPerson) ? f.getDstPerson() : f.getSrcPerson())
                 .collect(Collectors.toList());
+        friends.removeAll(blockedFriends);
+        return friends;
     }
 
     private Friendship createFriendship(Person currentPerson, Person dstPerson, FriendshipStatusCode statusCode) {

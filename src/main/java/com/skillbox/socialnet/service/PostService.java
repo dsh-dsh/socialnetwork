@@ -52,8 +52,8 @@ public class PostService {
 
     @Loggable
     public GeneralListResponse<PostDTO> getFeeds(ElementPageable pageable) {
-        List<Person> friends = getFriendList();
         pageable.setSort(Sort.by("time").descending());
+        List<Person> friends = getFriendList();
         Page<Post> postPage = postRepository.findByAuthorIn(friends, pageable);
         List<Post> posts = addPostsToLimit(postPage);
         List<PostDTO> postDTOs = getPostDTOList(posts);
@@ -62,7 +62,7 @@ public class PostService {
     }
 
     private List<Person> getFriendList() {
-        List<Person> friends = friendsService.getMyFriends();
+        List<Person> friends = friendsService.getMyNotBlockedFriends();
         if(friends.isEmpty()) {
             Person me = authService.getPersonFromSecurityContext();
             friends = List.copyOf(friendsService.getRecommendedFriends(me, Set.of()));
@@ -135,13 +135,14 @@ public class PostService {
     }
 
     public List<Post> addPostsToLimit(Page<Post> postPage) {
-        Person currentPerson = authService.getPersonFromSecurityContext();
+        int postLimit = postPage.getPageable().getPageSize();
         List<Post> posts = postPage.getContent();
         List<Post> postList = new ArrayList<>(posts);
-        if (postPage.getPageable().getOffset() == 0 && posts.size() < Constants.RECOMMENDED_POST_LIMIT) {
-            int limit = Constants.RECOMMENDED_POST_LIMIT - posts.size();
+        if (postPage.getPageable().getOffset() == 0 && posts.size() < postLimit) {
+            int limit = postLimit - posts.size();
+            List<Person> persons = getAuthorsToExclude(posts);
             List<Post> additionalPosts = postRepository
-                    .findOrderByNewAuthorsExclude(posts, currentPerson, PageRequest.of(0, limit));
+                    .findOrderByNewAuthorsExclude(persons, PageRequest.of(0, limit));
             postList.addAll(additionalPosts);
             postList = postList.stream()
                     .sorted(Comparator.comparing(Post::getTime).reversed())
@@ -149,6 +150,16 @@ public class PostService {
         }
 
         return postList;
+    }
+
+    private List<Person> getAuthorsToExclude(List<Post> posts) {
+        Person currentPerson = authService.getPersonFromSecurityContext();
+        List<Person> persons = posts.stream()
+                .map(Post::getAuthor)
+                .collect(Collectors.toList());
+        persons.add(currentPerson);
+        persons.addAll(friendsService.getBlockedFriends(currentPerson));
+        return persons;
     }
 
     private Page<Post> getPostsPage(PostSearchRQ postSearchRQ, Pageable pageable, long dateTo) {
