@@ -33,26 +33,17 @@ public class ProfileController {
 
     @GetMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> getUser() {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.getUser()));
     }
 
     @PutMapping("/me")
     public ResponseEntity<GeneralResponse<UserDTO>> editUser(
             @RequestBody @Valid UserChangeRQ userChangeRQ) {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.editUser(userChangeRQ)));
     }
 
     @DeleteMapping("/me")
     public ResponseEntity<GeneralResponse<String>> deleteUser() {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(new GeneralResponse<>(userService.deleteUser()));
     }
 
@@ -77,9 +68,6 @@ public class ProfileController {
             @PathVariable(name = "id") int personId,
             @RequestParam(name = "publish_date", defaultValue = "0") long publishDate,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(new GeneralResponse<>(postService.addPostToUserWall(personId, publishDate, postChangeRQ)));
     }
 
@@ -107,17 +95,11 @@ public class ProfileController {
 
     @PutMapping("/block/{id}")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> blockUser(@PathVariable int id) {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(new GeneralResponse<>(friendsService.blockUser(id)));
     }
 
     @DeleteMapping("/block/{id}")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> unblockUser(@PathVariable int id) {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(new GeneralResponse<>(friendsService.unblockUser(id)));
     }
 

@@ -18,20 +18,16 @@ import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
-import static com.skillbox.socialnet.config.Config.bcrypt;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +49,7 @@ public class AccountService {
         person.setEMail(accountRegisterRQ.getEmail());
         person.setFirstName(accountRegisterRQ.getFirstName());
         person.setLastName(accountRegisterRQ.getLastName());
-        person.setPassword(bcrypt(accountRegisterRQ.getPasswd1()));
+        person.setPassword(passwordEncoder.encode(accountRegisterRQ.getPasswd1()));
         person.setLastOnlineTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         person.setRegDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         person.setApproved(true);

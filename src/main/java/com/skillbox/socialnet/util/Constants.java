@@ -13,6 +13,7 @@ public class Constants {
     public static final String NO_SUCH_FRIENDSHIP_MESSAGE = "no such friendship relation";
     public static final String NO_ANY_POST_MESSAGE = "no any post";
     public static final String WRONG_CREDENTIALS_MESSAGE = "wrong credentials";
+    public static final String AUTHENTICATION_FAIL_MESSAGE = "Authentication failed";
     public static final String TOKEN_EXPIRED_MESSAGE = "Token expired";
     public static final String INVALID_TOKEN_MESSAGE = "Invalid token";
     public static final String BAD_REQUEST_MESSAGE = "invalid_request";

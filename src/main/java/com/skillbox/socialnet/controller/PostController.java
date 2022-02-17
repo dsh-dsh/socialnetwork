@@ -47,18 +47,12 @@ public class PostController {
             @PathVariable int id,
             @RequestParam(defaultValue = "0", name = "publishDate") long publishDate,
             @RequestBody @Valid PostChangeRQ postChangeRQ) {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.changePostById(id, publishDate, postChangeRQ)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<GeneralResponse<DeleteDTO>> deletePost(@PathVariable int id) {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.deletePostById(id)));
     }
@@ -73,9 +67,6 @@ public class PostController {
     public ResponseEntity<GeneralResponse<CommentDTO>> postComment(
             @PathVariable(name = "id") int postId,
             @RequestBody @Valid CommentRQ commentRQ) {
-        if (authService.getPersonFromSecurityContext() == null){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(postService.makeCommentToPost(postId, commentRQ)));
     }
@@ -85,9 +76,6 @@ public class PostController {
             @PathVariable int id,
             @PathVariable(name = "comment_id") int commentId,
             @RequestBody @Valid CommentRQ commentRQ) {
-        if (authService.getPersonFromSecurityContext() == null){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(commentService.rewriteCommentToThePost(commentId, commentRQ)));
     }
@@ -96,9 +84,6 @@ public class PostController {
     public ResponseEntity<GeneralResponse<DeleteDTO>> deleteComment(
             @PathVariable int id,
             @PathVariable(name = "comment_id") int commentId) {
-        if (authService.getPersonFromSecurityContext() == null){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(
                 new GeneralResponse<>(commentService.deleteCommentToThePost(id, commentId)));
     }

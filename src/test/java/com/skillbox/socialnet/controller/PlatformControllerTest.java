@@ -40,6 +40,7 @@ class PlatformControllerTest {
     private static final String COUNTRIES = "countries";
 
     @Test
+    @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/platform/addCities.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void getCities() throws Exception {
@@ -50,6 +51,13 @@ class PlatformControllerTest {
                 .andExpect(jsonPath("$.data.[1].title").value("St. Petersburg"))
                 .andExpect(jsonPath("$.data.[2]").doesNotExist());
 
+    }
+
+    @Test
+    void getCitiesUnauthorized() throws Exception {
+        mockMvc.perform(get(URL_PREFIX + CITIES))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -106,6 +114,7 @@ class PlatformControllerTest {
     }
 
     @Test
+    @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/platform/addCities.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/platform/deleteCities.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void getCountry() throws Exception {
@@ -116,6 +125,13 @@ class PlatformControllerTest {
                 .andExpect(jsonPath("$.data.[1].title").value("Ukraine"))
                 .andExpect(jsonPath("$.data.[2]").doesNotExist());
 
+    }
+
+    @Test
+    void getCountryUnauthorized() throws Exception {
+        mockMvc.perform(get(URL_PREFIX + COUNTRIES))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -144,6 +160,7 @@ class PlatformControllerTest {
     }
 
     @Test
+    @WithUserDetails(P1_MAIL)
     @Sql(value = "/sql/platform/addLang.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/platform/deleteLang.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void getLang() throws Exception {
@@ -154,5 +171,12 @@ class PlatformControllerTest {
                 .andExpect(jsonPath("$.data.[1].title").value("Eng"))
                 .andExpect(jsonPath("$.data.[2]").doesNotExist());
 
+    }
+
+    @Test
+    void getLangUnauthorized() throws Exception {
+        mockMvc.perform(get(URL_PREFIX + "languages"))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

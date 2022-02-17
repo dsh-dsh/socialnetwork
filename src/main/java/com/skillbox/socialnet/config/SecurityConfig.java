@@ -1,10 +1,12 @@
 package com.skillbox.socialnet.config;
 
+import com.skillbox.socialnet.security.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -12,9 +14,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,48 +29,28 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Value("${cors.urls}")
+    private final List<String> hosts = new ArrayList<>();
+
     private static final String[] AUTH_WHITELIST = {
-            "/swagger-resources",
-            "/swagger-resources/",
-            "/configuration/ui",
-            "/configuration/security",
-            "/webjars/springfox-swagger-ui/**",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/webjars/",
             "/",
-            "/static/**",
             "/api/v1/auth/**",
-            "/api/v1/platform/**",
             "/api/v1/account/register",
             "/api/v1/account/password/**",
             "/api/v1/account/shift-email",
-            "/profile/storage/",
-            "/storage/",
-            "api/v1/admin/login",
-            "/favicon.ico",
-            "/js/**", "/css/**",
+            "/api/v1/admin/login",
+            "/api/v1/platform/languages",
             "/change-password",
             "/shift-email",
-            "/**/{path:[^\\\\.]*}",
-            "/webjars/**",
-            "/app.js",
-            "/actuator/**"
+            "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html",
+            "/actuator/**",
+            "/static/**", "/webjars/**", "/favicon.ico",
+            "/js/**", "/css/**", "/app.js",
+            "/login", "/profile", "/push", "/friends", "/im", "/statistics", "/settings"
     };
-
-    @Bean
-    public FilterRegistrationBean corsFilter() {
-        CorsConfigurationSource source = corsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("");
-        config.addAllowedHeader("");
-        config.addAllowedMethod("*");
-        org.springframework.web.filter.CorsFilter corsFilter = new org.springframework.web.filter.CorsFilter(source);
-        FilterRegistrationBean bean = new FilterRegistrationBean(corsFilter);
-        bean.setOrder(0);
-        return bean;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -73,40 +58,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests()
-                .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/").permitAll()
-                .antMatchers("/api/v1/auth/login").permitAll()
-                .antMatchers("/api/v1/auth/refresh").permitAll()
-                .antMatchers("/api/v1/auth/logout").permitAll()
-                .antMatchers("/api/v1/account/**").permitAll()
-                .antMatchers("/api/v1/platform/**").permitAll()
-                .antMatchers("/api/v1/geo/**").permitAll()
-                .antMatchers("/api/v1/feeds/**").permitAll()
-                .antMatchers("/api/v1/users/**").permitAll()
-                .antMatchers("/api/v1/post/**").permitAll()
-                .antMatchers("/api/v1/tags/**").permitAll()
-                .antMatchers("/api/v1/notifications/**").permitAll()
-                .antMatchers("/actuator/").permitAll()
-                .antMatchers("/api/v1/dialogs/**").permitAll()
-                .antMatchers("/api/v1/friends/**").permitAll()
-                .antMatchers("/api/v1/storage/**").permitAll()
-                .antMatchers("/api/v1/likes/**").permitAll()
-                .antMatchers("/api/v1/liked/**").permitAll()
-                .antMatchers("/v2/api-docs",
-                        "/configuration/ui",
-                        "/swagger-resources/",
-                        "/configuration/security",
-                        "/swagger-ui.html",
-                        "/webjars/").permitAll()
-                .anyRequest()
-                .authenticated()
+                    .authorizeRequests()
+                    .antMatchers(AUTH_WHITELIST).permitAll()
+                    .anyRequest().authenticated()
                 .and()
-                .cors(AbstractHttpConfigurer::disable);
+                    .cors(AbstractHttpConfigurer::disable)
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling()
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
 
-    @Value("${cors.urls}")
-    private List<String> hosts = new ArrayList<>();
+    @Bean
+    public FilterRegistrationBean<CorsFilter> corsFilter() {
+        CorsConfigurationSource source = corsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("");
+        config.addAllowedHeader("");
+        config.addAllowedMethod("*");
+        org.springframework.web.filter.CorsFilter corsFilter = new org.springframework.web.filter.CorsFilter(source);
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(corsFilter);
+        bean.setOrder(0);
+        return bean;
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

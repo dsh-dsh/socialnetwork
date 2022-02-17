@@ -22,32 +22,30 @@ public class LikesController {
     private final AuthService authService;
 
     @GetMapping("/likes")
-    public ResponseEntity<GeneralResponse<LikeDTO>> getLikes(@RequestParam("item_id") int itemId,
-                                                             @RequestParam String type){
+    public ResponseEntity<GeneralResponse<LikeDTO>> getLikes(
+            @RequestParam("item_id") int itemId,
+            @RequestParam String type){
         return ResponseEntity.ok(new GeneralResponse<>(likeService.getLikes(itemId)));
     }
 
     @PutMapping("/likes")
-    public ResponseEntity<GeneralResponse<LikeDTO>> setLike(@RequestBody LikeRQ likeRQ){
-        if (authService.getPersonFromSecurityContext() == null){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<GeneralResponse<LikeDTO>> setLike(
+            @RequestBody LikeRQ likeRQ){
         return ResponseEntity.ok(new GeneralResponse<>(likeService.setLike(likeRQ.getId())));
     }
 
     @GetMapping("/liked")
-    public ResponseEntity<GeneralResponse<LikedDTO>> getLiked(@RequestParam("item_id") int postId,
-                                                              @RequestParam String type,
-                                                              @RequestParam("user_id") int userId){
+    public ResponseEntity<GeneralResponse<LikedDTO>> getLiked(
+            @RequestParam("item_id") int postId,
+            @RequestParam String type,
+            @RequestParam("user_id") int userId){
         return ResponseEntity.ok(new GeneralResponse<>(likeService.getLiked(postId, userId)));
     }
 
     @DeleteMapping("/likes")
-    public ResponseEntity<GeneralResponse<DeleteLikeDTO>> deleteLike(@RequestParam("item_id") int itemId,
-                                                                     @RequestParam String type){
-        if (authService.getPersonFromSecurityContext() == null){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<GeneralResponse<DeleteLikeDTO>> deleteLike(
+            @RequestParam("item_id") int itemId,
+            @RequestParam String type){
         return ResponseEntity.ok(new GeneralResponse<>(likeService.deleteLike(itemId)));
     }
 

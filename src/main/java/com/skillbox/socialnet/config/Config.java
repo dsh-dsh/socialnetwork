@@ -25,16 +25,6 @@ public class Config {
     @Value("${aws.secret.key}")
     private String secretKey;
 
-    public static String bcrypt(String password) {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(12);
-        return bCryptPasswordEncoder.encode(password);
-    }
-
-    public static boolean checkPassword(String passwordDB, String passwordFront){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(passwordFront, passwordDB);
-    }
-
     @Bean
     public AmazonS3 getAmazonS3() {
         AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);

@@ -77,4 +77,6 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(new ErrorResponse(errors.get(0)), HttpStatus.BAD_REQUEST);
     }
+
+
 }

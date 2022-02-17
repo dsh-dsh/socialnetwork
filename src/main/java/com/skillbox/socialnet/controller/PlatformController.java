@@ -36,9 +36,6 @@ public class PlatformController {
     @PostMapping("/countries")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setCountry(
             @RequestBody LocationDTO locationDTO){
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCountry(locationDTO)));
     }
 
@@ -51,9 +48,6 @@ public class PlatformController {
     @PostMapping("/cities")
     public ResponseEntity<GeneralResponse<MessageOkDTO>> setCity(
             @RequestBody LocationDTO locationDTO){
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         return ResponseEntity.ok(new GeneralResponse<>(platformService.addCity(locationDTO)));
     }
 

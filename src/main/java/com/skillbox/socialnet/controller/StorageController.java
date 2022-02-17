@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
+
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -21,12 +21,11 @@ public class StorageController {
     private final AuthService  authService;
     
     @PostMapping("/storage")
-    public ResponseEntity<GeneralResponse<FileDTO>> storage(@RequestParam("type") String type,
-                                                            @RequestPart("file") MultipartFile file) throws IOException {
-        if (authService.getPersonFromSecurityContext() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        return ResponseEntity.ok(new GeneralResponse<>(storageService.saveImageToProfile(type, file)));
+    public ResponseEntity<GeneralResponse<FileDTO>> storage(
+            @RequestParam("type") String type,
+            @RequestPart("file") MultipartFile file) throws IOException {
+        return ResponseEntity.ok(
+                new GeneralResponse<>(storageService.saveImageToProfile(type, file)));
     }
 
 }
