@@ -58,7 +58,7 @@ public class NotificationService {
 
     public NotificationRS setNotification(boolean all, int id) {
         int currentPersonID = authService.getPersonFromSecurityContext().getId();
-        if(!all){
+        if (!all) {
             notificationRepository.makeOneNotificatonRead(id);
         } else {
             notificationRepository.makeAllNotificationRead(currentPersonID);
@@ -73,7 +73,7 @@ public class NotificationService {
     }
 
     public void createNewNotification(NotificationTypeCode typeCode, int dstPersonId, int entityId, String contact) {
-        if(isNotificationEnabled(dstPersonId, typeCode.toString())) {
+        if (isNotificationEnabled(dstPersonId, typeCode.toString())) {
             Timestamp sentTime = new Timestamp(Calendar.getInstance().getTimeInMillis());
             notificationRepository.createNewNotification(typeCode.ordinal(), sentTime, dstPersonId, String.valueOf(entityId), contact, false);
             sendNotifications(dstPersonId);
@@ -115,7 +115,7 @@ public class NotificationService {
     @Scheduled(cron = "0 * * * * *") //каждую минуту
     //@Scheduled(cron = "0 0 * * * *") //каждый час
     //@Scheduled(cron = "0 12,00 * * * *")//каждые 12 часов
-    private void createBirthdayNotifications(){
+    private void createBirthdayNotifications() {
         List<Integer> allIds = personRepository.getAllIds();
         for (Integer allId : allIds) {
             createBirthdayRS(allId);
@@ -123,24 +123,24 @@ public class NotificationService {
     }
 
 
-    private void createBirthdayRS(int id){
+    private void createBirthdayRS(int id) {
         List<NotificationInterfaceProjectile> ids = friendshipRepository.getIdsForNotification(id);
 
         for (NotificationInterfaceProjectile nip : ids) {
-            if (nip.getSrc() == id) {
-                if (personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getDst()) != null && isNotificationEnabled(id, NotificationTypeCode.FRIEND_BIRTHDAY.toString())) {
-                    notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getDst().toString(), personRepository.getEmailById(id), false);
-                }
+
+            if ((nip.getSrc() == id) && (personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getDst()) != null && isNotificationEnabled(id, NotificationTypeCode.FRIEND_BIRTHDAY.toString()))) {
+                notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getDst().toString(), personRepository.getEmailById(id), false);
             }
-            if (nip.getDst() == id) {
-                if(personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getSrc()) != null && isNotificationEnabled(id, NotificationTypeCode.FRIEND_BIRTHDAY.toString())){
-                    notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getSrc().toString(), personRepository.getEmailById(id), false);
-                }
+
+
+            if ((nip.getDst() == id) && (personRepository.getIdIfBirthDayIsTomorrowOrToday(nip.getSrc()) != null && isNotificationEnabled(id, NotificationTypeCode.FRIEND_BIRTHDAY.toString()))) {
+                notificationRepository.createNewNotification(NotificationTypeCode.FRIEND_BIRTHDAY.ordinal(), new Timestamp(Calendar.getInstance().getTimeInMillis()), id, nip.getSrc().toString(), personRepository.getEmailById(id), false);
             }
+
         }
     }
 
-    private boolean isNotificationEnabled(int id, String code){
+    private boolean isNotificationEnabled(int id, String code) {
         return settingsRepository.getPermissionForPersonByType(id, code);
     }
 }

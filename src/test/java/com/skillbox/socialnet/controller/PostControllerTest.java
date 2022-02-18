@@ -40,16 +40,6 @@ class PostControllerTest {
     private static final String URL_PREFIX = "/api/v1/post/";
     private static final String COMMENT = "/comments";
 
-//    @Test
-//    @WithUserDetails(P1_MAIL)
-//    @Sql(value = "/sql/post/addPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = "/sql/post/deletePost.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//     void searchPost() throws Exception {
-//        mockMvc.perform(get(URL_PREFIX).param("text", "test title"))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.data.[0].post_text").value("test post"));
-//    }
 
     @Test
     @WithUserDetails(P1_MAIL)

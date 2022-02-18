@@ -8,6 +8,7 @@ import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -46,12 +47,9 @@ public class PersonConverter {
     }
 
     private boolean isFriend(Person opponentPerson) {
-        System.out.println(opponentPerson);
-        System.out.println(getCurrentPerson());
-        System.out.println("----------------");
         List<Friendship> friendshipList = friendshipRepository
                 .findFriendshipsByStatusCode(getCurrentPerson(), opponentPerson, FriendshipStatusCode.FRIEND);
-        return friendshipList.size() > 0;
+        return !friendshipList.isEmpty();
     }
 
     private boolean isBlocked(Person opponentPerson) {

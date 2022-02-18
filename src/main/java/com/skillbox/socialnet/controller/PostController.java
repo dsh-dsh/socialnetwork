@@ -1,19 +1,18 @@
 package com.skillbox.socialnet.controller;
 
+import com.skillbox.socialnet.model.dto.CommentDTO;
+import com.skillbox.socialnet.model.dto.DeleteDTO;
+import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.rq.CommentRQ;
 import com.skillbox.socialnet.model.rq.PostChangeRQ;
 import com.skillbox.socialnet.model.rq.PostSearchRQ;
 import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.model.rs.GeneralResponse;
-import com.skillbox.socialnet.model.dto.CommentDTO;
-import com.skillbox.socialnet.model.dto.DeleteDTO;
-import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.CommentService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

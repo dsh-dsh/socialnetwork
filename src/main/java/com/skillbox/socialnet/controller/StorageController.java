@@ -1,14 +1,14 @@
 package com.skillbox.socialnet.controller;
 
-import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.model.dto.FileDTO;
+import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.StorageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 
 @CrossOrigin

@@ -2,7 +2,6 @@ package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.model.entity.Person;
 import com.skillbox.socialnet.model.entity.Post;
-import com.skillbox.socialnet.model.entity.PostComment;
 import com.skillbox.socialnet.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,6 +45,5 @@ public class HardDeletingPerson {
             }
         }
         personRepository.deleteAll(deletedPersons);
-        System.out.println("Scheduled successful");
     }
 }

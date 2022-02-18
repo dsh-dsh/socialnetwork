@@ -15,9 +15,9 @@ import com.skillbox.socialnet.service.UserService;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 
 @CrossOrigin

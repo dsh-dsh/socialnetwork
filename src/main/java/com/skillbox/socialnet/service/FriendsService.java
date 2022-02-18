@@ -94,7 +94,7 @@ public class FriendsService {
     private Friendship getAndAcceptFriendship(Person currentPerson, Person dstPerson) {
         List<Friendship> requests = friendshipRepository
                 .findRequests(currentPerson, dstPerson, FriendshipStatusCode.REQUEST);
-        if(requests.size() > 0) {
+        if(!requests.isEmpty()) {
             return acceptFriendship(dstPerson, requests);
         }
 

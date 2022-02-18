@@ -2,7 +2,6 @@ package com.skillbox.socialnet.service;
 
 import com.skillbox.socialnet.model.rs.StatisticsResponse;
 import com.skillbox.socialnet.repository.PostRepository;
-import liquibase.pro.packaged.T;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
