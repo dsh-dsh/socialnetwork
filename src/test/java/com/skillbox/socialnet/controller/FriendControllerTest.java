@@ -172,22 +172,22 @@ class FriendControllerTest {
     }
 
 
-//    @Order(11)
-//    @Test
-//    @WithUserDetails(EMAIL_PERSON_ID1)
-//    @Sql(value = "/sql/friend/add_10_persons.sql",
-//            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = "/sql/friend/delete_new_persons.sql",
-//            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//     void getRecommendationsAfterAdding10Persons() throws Exception {
-//        this.mockMvc.perform(get(URL_PREFIX + "/recommendations"))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.data").isArray())
-//                .andExpect(jsonPath("$.data.[0]").exists())
-//                .andExpect(jsonPath("$.data.[9]").exists())
-//                .andExpect(jsonPath("$.data.[10]").doesNotExist());
-//    }
+    @Order(11)
+    @Test
+    @WithUserDetails(EMAIL_PERSON_ID1)
+    @Sql(value = "/sql/friend/add_10_persons.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/friend/delete_new_persons.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+     void getRecommendationsAfterAdding10Persons() throws Exception {
+        this.mockMvc.perform(get(URL_PREFIX + "/recommendations"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.[0]").exists())
+                .andExpect(jsonPath("$.data.[10]").exists())
+                .andExpect(jsonPath("$.data.[11]").doesNotExist());
+    }
 
     @Order(12)
     @Test
@@ -200,14 +200,14 @@ class FriendControllerTest {
     private int getRequestsNumber(String srcPersonEmail, int dstPersonId) {
         Person srcPerson = personService.getPersonByEmail(srcPersonEmail);
         Person dstPerson = personService.getPersonById(dstPersonId);
-        List<Friendship> requests = friendshipRepository.findRequests(srcPerson, dstPerson, FriendshipStatusCode.REQUEST);
+        List<Friendship> requests = friendshipRepository.findAllRequests(dstPerson, FriendshipStatusCode.REQUEST);
         return requests.size();
     }
 
     private boolean getFriendship(String srcPersonEmail, int dstPersonId) {
         Person srcPerson = personService.getPersonByEmail(srcPersonEmail);
         Person dstPerson = personService.getPersonById(dstPersonId);
-        List<Friendship> friendships = friendshipRepository.findFriendshipsByStatusCode(srcPerson, dstPerson, FriendshipStatusCode.FRIEND);
+        List<Friendship> friendships = friendshipRepository.findRequests(srcPerson, dstPerson, FriendshipStatusCode.FRIEND);
         return friendships.size() == 1;
     }
 }
