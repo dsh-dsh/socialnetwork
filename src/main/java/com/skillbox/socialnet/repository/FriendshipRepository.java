@@ -1,6 +1,5 @@
 package com.skillbox.socialnet.repository;
 
-
 import com.skillbox.socialnet.model.dto.NotificationInterfaceProjectile;
 import com.skillbox.socialnet.model.entity.Friendship;
 import com.skillbox.socialnet.model.entity.Person;
@@ -17,10 +16,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @author Semen V
- * @created 28|11|2021
- */
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Integer> {
 
@@ -98,15 +93,6 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     @Query(value = "delete from friendship as f where f.src_person_id = :id or f.dst_person_id = :id",
             nativeQuery = true)
     void deleteForDeletedPerson(int id);
-
-
-    Optional<Friendship> findBySrcPersonAndDstPerson(Person srcPerson, Person dstPerson);
-
-    @Query("FROM Friendship " +
-            "WHERE ((srcPerson = :srcPerson and dstPerson = :dstPerson) " +
-            "OR (srcPerson = :dstPerson and dstPerson = :srcPerson)) " +
-            "AND status.code = :code")
-    Optional<Friendship> findFriendship(Person srcPerson, Person dstPerson, FriendshipStatusCode code);
 
     @Query("FROM Friendship " +
             "WHERE srcPerson = :srcPerson AND dstPerson = :dstPerson " +

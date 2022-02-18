@@ -16,7 +16,7 @@ public class Friendship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "status_id")
     private FriendshipStatus status;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
