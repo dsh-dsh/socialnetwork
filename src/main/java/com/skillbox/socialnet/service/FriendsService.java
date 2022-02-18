@@ -24,11 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * @author Semen V
- * @created 18|11|2021
- */
-
 @Service
 @RequiredArgsConstructor
 public class FriendsService {
@@ -133,14 +128,18 @@ public class FriendsService {
                     .filter(person -> !myFriends.contains(person))
                     .collect(Collectors.toSet());
         }
+        addNewFriendsToRecommended(currentPerson, myFriends, recommendedFriends);
+
+        return recommendedFriends;
+    }
+
+    private void addNewFriendsToRecommended(Person currentPerson, Set<Person> myFriends, Set<Person> recommendedFriends) {
         int limit = Constants.RECOMMENDED_FRIENDS_LIMIT - recommendedFriends.size();
         if(limit > 0) {
             Set<Person> personsToExclude = getPersonsToExclude(currentPerson, myFriends, recommendedFriends);
             List<Person> newFriends = personRepository.findNewFriendsLimit(personsToExclude, PageRequest.of(0, limit));
             recommendedFriends.addAll(newFriends);
         }
-
-        return recommendedFriends;
     }
 
     public MessageOkDTO blockUser(int personId) {
@@ -159,14 +158,24 @@ public class FriendsService {
     public MessageOkDTO unblockUser(int personId) {
         Person srcPerson = authService.getPersonFromSecurityContext();
         Person dstPerson = personService.getPersonById(personId);
-        Friendship friendship = friendshipRepository
-                .findFriendshipByStatusCode(srcPerson, dstPerson, FriendshipStatusCode.BLOCKED)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_FRIENDSHIP_MESSAGE));
-        friendship.getStatus().setCode(FriendshipStatusCode.FRIEND);
-        friendship.getStatus().setName(FriendshipStatusCode.FRIEND.getName());
-        friendshipRepository.save(friendship);
+        List<Friendship> friendships = friendshipRepository.findFriendships(srcPerson, dstPerson);
+        unblockOrDeleteFriendship(srcPerson, friendships);
 
         return new MessageOkDTO();
+    }
+
+    private void unblockOrDeleteFriendship(Person srcPerson, List<Friendship> friendships) {
+        for(Friendship friendship : friendships) {
+            if(friendship.getSrcPerson().equals(srcPerson)) {
+                if(friendships.size() > 1) {
+                    friendshipRepository.delete(friendship);
+                } else {
+                    friendship.getStatus().setCode(FriendshipStatusCode.FRIEND);
+                    friendship.getStatus().setName(FriendshipStatusCode.FRIEND.getName());
+                    friendshipRepository.save(friendship);
+                }
+            }
+        }
     }
 
     public List<Person> getBlockedFriends(Person currentPerson) {
@@ -218,10 +227,7 @@ public class FriendsService {
 
     private List<Person> getFriendsFromFriendships(Person currentPerson, List<Friendship> friendships) {
         return friendships.stream()
-                .map(friendship -> friendship
-                        .getSrcPerson().equals(currentPerson) ?
-                        friendship.getDstPerson() :
-                        friendship.getSrcPerson())
+                .map(friendship -> getFriendFromFriendship(friendship, currentPerson))
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -230,15 +236,14 @@ public class FriendsService {
         return !(friendship.getSrcPerson() != currentPerson && friendship.getDstPerson() != currentPerson);
     }
 
-    private Person getFriendFromFriendship(Friendship friendship, Person currentPerson) {
-        if (!isMyFriendship(friendship, currentPerson)) {
-            return null;
-        }
+    private static Person getFriendFromFriendship(Friendship friendship, Person currentPerson) {
         if (friendship.getSrcPerson() == currentPerson) {
             return friendship.getDstPerson();
-        } else {
+        }
+        if (friendship.getDstPerson() == currentPerson) {
             return friendship.getSrcPerson();
         }
+        return null;
     }
 
     public boolean isFriends(Person currentPerson, Person dstPerson) {
