@@ -106,7 +106,7 @@ public class AccountService {
     private String getConfirmationCodeString() {
         long expiration = System.currentTimeMillis() + expirationTime;
         String confirmationCode = UUID.randomUUID()
-                .toString().replace("-", "") + "E" + expiration;
+                .toString().replace("-", "") + Constants.EXPIRATION_PREFIX + expiration;
         return confirmationCode;
     }
 

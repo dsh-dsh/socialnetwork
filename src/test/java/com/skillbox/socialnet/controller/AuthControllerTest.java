@@ -57,7 +57,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.BAD_REQUEST_MESSAGE));
+                .andExpect(jsonPath("$.error").value(Constants.NO_SUCH_USER_MESSAGE));
     }
 
     @Test
