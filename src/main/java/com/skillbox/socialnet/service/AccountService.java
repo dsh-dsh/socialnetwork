@@ -44,6 +44,14 @@ public class AccountService {
 
 
     public MessageOkDTO register(AccountRegisterRQ accountRegisterRQ) {
+        Person person = createNewPerson(accountRegisterRQ);
+        personRepository.save(person);
+        setNotificationSettingsOnRegistering(person);
+
+        return new MessageOkDTO();
+    }
+
+    private Person createNewPerson(AccountRegisterRQ accountRegisterRQ) {
         Person person = new Person();
         person.setEMail(accountRegisterRQ.getEmail());
         person.setFirstName(accountRegisterRQ.getFirstName());
@@ -52,11 +60,7 @@ public class AccountService {
         person.setLastOnlineTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         person.setRegDate(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         person.setApproved(true);
-        personRepository.save(person);
-
-        setNotificationSettingsOnRegistering(person);
-
-        return new MessageOkDTO();
+        return person;
     }
 
     private void setNotificationSettingsOnRegistering(Person person) {
@@ -82,22 +86,27 @@ public class AccountService {
         }
         String recoveryLink = servletRequest.getRequestURL().toString()
                 .replace(servletRequest.getServletPath(), "") +
-                "/change-password?code=" + getConfirmationCode(email);
+                "/change-password?code=" + addConfirmationCode(email);
         emailService.send(email, Constants.PASSWWORD_RECOVERY_SUBJECT,
                     String.format(Constants.PASSWWORD_RECOVERY_TEXT, recoveryLink));
 
         return new MessageOkDTO();
     }
 
-    public String getConfirmationCode(String email) {
+    public String addConfirmationCode(String email) {
         Person person = personRepository.findByeMail(email)
                 .orElseThrow(NoSuchUserException::new);
-        long expiration = System.currentTimeMillis() + expirationTime;
-        String confirmationCode = UUID.randomUUID()
-                .toString().replace("-", "") + "E" + expiration;
+        String confirmationCode = getConfirmationCodeString();
         person.setConfirmationCode(confirmationCode);
         personRepository.save(person);
 
+        return confirmationCode;
+    }
+
+    private String getConfirmationCodeString() {
+        long expiration = System.currentTimeMillis() + expirationTime;
+        String confirmationCode = UUID.randomUUID()
+                .toString().replace("-", "") + "E" + expiration;
         return confirmationCode;
     }
 
@@ -122,9 +131,8 @@ public class AccountService {
     }
 
     public MessageOkDTO setEmail(AccountEmailRQ accountEmailRQ) {
-        String email = accountEmailRQ.getEmail();
         Person person = authService.getPersonFromSecurityContext();
-        person.setEMail(email);
+        person.setEMail(accountEmailRQ.getEmail());
         personRepository.save(person);
 
         return new MessageOkDTO();

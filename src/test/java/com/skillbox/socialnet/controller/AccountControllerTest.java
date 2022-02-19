@@ -181,7 +181,7 @@ class AccountControllerTest {
                     "WHERE e_mail = '" + EXISTING_EMAIL + "'",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void passwordSetTest() throws Exception {
-        String confirmationCode = accountService.getConfirmationCode(EXISTING_EMAIL);
+        String confirmationCode = accountService.addConfirmationCode(EXISTING_EMAIL);
         AccountPasswordSetRQ request = new AccountPasswordSetRQ(confirmationCode, NEW_PASSWORD);
 
         this.mockMvc.perform(
@@ -210,7 +210,7 @@ class AccountControllerTest {
 
     @Test
     void passwordSetWithWrongCodeTest() throws Exception {
-        String wrongConfirmationCode = "wrong" + accountService.getConfirmationCode(EXISTING_EMAIL);
+        String wrongConfirmationCode = "wrong" + accountService.addConfirmationCode(EXISTING_EMAIL);
         AccountPasswordSetRQ request = new AccountPasswordSetRQ(wrongConfirmationCode, NEW_PASSWORD);
         this.mockMvc.perform(
                         put(URL_PREFIX + "/password/set")
@@ -324,7 +324,7 @@ class AccountControllerTest {
     }
 
     private String getExpiredConfirmationCode() {
-        String confirmationCode = accountService.getConfirmationCode(EXISTING_EMAIL);
+        String confirmationCode = accountService.addConfirmationCode(EXISTING_EMAIL);
         return confirmationCode.substring(0, confirmationCode.lastIndexOf("E") + 1) + "12345";
     }
 }
