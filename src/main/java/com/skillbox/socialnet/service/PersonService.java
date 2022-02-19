@@ -59,7 +59,6 @@ public class PersonService {
     private void createLocations(UserChangeRQ userChangeRQ) {
         String city = userChangeRQ.getCity() != null ? userChangeRQ.getCity() : "";
         String country = userChangeRQ.getCountry() != null ? userChangeRQ.getCountry() : "";
-
         if(!city.equals("")) {
             platformService.addCity(new LocationDTO(0, city));
         }

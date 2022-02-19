@@ -50,7 +50,6 @@ public class PostService {
         return new GeneralListResponse<>(postsDTOList, postPage);
     }
 
-    @Loggable
     public GeneralListResponse<PostDTO> getFeeds(ElementPageable pageable) {
         pageable.setSort(Sort.by("time").descending());
         List<Person> friends = getFriendList();
