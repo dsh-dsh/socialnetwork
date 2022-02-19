@@ -20,49 +20,30 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
-    @Loggable
     @ExceptionHandler(BadRequestException.class)
     protected ResponseEntity<ErrorResponse> handleBadRequestException(
             BadRequestException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @Loggable
     @ExceptionHandler(MailException.class)
     protected ResponseEntity<ErrorResponse> handleMailException(
             MailException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @Loggable
     @ExceptionHandler(NoSuchUserException.class)
     protected ResponseEntity<ErrorResponse> handleNoSuchUserException(
             NoSuchUserException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @Loggable
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     protected ResponseEntity<ErrorResponse> handleAuthenticationCredentialsNotFoundException(
             AuthenticationCredentialsNotFoundException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
-    @Loggable
-    @ExceptionHandler(NoAnyPostsFoundException.class)
-    protected ResponseEntity<ErrorResponse> handleNoAnyPostsFoundException(
-            NoAnyPostsFoundException ex) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-    }
-
-    @Loggable
-    @ExceptionHandler(NoSuchPostException.class)
-    protected ResponseEntity<ErrorResponse> handleNoSuchPostException(
-            NoSuchPostException ex) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @Loggable
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,

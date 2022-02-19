@@ -11,11 +11,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-/**
- * @author Semen V
- * @created 18|11|2021
- */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

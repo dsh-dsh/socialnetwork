@@ -9,11 +9,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Size;
 
-/**
- * @author Semen V
- * @created 18|11|2021
- */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

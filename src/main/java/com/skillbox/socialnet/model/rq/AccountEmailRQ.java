@@ -8,11 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 
-/**
- * @author Semen V
- * @created 19|11|2021
- */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

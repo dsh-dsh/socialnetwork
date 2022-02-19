@@ -7,7 +7,7 @@ public enum FriendshipStatusCode {
     DECLINED("Declined"),
     SUBSCRIBED("Subscribed");
 
-    private String name;
+    private final String name;
 
     FriendshipStatusCode(String name) {
         this.name = name;

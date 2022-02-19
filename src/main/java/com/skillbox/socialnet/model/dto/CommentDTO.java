@@ -3,9 +3,7 @@ package com.skillbox.socialnet.model.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skillbox.socialnet.model.entity.PostComment;
-import com.skillbox.socialnet.service.CommentService;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;

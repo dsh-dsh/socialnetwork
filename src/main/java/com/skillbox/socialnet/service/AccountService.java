@@ -105,9 +105,8 @@ public class AccountService {
 
     private String getConfirmationCodeString() {
         long expiration = System.currentTimeMillis() + expirationTime;
-        String confirmationCode = UUID.randomUUID()
+        return UUID.randomUUID()
                 .toString().replace("-", "") + Constants.EXPIRATION_PREFIX + expiration;
-        return confirmationCode;
     }
 
     public MessageOkDTO setPassword(AccountPasswordSetRQ accountPasswordSetRQ) {

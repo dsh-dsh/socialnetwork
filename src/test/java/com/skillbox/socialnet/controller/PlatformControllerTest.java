@@ -16,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.skillbox.socialnet.util.Constants.NOT_VALID_LOCAL_MESSAGE;
-import static com.skillbox.socialnet.util.Constants.NOT_VALID_TITLE_MESSAGE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

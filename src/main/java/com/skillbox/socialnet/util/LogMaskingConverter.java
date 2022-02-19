@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 @ConverterKeys("maskedMessage")
 public class LogMaskingConverter extends LogEventPatternConverter {
 
-    private static final String EMAIL_REGEX = "[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}";
+    private static final String EMAIL_REGEX = "[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
     private static final String EMAIL_REPLACEMENT = "***@******.***";
 

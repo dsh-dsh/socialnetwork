@@ -13,6 +13,6 @@ public class NotificationTypeValidator implements ConstraintValidator<ValidNotif
         NotificationTypeCode[] types = NotificationTypeCode.values();
         return Arrays.stream(types)
                 .map(NotificationTypeCode::toString)
-                .filter(value -> value.equals(notificationType)).count() > 0;
+                .anyMatch(value -> value.equals(notificationType));
     }
 }
