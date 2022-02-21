@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated()
                 .and()
-                    .cors(AbstractHttpConfigurer::disable)
+//                    .cors(AbstractHttpConfigurer::disable)
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling()
