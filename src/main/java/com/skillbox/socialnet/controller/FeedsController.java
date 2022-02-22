@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
+//@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/feeds")

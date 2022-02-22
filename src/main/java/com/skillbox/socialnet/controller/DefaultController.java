@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
+//@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
 @Controller
 public class DefaultController {
 
