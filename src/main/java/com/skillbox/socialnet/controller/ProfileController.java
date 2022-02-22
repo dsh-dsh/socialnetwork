@@ -12,7 +12,6 @@ import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.FriendsService;
 import com.skillbox.socialnet.service.PostService;
 import com.skillbox.socialnet.service.UserService;
-import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-//@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")

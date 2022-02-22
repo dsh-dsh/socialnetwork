@@ -5,13 +5,11 @@ import com.skillbox.socialnet.model.dto.UserDTO;
 import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.service.FriendsService;
-import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/friends")

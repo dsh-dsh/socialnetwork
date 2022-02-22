@@ -4,7 +4,6 @@ import com.skillbox.socialnet.model.dto.FileDTO;
 import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.StorageService;
-import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-//@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")

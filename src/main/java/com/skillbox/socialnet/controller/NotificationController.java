@@ -2,12 +2,10 @@ package com.skillbox.socialnet.controller;
 
 import com.skillbox.socialnet.model.rs.NotificationRS;
 import com.skillbox.socialnet.service.NotificationService;
-import com.skillbox.socialnet.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
