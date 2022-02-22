@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -65,26 +66,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated()
                 .and()
-//                    .cors(AbstractHttpConfigurer::disable)
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling()
                     .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
 
-//    @Bean
-//    public FilterRegistrationBean<CorsFilter> corsFilter() {
-//        CorsConfigurationSource source = corsConfigurationSource();
-//        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowCredentials(true);
-//        config.addAllowedOrigin("");
-//        config.addAllowedHeader("");
-//        config.addAllowedMethod("*");
-//        org.springframework.web.filter.CorsFilter corsFilter = new org.springframework.web.filter.CorsFilter(source);
-//        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(corsFilter);
-//        bean.setOrder(0);
-//        return bean;
-//    }
+    //curl -v -H "Access-Control-Request-Method: GET" -H "Origin: http://localhost:8080" -X OPTIONS http://localhost:8086
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

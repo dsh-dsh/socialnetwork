@@ -4,7 +4,7 @@ public class Constants {
     private Constants() {
     }
 
-    public static final String ALLOW_ORIGIN = "http://localhost:8080/";
+    public static final String ALLOW_ORIGIN = "http://localhost:8080";
 
     public static final int MAX_AGE = 6733;
     public static final int RECOMMENDED_FRIENDS_LIMIT = 15;
