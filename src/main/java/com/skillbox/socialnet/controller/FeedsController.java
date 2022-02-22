@@ -4,6 +4,7 @@ import com.skillbox.socialnet.model.dto.PostDTO;
 import com.skillbox.socialnet.model.rs.GeneralListResponse;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.PostService;
+import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
 import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-//@CrossOrigin
+@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/feeds")

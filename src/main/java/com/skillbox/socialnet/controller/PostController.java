@@ -11,6 +11,7 @@ import com.skillbox.socialnet.model.rs.GeneralResponse;
 import com.skillbox.socialnet.service.AuthService;
 import com.skillbox.socialnet.service.CommentService;
 import com.skillbox.socialnet.service.PostService;
+import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-//@CrossOrigin
+@CrossOrigin(origins = Constants.ALLOW_ORIGIN)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/post")
