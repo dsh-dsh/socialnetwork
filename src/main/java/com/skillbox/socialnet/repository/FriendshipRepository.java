@@ -98,4 +98,10 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
             "WHERE srcPerson = :srcPerson AND dstPerson = :dstPerson " +
             "AND status.code = :code")
     Optional<Friendship> findFriendshipByStatusCode(Person srcPerson, Person dstPerson, FriendshipStatusCode code);
+
+    @Query(value = "select dst_person_id as dst from friendship f " +
+            "LEFT JOIN friendship_status fs ON fs.id = f.status_id " +
+            "where (src_person_id = :id or dst_person_id = :id)  and fs.code like 'BLOCKED'",
+            nativeQuery = true)
+    List<Integer> getIdsIfBlocked(int id);
 }
