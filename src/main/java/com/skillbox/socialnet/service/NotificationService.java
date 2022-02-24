@@ -73,7 +73,8 @@ public class NotificationService {
     }
 
     public void createNewNotification(NotificationTypeCode typeCode, int dstPersonId, int entityId, String contact) {
-        if (isNotificationEnabled(dstPersonId, typeCode.toString())) {
+        List<Integer> blockedUsers = friendshipRepository.getIdsIfBlocked(authService.getPersonFromSecurityContext().getId());
+        if (isNotificationEnabled(dstPersonId, typeCode.toString()) && !blockedUsers.contains(dstPersonId)) {
             Timestamp sentTime = new Timestamp(Calendar.getInstance().getTimeInMillis());
             notificationRepository.createNewNotification(typeCode.ordinal(), sentTime, dstPersonId, String.valueOf(entityId), contact, false);
             sendNotifications(dstPersonId);
