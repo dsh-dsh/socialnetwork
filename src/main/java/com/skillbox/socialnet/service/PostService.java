@@ -12,7 +12,6 @@ import com.skillbox.socialnet.repository.FriendshipRepository;
 import com.skillbox.socialnet.repository.PostRepository;
 import com.skillbox.socialnet.util.Constants;
 import com.skillbox.socialnet.util.ElementPageable;
-import com.skillbox.socialnet.util.annotation.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Loggable
 public class PostService {
 
     private final PostRepository postRepository;
@@ -83,7 +81,7 @@ public class PostService {
         post.setPostText(postChangeRQ.getPostText());
         post.setTime(new Timestamp((publishDate == 0) ? Calendar.getInstance().getTimeInMillis() : publishDate));
         post = postRepository.save(post);
-        addTags2Post(post, postChangeRQ.getTags());
+        tagService.addTags2Post(post, postChangeRQ.getTags());
         createNotificationsForWall(personId);
         return getPostDTO(post);
     }
@@ -94,7 +92,7 @@ public class PostService {
         changePostPublishDate(publishDate, post);
         changePostTexts(postChangeRQ, post);
         postRepository.save(post);
-        addTags2Post(post, postChangeRQ.getTags());
+        tagService.addTags2Post(post, postChangeRQ.getTags());
 
         return getPostDTO(post);
     }
@@ -107,7 +105,6 @@ public class PostService {
         return new DeleteDTO(id);
     }
 
-    @Loggable
     public GeneralListResponse<PostDTO> getUserWall(int id, ElementPageable pageable) {
         Person person = personService.getPersonById(id);
         pageable.setSort(Sort.by("time").descending());
@@ -203,14 +200,6 @@ public class PostService {
     private int getMyLike(List<PostLike> likes) {
         Person me = authService.getPersonFromSecurityContext();
         return (int) likes.stream().filter(like -> like.getPerson().equals(me)).count();
-    }
-
-    private void addTags2Post(Post post, List<String> tagNames) {
-        List<Tag> tags = tagService.addTagsIfNotExists(tagNames);
-        Set<Post2tag> newTagPosts = tagService.getPost2tagSet(post, tags);
-        post.getTags().clear();
-        post.getTags().addAll(newTagPosts);
-        postRepository.save(post);
     }
 
     private List<PostDTO> getPostDTOList(List<Post> posts) {

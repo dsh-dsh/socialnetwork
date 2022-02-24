@@ -16,7 +16,7 @@ import java.util.List;
 public class HardDeletingPerson {
     private final PersonRepository personRepository;
     private final PostRepository postRepository;
-    private final Tag2PostRepository tag2PostRepository;
+    private final Post2tagRepository post2tagRepository;
     private final LikesRepository likesRepository;
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
@@ -35,7 +35,7 @@ public class HardDeletingPerson {
             for (Post postForDelete :
                     posts) {
                 likesRepository.deleteForDeletedPost(postForDelete.getId());
-                tag2PostRepository.deleteForDeletedPost(postForDelete.getId());
+                post2tagRepository.deleteForDeletedPost(postForDelete.getId());
                 commentRepository.deleteForDeletedPost(postForDelete.getId());
             }
             postRepository.deleteForDeletedPerson(p.getId());

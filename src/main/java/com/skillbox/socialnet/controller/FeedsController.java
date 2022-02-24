@@ -15,11 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/feeds")
-@Loggable
 public class FeedsController {
 
     private final PostService postService;
-    private final AuthService authService;
 
     @GetMapping
     public ResponseEntity<GeneralListResponse<PostDTO>> getFeeds(ElementPageable pageable){
