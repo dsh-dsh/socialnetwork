@@ -16,9 +16,9 @@ public class StatisticsResponse {
     private int comments;
 
     @JsonProperty("first_publication")
-    private Timestamp firstPublication;
+    private String firstPublication;
 
-    public StatisticsResponse(Integer sumOfPostsById, Integer sumOfLikes, Integer comments, Timestamp firstPublication) {
+    public StatisticsResponse(Integer sumOfPostsById, Integer sumOfLikes, Integer comments, String firstPublication) {
         this.posts = sumOfPostsById;
         this.likes = sumOfLikes;
         this.comments = comments;
