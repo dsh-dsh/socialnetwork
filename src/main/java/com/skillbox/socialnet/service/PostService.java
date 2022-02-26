@@ -105,13 +105,24 @@ public class PostService {
         return new DeleteDTO(id);
     }
 
-    public GeneralListResponse<PostDTO> getUserWall(int id, ElementPageable pageable) {
-        Person person = personService.getPersonById(id);
-        pageable.setSort(Sort.by("time").descending());
-        Page<Post> postPage = postRepository.findPostsByAuthor(person, pageable);
+    public GeneralListResponse<PostDTO> getUserWall(int postId, String type, ElementPageable pageable) {
+        Person person = personService.getPersonById(postId);
+        Page<Post> postPage = getPostPage(type, pageable, person);
         List<PostDTO> postDTOList = getPostDTOList(postPage.getContent());
 
         return new GeneralListResponse<>(postDTOList, postPage);
+    }
+
+    private Page<Post> getPostPage(String type, ElementPageable pageable, Person person) {
+        pageable.setSort(Sort.by("time").descending());
+        Timestamp now = new Timestamp(Calendar.getInstance().getTimeInMillis());
+        if (type.equals("posted")) {
+            return postRepository.findByAuthorAndTimeBefore(person, now, pageable);
+        } else if (type.equals("queued")){
+            return postRepository.findByAuthorAndTimeAfter(person, now, pageable);
+        } else {
+            return postRepository.findPostsByAuthor(person, pageable);
+        }
     }
 
     public List<CommentDTO> getCommentsToPost(int id) {
