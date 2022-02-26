@@ -5,7 +5,6 @@ import com.skillbox.socialnet.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class StatisticsService {
                     postRepository.getSumOfPostsById(id) == null ? 0 : postRepository.getSumOfPostsById(id),
                     postRepository.getSumOfLikes(id) == null ? 0 : postRepository.getSumOfLikes(id),
                     postRepository.getSumOfComments(id) == null ? 0 : postRepository.getSumOfComments(id),
-                    postRepository.getFirstPublication(id) == null ? new Timestamp(0) : postRepository.getFirstPublication(id)
+                    postRepository.getFirstPublication(id) == null ? "Нет постов" : postRepository.getFirstPublication(id).toString()
             );
         }
 }
