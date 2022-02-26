@@ -45,8 +45,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Page<Post> findPostsByAuthor(Person author, Pageable pageable);
 
-    Post getPostByAuthor(Person person);
-
     @Query("SELECT post " +
             "FROM Post AS post " +
             "WHERE post.author NOT IN (:persons) " +
@@ -81,4 +79,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = "select count(*) from post_comment where author_id = :id",
             nativeQuery = true)
     Integer getSumOfComments(int id);
+
+    Page<Post> findByAuthorAndTimeBefore(Person author, Timestamp time, Pageable pageable);
+
+    Page<Post> findByAuthorAndTimeAfter(Person author, Timestamp time, Pageable pageable);
 }

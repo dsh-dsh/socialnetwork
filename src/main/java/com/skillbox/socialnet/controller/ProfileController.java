@@ -58,8 +58,10 @@ public class ProfileController {
 
     @GetMapping("/{id}/wall")
     public ResponseEntity<GeneralListResponse<PostDTO>> getUserWall(
-            @PathVariable int id, ElementPageable pageable) {
-        return ResponseEntity.ok(postService.getUserWall(id, pageable));
+            @PathVariable int id,
+            @RequestParam(defaultValue = "") String type,
+            ElementPageable pageable) {
+        return ResponseEntity.ok(postService.getUserWall(id, type, pageable));
     }
 
     @PostMapping("/{id}/wall")
