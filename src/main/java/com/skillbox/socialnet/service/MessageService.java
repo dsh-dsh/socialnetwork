@@ -50,6 +50,10 @@ public class MessageService {
         return messageRepository.countByDialogAndRecipientAndReadStatus(dialog, recipient, MessageReadStatus.SENT);
     }
 
+    public int getMessageCount(Dialog dialog) {
+        return messageRepository.countByDialog(dialog);
+    }
+
     public void setMessagesStatusRead(List<Message> messages, Person author) {
         messageRepository.setMessagesReadStatus(messages, author, MessageReadStatus.READ);
     }

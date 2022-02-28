@@ -37,4 +37,6 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
             "WHERE message IN (:messages) " +
             "AND message.recipient = :recipient")
     void setMessagesReadStatus(List<Message> messages, Person recipient, MessageReadStatus status);
+
+    int countByDialog(Dialog dialog);
 }

@@ -16,8 +16,10 @@ public class DialogDTO {
     private PersonDialogDTO recipient;
     @JsonProperty("unread_count")
     private int unreadCount;
+    @JsonProperty("message_count")
+    private int messageCount;
 
-    public DialogDTO(Dialog dialog, Person me, Message lastMessage, int unreadCount) {
+    public DialogDTO(Dialog dialog, Person me, Message lastMessage, int unreadCount, int messageCount) {
         this.id = dialog.getId();
         this.lastMessage = new MessageDTO(me, lastMessage);
         Person person = dialog.getPersons().stream()
@@ -26,5 +28,6 @@ public class DialogDTO {
                 .orElseThrow(BadRequestException::new);
         this.recipient = new PersonDialogDTO(person);
         this.unreadCount = unreadCount;
+        this.messageCount = messageCount;
     }
 }
