@@ -95,7 +95,8 @@ public class DialogService {
                 .map(dialog -> new DialogDTO(
                         dialog, author,
                         messageService.getLastMessage(dialog),
-                        messageService.getUnreadCount(dialog, author)))
+                        messageService.getUnreadCount(dialog, author),
+                        messageService.getMessageCount(dialog)))
                 .sorted(comparatorByLastMessage.reversed())
                 .collect(Collectors.toList());
     }
