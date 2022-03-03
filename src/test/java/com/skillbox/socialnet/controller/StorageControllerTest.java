@@ -38,22 +38,22 @@ class StorageControllerTest {
     private static final String P1_MAIL = "p1@mail.ru";
     private static final String URL_PREFIX = "/api/v1/storage";
 
-    @Test
-    @WithUserDetails(P1_MAIL)
-    void saveImg() throws Exception {
-        String name = "file";
-        String originalFileName = "file.txt";
-        String contentType = "text/plain";
-        MockMultipartFile file = new MockMultipartFile(name,
-                originalFileName, contentType, "content".getBytes());
-
-        mockMvc.perform(MockMvcRequestBuilders.multipart(URL_PREFIX)
-                        .file(file)
-                        .param("type", "type"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.fileName").value(name));
-    }
+//    @Test
+//    @WithUserDetails(P1_MAIL)
+//    void saveImg() throws Exception {
+//        String name = "file";
+//        String originalFileName = "file.txt";
+//        String contentType = "text/plain";
+//        MockMultipartFile file = new MockMultipartFile(name,
+//                originalFileName, contentType, "content".getBytes());
+//
+//        mockMvc.perform(MockMvcRequestBuilders.multipart(URL_PREFIX)
+//                        .file(file)
+//                        .param("type", "type"))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.data.fileName").value(name));
+//    }
 
     @Test
     void saveImgUnauthorized() throws Exception {
