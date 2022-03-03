@@ -41,7 +41,6 @@ public class DialogService {
         return dialogRepository.findByPerson(author);
     }
 
-    @Transactional
     public DialogIdDTO createDialog(DialogCreateDTORequest dialogCreateDTORequest) {
         Set<Person> persons = personService.getPersonsByIdList(dialogCreateDTORequest.getUserIds());
         Person author = authService.getPersonFromSecurityContext();
@@ -114,7 +113,6 @@ public class DialogService {
                 .orElseThrow(BadRequestException::new);
     }
 
-    @Transactional
     public Optional<Dialog> getDialogByPersonSet(Person me, Set<Person> persons) {
         List<Dialog> dialogs = dialogRepository.findByPerson(me);
         return dialogs.stream()
