@@ -69,8 +69,9 @@ public class PostService {
 
     public PostDTO getPostById(int id) {
         Post post = postRepository.findPostById(id).orElseThrow(BadRequestException::new);
+        String myEmail = authService.getPersonFromSecurityContext().getEMail();
 
-        return getPostDTO(post);
+        return getPostDTO(post, myEmail);
     }
 
     public PostDTO addPostToUserWall(int personId, long publishDate, PostChangeRQ postChangeRQ) {
@@ -83,7 +84,9 @@ public class PostService {
         post = postRepository.save(post);
         tagService.addTags2Post(post, postChangeRQ.getTags());
         createNotificationsForWall(personId);
-        return getPostDTO(post);
+        String myEmail = authService.getPersonFromSecurityContext().getEMail();
+
+        return getPostDTO(post, myEmail);
     }
 
     public PostDTO changePostById(int id, long publishDate, PostChangeRQ postChangeRQ) {
@@ -93,8 +96,9 @@ public class PostService {
         changePostTexts(postChangeRQ, post);
         postRepository.save(post);
         tagService.addTags2Post(post, postChangeRQ.getTags());
+        String myEmail = authService.getPersonFromSecurityContext().getEMail();
 
-        return getPostDTO(post);
+        return getPostDTO(post, myEmail);
     }
 
     public DeleteDTO deletePostById(int id) {
@@ -200,11 +204,11 @@ public class PostService {
         }
     }
 
-    private PostDTO getPostDTO(Post post) {
+    private PostDTO getPostDTO(Post post, String myEmail) {
         PostDTO postDTO = PostDTO.getPostDTO(post);
         postDTO.setMyLike(getMyLike(post.getLikes()));
         postDTO.setComments(commentService.getCommentsDTOList(post));
-        postDTO.getAuthor().setMe(postDTO.getAuthor().getEmail().equals(authService.getPersonFromSecurityContext().getEMail()));
+        postDTO.getAuthor().setMe(postDTO.getAuthor().getEmail().equals(myEmail));
         return postDTO;
     }
 
@@ -214,8 +218,10 @@ public class PostService {
     }
 
     private List<PostDTO> getPostDTOList(List<Post> posts) {
+        String myEmail = authService.getPersonFromSecurityContext().getEMail();
+
         return posts.stream()
-                .map(this::getPostDTO)
+                .map(post -> getPostDTO(post, myEmail))
                 .collect(Collectors.toList());
     }
 
